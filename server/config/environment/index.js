@@ -39,7 +39,13 @@ var all = {
         safe: true
       }
     }
+  },
+
+  github: {
+    user: process.env.GITHUB_USER,
+    password: process.env.GITHUB_SECRET
   }
+
 };
 
 // Export the config object based on the NODE_ENV

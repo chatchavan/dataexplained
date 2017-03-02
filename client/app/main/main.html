@@ -16,9 +16,34 @@
         <!--<li><a href="#" tooltip="{{thing.info}}">{{thing.name}}</a></li>-->
       <!--</ul>-->
     <!--</div>-->
-    <iframe style="height:400px; width:800px; resize: both; overflow: auto;" src="http://34.251.167.94:8787" name="rstudio" id="rstudio">
-      <p>iframes are not supported by your browser.</p>
-    </iframe>
+
+    <div class="col-lg-8 col-md-8">
+      <iframe style="width: 100%; height: 600px" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
+        <p>iframes are not supported by your browser.</p>
+      </iframe>
+    </div>
+    <div style="height: 600px" class="col-lg-4 col-md-4">
+      <h2>Live Logs</h2>
+      <form>
+        <div class="form-group">
+          <label for="sel2">Select logs to form blocks (hold shift to select more than one):</label>
+          <select style="width: 100%" id="sel2" ng-model="main.selection"
+                  ng-options="item as item.log for item in main.loglist"
+                  ng-multiple="true" multiple>
+
+          </select>
+          <!--<select ng-model="main.selection" multiple class="form-control" id="sel2">-->
+            <!--<option ng-repeat="log in main.loglist">{{log.log}}</option>-->
+          <!--</select>-->
+        </div>
+        <button ng-click="main.createBlock()">Create Block</button>
+      </form>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <a ng-click="main.readFile()">click meeeeee</a>
   </div>
 </div>
 

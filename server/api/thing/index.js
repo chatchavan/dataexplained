@@ -5,9 +5,9 @@ var controller = require('./thing.controller');
 
 var router = express.Router();
 
-router.get('/', controller.index);
+router.get('/', controller.index); //get R history
 router.get('/:id', controller.show);
-router.post('/', controller.create);
+router.post('/', controller.create); //create block
 router.put('/:id', controller.update);
 router.patch('/:id', controller.update);
 router.delete('/:id', controller.destroy);
