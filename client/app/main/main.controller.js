@@ -4,17 +4,18 @@
 
 class MainController {
 
-  constructor($http, $sce) {
+  constructor($http, $sce, $interval) {
     this.$http = $http;
     this.awesomeThings = [];
     this.selection = '';
     this.blockPrefix = "//startBlock";
     this.blockSuffix = "//endBlock";
 
-    this.rStudioEndpoint = $sce.trustAsResourceUrl('http://34.251.167.94:8787');
-    // this.rStudioEndpoint = $sce.trustAsResourceUrl('http://130.60.157.118:8787');
-    this.log = 'sdfsdfs';
+    this.rStudioEndpoint = $sce.trustAsResourceUrl('http://34.251.106.133:8787');
+    //this.rStudioEndpoint = $sce.trustAsResourceUrl('http://192.168.56.101:8787');
 
+    this.readFile();
+    $interval(this.readFile.bind(this), 5000);
     // $http.get('/api/things').then(response => {
     //   this.awesomeThings = response.data;
     // });
@@ -62,6 +63,7 @@ class MainController {
 
     return list;
   }
+
 
 
 

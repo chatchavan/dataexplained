@@ -15,6 +15,7 @@ var fs = require('fs');
 var config = require('../../config/environment');
 var GitHubApi = require("github");
 var base64 = require('js-base64').Base64;
+var rHistoryPath = config.env
 
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
@@ -68,8 +69,11 @@ export function index(req, res) {
   // Thing.findAsync()
   //   .then(responseWithResult(res))
   //   .catch(handleError(res));
+  fs.readFile('/home/coldata/.rstudio/history_database', 'utf8', function (err,data) {
+  // fs.readFile('./history_database', 'utf8', function (err,data) {
 
-  fs.readFile('./history_database', 'utf8', function (err,data) {
+
+    // fs.readFile('./history_database', 'utf8', function (err,data) {
     if (err) {
       return console.log(err);
     }

@@ -17,12 +17,12 @@
       <!--</ul>-->
     <!--</div>-->
 
-    <div class="col-lg-8 col-md-8">
+    <div class="col-lg-7 col-md-7">
       <iframe style="width: 100%; height: 600px" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
         <p>iframes are not supported by your browser.</p>
       </iframe>
     </div>
-    <div style="height: 600px" class="col-lg-4 col-md-4">
+    <div style="height: 600px" class="col-lg-3 col-md-3">
       <h2>Live Logs</h2>
       <form>
         <div class="form-group">
@@ -36,11 +36,27 @@
             <!--<option ng-repeat="log in main.loglist">{{log.log}}</option>-->
           <!--</select>-->
         </div>
-        <button ng-click="main.createBlock()">Create Block</button>
       </form>
     </div>
+    <!--<div class="col-lg-1 col-md-1">-->
+    <!--</div>-->
+    <div class="dual-list list-right col-lg-2 col-md-2">
+      <button ng-click="main.createBlock()">Create Block</button>
 
-  </div>
+      <ul class="list-group">
+          <li class="list-group-item">Cras justo odio</li>
+          <li class="list-group-item">Dapibus ac facilisis in</li>
+          <li class="list-group-item">Morbi leo risus</li>
+          <li class="list-group-item">Porta ac consectetur ac</li>
+          <li class="list-group-item">Vestibulum at eros</li>
+        </ul>
+
+
+    </div>
+
+    </div>
+
+
 
   <div class="row">
     <a ng-click="main.readFile()">click meeeeee</a>
