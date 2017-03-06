@@ -14,31 +14,28 @@ class MainController {
     this.rStudioEndpoint = $sce.trustAsResourceUrl('http://34.251.106.133:8787');
     //this.rStudioEndpoint = $sce.trustAsResourceUrl('http://192.168.56.101:8787');
 
-    this.readFile();
-    $interval(this.readFile.bind(this), 5000);
-    // $http.get('/api/things').then(response => {
-    //   this.awesomeThings = response.data;
-    // });
+    this.getAllBlocks();
+    $interval(this.getAllBlocks.bind(this), 5000);
+
   }
 
-  addThing(block) {
+  addBlock(block) {
     // if (this.newThing) {
-      this.$http.post('/api/things', { block: block });
-      this.newThing = '';
+      this.$http.post('/api/blocks', { block: block });
     // }
   }
 
-  readFile(){
-    this.$http.get('/api/things').then(response => {
+  getAllBlocks(){
+    this.$http.get('/api/blocks').then(response => {
       this.log = response.data.content;
       this.loglist = this.formatLogs(this.log.split("\n"));
       console.log('yeah', this.log);
     });
   }
 
-  deleteThing(thing) {
-    this.$http.delete('/api/things/' + thing._id);
-  }
+  // deleteThing(thing) {
+  //   this.$http.delete('/api/things/' + thing._id);
+  // }
 
   createBlock(){
     console.log(this.selection);
@@ -48,7 +45,7 @@ class MainController {
     }
     block += '\\n'+this.blockSuffix;
     console.log(block);
-    this.addThing(block);
+    this.addBlock(block);
   }
 
   formatLogs(list){
