@@ -11,10 +11,6 @@
 
 import _ from 'lodash';
 var Thing = require('./thing.model');
-var fs = require('fs');
-var config = require('../../config/environment');
-var GitHubApi = require("github");
-var base64 = require('js-base64').Base64;
 
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
@@ -65,24 +61,9 @@ function removeEntity(res) {
 
 // Gets a list of Things
 export function index(req, res) {
-  // Thing.findAsync()
-  //   .then(responseWithResult(res))
-  //   .catch(handleError(res));
-  fs.readFile('/home/coldata/.rstudio/history_database', 'utf8', function (err,data) {
-  // fs.readFile('./history_database', 'utf8', function (err,data) {
-
-
-    // fs.readFile('./history_database', 'utf8', function (err,data) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log(data);
-        var result = {'content': data.toString()};
-        // responseWithResult(result);
-    return res.status(200).json(result);
-  });
-
-
+  Thing.findAsync()
+    .then(responseWithResult(res))
+    .catch(handleError(res));
 }
 
 // Gets a single Thing from the DB
@@ -95,60 +76,9 @@ export function show(req, res) {
 
 // Creates a new Thing in the DB
 export function create(req, res) {
-  // Thing.createAsync(req.body)
-  //   .then(responseWithResult(res, 201))
-  //   .catch(handleError(res));
-
-  // fs.writeFile(pathlocal, "Hey there!", function(err) {
-  //   if(err) {
-  //     return console.log(err);
-  //   }
-  //   console.log("The file was saved!");
-  //
-  //
-  //
-  //
-  // })
-
-  var content = req.body.block;
-
-
-  var github = new GitHubApi();
-  github.authenticate({
-    type: "basic",
-    username: config.github.user,
-    password: config.github.password
-  });
-
-  var file = {
-    owner: config.github.user,
-    repo: 'blocks',
-    path: 'block.txt',
-    message: 'auto commit',
-    content: base64.encode(content)
-  };
-
-  github.repos.getContent({
-    owner: config.github.user,
-    repo: 'blocks',
-    path: 'block.txt'
-  }).then((re) => {
-
-    //file does exist
-    let sha = re.data.sha;
-    console.log('sha', sha);
-    updateFile(github,sha, file);
-
-  }, (err) => {
-    //file does not exist yet
-    console.log('file does not exist yet, creating new one');
-    // console.log('errror', err)
-    createFile(github, file);
-  });
-
-  return '';
-
-
+  Thing.createAsync(req.body)
+    .then(responseWithResult(res, 201))
+    .catch(handleError(res));
 }
 
 // Updates an existing Thing in the DB
@@ -169,28 +99,4 @@ export function destroy(req, res) {
     .then(handleEntityNotFound(res))
     .then(removeEntity(res))
     .catch(handleError(res));
-}
-
-
-///HELPER FUNCTIONS
-function createFile(github, file){
-  github.repos.createFile(file).then((re) => {
-    console.log('FILE SUCCESSFULLY CREATED');
-    console.log(re);
-  }, (err) => {
-    console.log('file could not be created');
-    console.log(err);
-
-  });
-}
-
-
-function updateFile(github, sha, file){
-  file.sha = sha;
-  github.repos.updateFile(file).then((re) => {
-    console.log('FILE SUCCESSFULLY UPDATED');
-  }, (err) => {
-    console.log('file could not be updated');
-    console.log(err);
-  });
 }
