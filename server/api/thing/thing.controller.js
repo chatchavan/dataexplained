@@ -15,7 +15,6 @@ var fs = require('fs');
 var config = require('../../config/environment');
 var GitHubApi = require("github");
 var base64 = require('js-base64').Base64;
-var rHistoryPath = config.env
 
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
