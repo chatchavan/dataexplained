@@ -17,17 +17,17 @@
       <!--</ul>-->
     <!--</div>-->
 
-    <div class="col-lg-7 col-md-7">
-      <iframe style="width: 100%; height: 600px" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
+    <div class="col-lg-7 col-md-7" style="overflow: scroll">
+      <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
         <p>iframes are not supported by your browser.</p>
       </iframe>
     </div>
-    <div style="height: 600px" class="col-lg-3 col-md-3">
+    <div class="col-lg-3 col-md-3">
       <h2>Live Logs</h2>
-      <form>
+      <form class="fullDimension">
         <div class="form-group">
           <label for="sel2">Select logs to form blocks (hold shift to select more than one):</label>
-          <select style="width: 100%" id="sel2" ng-model="main.selection"
+          <select class="fullDimension" id="sel2" ng-model="main.selection"
                   ng-options="item as item.log for item in main.loglist"
                   ng-multiple="true" multiple>
 
@@ -43,13 +43,9 @@
     <div class="dual-list list-right col-lg-2 col-md-2">
       <button ng-click="main.createBlock()">Create Block</button>
 
-      <ul class="list-group">
-          <li class="list-group-item">Cras justo odio</li>
-          <li class="list-group-item">Dapibus ac facilisis in</li>
-          <li class="list-group-item">Morbi leo risus</li>
-          <li class="list-group-item">Porta ac consectetur ac</li>
-          <li class="list-group-item">Vestibulum at eros</li>
-        </ul>
+      <ul class="list-group" ng-repeat="block in main.blockList">
+          <li class="list-group-item">{{block.title}}</li>
+      </ul>
 
 
     </div>

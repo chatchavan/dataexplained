@@ -6,7 +6,8 @@ angular.module('rationalecapApp', [
   'ngResource',
   'ngSanitize',
   'ui.router',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'angularModalService'
 ])
   .config(function($urlRouterProvider, $locationProvider) {
     $urlRouterProvider

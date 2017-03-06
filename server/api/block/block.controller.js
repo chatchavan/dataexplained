@@ -65,8 +65,9 @@ function removeEntity(res) {
 
 // Gets a list of Blocks
 export function index(req, res) {
-  // fs.readFile('/home/coldata/.rstudio/history_database', 'utf8', function (err, data) {
-    fs.readFile('./history_database', 'utf8', function (err,data) {
+  //TODO read user from body
+  fs.readFile('/home/coldata/.rstudio/history_database', 'utf8', function (err, data) {
+    // fs.readFile('./history_database', 'utf8', function (err,data) {
     if (err) {
       return console.log(err);
     }
@@ -86,7 +87,7 @@ export function show(req, res) {
 
 // Creates a new Block in the DB
 export function create(req, res) {
-  var content = req.body.block;
+  var content = req.body.blockString;
 
 
   var github = new GitHubApi();
@@ -112,17 +113,19 @@ export function create(req, res) {
 
     //file does exist
     let sha = re.data.sha;
+    let newContent = base64.decode(re.data.content)+'\\n'+ content;
+    file.content = base64.encode(newContent);
     console.log('sha', sha);
-    updateFile(github,sha, file);
+    updateFile(github,sha, file, newContent, res);
 
   }, (err) => {
     //file does not exist yet
     console.log('file does not exist yet, creating new one');
     // console.log('errror', err)
-    createFile(github, file);
+    createFile(github, file, content, res);
   });
 
-  return '';
+
 }
 
 // Updates an existing Block in the DB
@@ -146,25 +149,32 @@ export function destroy(req, res) {
 }
 
 //HELPER FUNCTIONS
-function createFile(github, file){
+function createFile(github, file, content, res){
   github.repos.createFile(file).then((re) => {
     console.log('FILE SUCCESSFULLY CREATED');
     console.log(re);
+    return res.status(200).json(content);
   }, (err) => {
     console.log('file could not be created');
     console.log(err);
+    return null;
 
   });
 }
 
 
-function updateFile(github, sha, file){
+function updateFile(github, sha, file, content, res){
   file.sha = sha;
   github.repos.updateFile(file).then((re) => {
     console.log('FILE SUCCESSFULLY UPDATED');
+    console.log(re);
+    // return base64.decode(re.data.content);
+    return res.status(200).json(content);
+
   }, (err) => {
     console.log('file could not be updated');
     console.log(err);
+    return null;
   });
 }
 

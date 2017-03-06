@@ -4,12 +4,21 @@
 
 class MainController {
 
-  constructor($http, $sce, $interval) {
+  constructor($http, $sce, $interval, ModalService) {
     this.$http = $http;
+    this.ModalService = ModalService;
     this.awesomeThings = [];
     this.selection = '';
     this.blockPrefix = "//startBlock";
     this.blockSuffix = "//endBlock";
+
+    this.blockList = [
+      {title: 'Cras justo odio'},
+      {title: 'Dapibus ac facilisis in'},
+      {title: 'Morbi leo risus'},
+      {title: 'Porta ac consectetur ac'},
+      {title: 'Vestibulum at eros'}
+    ];
 
     this.rStudioEndpoint = $sce.trustAsResourceUrl('http://34.251.106.133:8787');
     //this.rStudioEndpoint = $sce.trustAsResourceUrl('http://192.168.56.101:8787');
@@ -19,9 +28,11 @@ class MainController {
 
   }
 
-  addBlock(block) {
+  addBlock(block, blockString) {
     // if (this.newThing) {
-      this.$http.post('/api/blocks', { block: block });
+      this.$http.post('/api/blocks', { block: block, blockString: blockString }).then(response => {
+        console.log('posted block, new block-list', response.data);
+      });
     // }
   }
 
@@ -39,13 +50,35 @@ class MainController {
 
   createBlock(){
     console.log(this.selection);
-    let block = this.blockPrefix;
+    this.complexResult = '';
+    var that = this;
+
+    this.ModalService.showModal({
+      templateUrl: "/components/blockmodal/blockmodal.html",
+      controller: "BlockModalController",
+      inputs: {
+        title: "Add a new block"
+      }
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(result => {that.setResult(result);
+      });
+    });
+
+
+  }
+
+  setResult(block){
+    //TODO display block in list
+    let blockString = this.blockPrefix;
     for(let i = 0; i < this.selection.length; i++){
-      block += '\\n'+this.selection[i].timestamp + ':'+ this.selection[i].log;
+      blockString += '\\n'+this.selection[i].timestamp + ':'+ this.selection[i].log;
     }
-    block += '\\n'+this.blockSuffix;
-    console.log(block);
-    this.addBlock(block);
+    blockString += '\\n'+this.blockSuffix;
+    // block.timestamp = this.selection[this.selection.length-1].timestamp;
+    console.log(blockString);
+    this.addBlock(block, blockString);
+    // this.loglist = ("Title: " + block.title + ", age: " + block.age);
   }
 
   formatLogs(list){

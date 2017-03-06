@@ -41,6 +41,7 @@ angular.module('rationalecapApp')
             var args = Array.prototype.slice.call(arguments),
                 name = args.shift(),
                 deleteModal;
+            var formData;
 
             deleteModal = openModal({
               modal: {
@@ -64,7 +65,7 @@ angular.module('rationalecapApp')
             }, 'modal-danger');
 
             deleteModal.result.then(function(event) {
-              del.apply(event, args);
+              del.apply(event, [formData]);
             });
           };
         }
