@@ -2,6 +2,7 @@
 
 angular.module('rationalecapApp', [
   'rationalecapApp.constants',
+  'rationalecapApp.util',
   'ngCookies',
   'ngResource',
   'ngSanitize',

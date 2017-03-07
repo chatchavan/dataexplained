@@ -10,8 +10,9 @@ class NavbarController {
   isCollapsed = true;
   //end-non-standard
 
-  constructor() {
-    }
+  constructor($scope) {
+    this.user = $scope.user;
+  }
 }
 
 angular.module('rationalecapApp')

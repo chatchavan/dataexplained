@@ -65,42 +65,45 @@ function removeEntity(res) {
 
 // Gets a list of Blocks
 export function index(req, res) {
-  //TODO read user from body
-  fs.readFile('/home/coldata/.rstudio/history_database', 'utf8', function (err, data) {
-    // fs.readFile('./history_database', 'utf8', function (err,data) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log(data);
-    var result = {'content': data.toString()};
-    return res.status(200).json(result);
-  });
+  return res.status(200).json({'index': 'all'});
 }
 
 // Gets a single Block from the DB
 export function show(req, res) {
-  Block.findByIdAsync(req.params.id)
-    .then(handleEntityNotFound(res))
-    .then(responseWithResult(res))
-    .catch(handleError(res));
+  let user = req.params.user;
+
+  // //TODO get file from user
+  var github = authGithub();
+
+  github.repos.getContent({
+    owner: config.github.user,
+    repo: 'blocks',
+    path: user+'_blocks.txt'
+  }).then((re) => {
+    //file does exist
+    console.log('file does exist');
+    return res.status(200).json(base64.decode(re.data.content));
+  }, (err) => {
+    //file does not exist yet
+    console.log('file does not exist');
+    return res.status(200).json({});
+  });
+
+
 }
 
 // Creates a new Block in the DB
 export function create(req, res) {
   var content = req.body.blockString;
+  var user = req.body.user;
 
 
-  var github = new GitHubApi();
-  github.authenticate({
-    type: "basic",
-    username: config.github.user,
-    password: config.github.password
-  });
+  var github = authGithub();
 
   var file = {
     owner: config.github.user,
     repo: 'blocks',
-    path: 'block.txt',
+    path: user+'_blocks.txt',
     message: 'auto commit',
     content: base64.encode(content)
   };
@@ -108,7 +111,7 @@ export function create(req, res) {
   github.repos.getContent({
     owner: config.github.user,
     repo: 'blocks',
-    path: 'block.txt'
+    path: user+'_blocks.txt'
   }).then((re) => {
 
     //file does exist
@@ -167,7 +170,6 @@ function updateFile(github, sha, file, content, res){
   file.sha = sha;
   github.repos.updateFile(file).then((re) => {
     console.log('FILE SUCCESSFULLY UPDATED');
-    console.log(re);
     // return base64.decode(re.data.content);
     return res.status(200).json(content);
 
@@ -178,3 +180,12 @@ function updateFile(github, sha, file, content, res){
   });
 }
 
+function authGithub(){
+  var github = new GitHubApi();
+  github.authenticate({
+    type: "basic",
+    username: config.github.user,
+    password: config.github.password
+  });
+  return github;
+}

@@ -1,4 +1,4 @@
-<navbar></navbar>
+<navbar ng-if="main.userDefined" user="main.user"></navbar>
 
 <!--<header class="hero-unit" id="banner">-->
   <!--<div class="container">-->
@@ -9,13 +9,13 @@
 <!--</header>-->
 
 <div class="container">
-  <div class="row">
-    <!--<div class="col-lg-12">-->
-      <!--<h1 class="page-header">Features:</h1>-->
-      <!--<ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="thing in main.awesomeThings">-->
-        <!--<li><a href="#" tooltip="{{thing.info}}">{{thing.name}}</a></li>-->
-      <!--</ul>-->
-    <!--</div>-->
+  <div class="row" ng-if="!main.userDefined">
+    <h2>Please set active user</h2>
+    <input type="text" ng-model="main.user"/>
+    <button ng-click="main.setUser()">Set User</button>
+
+  </div>
+  <div class="row" ng-if="main.userDefined">
 
     <div class="col-lg-7 col-md-7" style="overflow: scroll">
       <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
@@ -23,6 +23,12 @@
       </iframe>
     </div>
     <div class="col-lg-3 col-md-3">
+      <div>
+        <a ng-click="main.pollLogs()">Poll Logs</a>
+      </div>
+      <div>
+        <a ng-click="main.getAllBlocks()">Get all Blocks</a>
+      </div>
       <h2>Live Logs</h2>
       <form class="fullDimension">
         <div class="form-group">
@@ -37,26 +43,25 @@
           <!--</select>-->
         </div>
       </form>
+      <h1>{{main.selection}}</h1>
     </div>
-    <!--<div class="col-lg-1 col-md-1">-->
-    <!--</div>-->
     <div class="dual-list list-right col-lg-2 col-md-2">
       <button ng-click="main.createBlock()">Create Block</button>
 
       <ul class="list-group" ng-repeat="block in main.blockList">
           <li class="list-group-item">{{block.title}}</li>
+          <p>{{block.content}}</p>
       </ul>
 
 
     </div>
 
+
     </div>
 
 
 
-  <div class="row">
-    <a ng-click="main.getAllBlocks()">click meeeeee</a>
-  </div>
+
 </div>
 
 <!--<footer></footer>-->

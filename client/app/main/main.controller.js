@@ -4,107 +4,102 @@
 
 class MainController {
 
-  constructor($http, $sce, $interval, ModalService) {
+  constructor($http, LocalStorageUtil, $sce, $interval, ModalService, LogUtil, BlockUtil) {
+    this.user = undefined;
+    this.userDefined = false;
     this.$http = $http;
+    this.$interval = $interval;
+    this.LocalStorageUtil = LocalStorageUtil;
     this.ModalService = ModalService;
-    this.awesomeThings = [];
+    this.BlockUtil = BlockUtil;
+    this.LogUtil = LogUtil;
     this.selection = '';
-    this.blockPrefix = "//startBlock";
-    this.blockSuffix = "//endBlock";
-
-    this.blockList = [
-      {title: 'Cras justo odio'},
-      {title: 'Dapibus ac facilisis in'},
-      {title: 'Morbi leo risus'},
-      {title: 'Porta ac consectetur ac'},
-      {title: 'Vestibulum at eros'}
-    ];
+    this.blockList = [];
+    this.blockPrefix = BlockUtil.getBlockPrefix();
+    this.blockSuffix = BlockUtil.getBlockSuffix();
 
     this.rStudioEndpoint = $sce.trustAsResourceUrl('http://34.251.106.133:8787');
     //this.rStudioEndpoint = $sce.trustAsResourceUrl('http://192.168.56.101:8787');
 
+    this.init();
+
+  }
+
+  init(){
+    this.user = this.LocalStorageUtil.retrieve('user');
+    console.log('retrieved user from localstorage', this.user);
+    if(this.user){
+      this.userDefined = true;
+      this.startPolling();
+    }
+  }
+
+  setUser(){
+    this.LocalStorageUtil.save('user',this.user);
+    this.userDefined = true;
+    this.startPolling();
+  }
+
+  startPolling(){
+    this.pollLogs();
     this.getAllBlocks();
-    $interval(this.getAllBlocks.bind(this), 5000);
-
+    this.$interval(this.pollLogs.bind(this), 5000);
   }
 
-  addBlock(block, blockString) {
-    // if (this.newThing) {
-      this.$http.post('/api/blocks', { block: block, blockString: blockString }).then(response => {
-        console.log('posted block, new block-list', response.data);
+  saveBlock(blockString) {
+    // var bs = this.BlockUtil.encodeBlock(this.blockList);
+    console.log('saving new block', blockString);
+      this.$http.post('/api/blocks', {blockString: blockString, user: this.user }).then(response => {
+        console.log('response', response);
+        if(response.data){
+          this.blockList = this.BlockUtil.decodeBlock(response.data);
+        }
       });
-    // }
   }
 
-  getAllBlocks(){
-    this.$http.get('/api/blocks').then(response => {
-      this.log = response.data.content;
-      this.loglist = this.formatLogs(this.log.split("\n"));
-      console.log('yeah', this.log);
+  pollLogs(){
+    this.$http.get('/api/logs',{params: {user: this.user}}).then(response => {
+      let log = response.data.content;
+      this.loglist = this.LogUtil.formatLogs(log.split("\n"));
     });
   }
 
-  // deleteThing(thing) {
-  //   this.$http.delete('/api/things/' + thing._id);
-  // }
+  getAllBlocks(){
+    console.log('get all blocks');
+
+    this.$http.get('/api/blocks/'+this.user).then(response => {
+      console.log('response', response);
+      if(response.data.length > 0){
+        this.blockList = this.BlockUtil.decodeBlock(response.data);
+        console.log(this.blockList);
+      }
+    }, (err) => {
+      //file does not exist yet
+      console.log('error fetching blocks', err);
+    });
+  }
+
 
   createBlock(){
     console.log(this.selection);
-    this.complexResult = '';
     var that = this;
+    let select = this.selection;
 
     this.ModalService.showModal({
-      templateUrl: "/components/blockmodal/blockmodal.html",
+      templateUrl: "app/blockmodal/blockmodal.html",
       controller: "BlockModalController",
       inputs: {
         title: "Add a new block"
       }
     }).then(function(modal) {
       modal.element.modal();
-      modal.close.then(result => {that.setResult(result);
+      modal.close.then(result => {that.saveBlock(that.BlockUtil.createBlock(result, select));
       });
     });
 
 
   }
 
-  setResult(block){
-    //TODO display block in list
-    let blockString = this.blockPrefix;
-    for(let i = 0; i < this.selection.length; i++){
-      blockString += '\\n'+this.selection[i].timestamp + ':'+ this.selection[i].log;
-    }
-    blockString += '\\n'+this.blockSuffix;
-    // block.timestamp = this.selection[this.selection.length-1].timestamp;
-    console.log(blockString);
-    this.addBlock(block, blockString);
-    // this.loglist = ("Title: " + block.title + ", age: " + block.age);
-  }
-
-  formatLogs(list){
-
-    for(let log in list){
-      let l = list[log];
-      list[log] = {
-        'timestamp' : l.substr(0,l.indexOf(':')),
-        'log' : l.substr(l.indexOf(':')+1, l.length)
-      };
-    }
-
-    return list;
-  }
-
-
-
-
-
-  //   for(let log in list){
-  //     let l = list[log];
-  //     list[log] = l.substr(l.indexOf(':')+1, l.length);
-  //   }
-  //
-  //   return list;
-  // }
 }
 
 angular.module('rationalecapApp')
