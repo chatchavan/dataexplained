@@ -11,6 +11,7 @@ var LogEvents = new EventEmitter();
 // Set max event listeners (0 == unlimited)
 LogEvents.setMaxListeners(0);
 
+
 // Model events
 var events = {
   'save': 'save',

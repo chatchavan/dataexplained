@@ -15,6 +15,7 @@ var fs = require('fs');
 var config = require('../../config/environment');
 var rHistory = config.env === 'development' ? './history_database' : '/home/coldata/.rstudio/history_database';
 
+
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
   return function(err) {
