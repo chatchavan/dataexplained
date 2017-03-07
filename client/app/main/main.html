@@ -1,4 +1,4 @@
-<navbar ng-if="main.userDefined" user="main.user"></navbar>
+<navbar ng-show="main.userDefined" user="main.user"></navbar>
 
 <!--<header class="hero-unit" id="banner">-->
   <!--<div class="container">-->
@@ -8,16 +8,16 @@
   <!--</div>-->
 <!--</header>-->
 
-<div class="container">
+<div id="sss" class="container">
   <div class="row" ng-if="!main.userDefined">
     <h2>Please set active user</h2>
     <input type="text" ng-model="main.user"/>
     <button ng-click="main.setUser()">Set User</button>
 
   </div>
-  <div class="row" ng-if="main.userDefined">
+  <div class="row" ng-show="main.userDefined">
 
-    <div class="col-lg-7 col-md-7" style="overflow: scroll">
+    <div  class="col-lg-7 col-md-7" id="iframe-container" style="overflow: scroll">
       <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
         <p>iframes are not supported by your browser.</p>
       </iframe>
@@ -33,7 +33,7 @@
       <form class="fullDimension">
         <div class="form-group">
           <label for="sel2">Select logs to form blocks (hold shift to select more than one):</label>
-          <select class="fullDimension" id="sel2" ng-model="main.selection"
+          <select ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension" id="sel2" ng-model="main.selection"
                   ng-options="item as item.log for item in main.loglist"
                   ng-multiple="true" multiple>
 
@@ -43,8 +43,8 @@
           <!--</select>-->
         </div>
       </form>
-      <h1>{{main.selection}}</h1>
     </div>
+
     <div class="dual-list list-right col-lg-2 col-md-2">
       <button ng-click="main.createBlock()">Create Block</button>
 

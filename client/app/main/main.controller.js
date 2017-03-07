@@ -6,6 +6,7 @@ class MainController {
 
   constructor($http, LocalStorageUtil, $sce, $interval, ModalService, LogUtil, BlockUtil) {
     this.user = undefined;
+    this.selectFocus = false;
     this.userDefined = false;
     this.$http = $http;
     this.$interval = $interval;
@@ -25,6 +26,14 @@ class MainController {
 
   }
 
+  focus(){
+    console.log('focus');
+  }
+
+  blur(){
+    console.log('blur');
+  }
+
   init(){
     this.user = this.LocalStorageUtil.retrieve('user');
     console.log('retrieved user from localstorage', this.user);
@@ -32,6 +41,7 @@ class MainController {
       this.userDefined = true;
       this.startPolling();
     }
+
   }
 
   setUser(){
@@ -49,19 +59,21 @@ class MainController {
   saveBlock(blockString) {
     // var bs = this.BlockUtil.encodeBlock(this.blockList);
     console.log('saving new block', blockString);
-      this.$http.post('/api/blocks', {blockString: blockString, user: this.user }).then(response => {
-        console.log('response', response);
-        if(response.data){
-          this.blockList = this.BlockUtil.decodeBlock(response.data);
-        }
-      });
+      // this.$http.post('/api/blocks', {blockString: blockString, user: this.user }).then(response => {
+      //   console.log('response', response);
+      //   if(response.data){
+      //     this.blockList = this.BlockUtil.decodeBlock(response.data);
+      //   }
+      // });
   }
 
   pollLogs(){
-    this.$http.get('/api/logs',{params: {user: this.user}}).then(response => {
-      let log = response.data.content;
-      this.loglist = this.LogUtil.formatLogs(log.split("\n"));
-    });
+      this.$http.get('/api/logs',{params: {user: this.user}}).then(response => {
+        let log = response.data.content;
+        if(!this.selectFocus) {
+          this.loglist = this.LogUtil.formatLogs(log.split("\n"));
+        }
+      });
   }
 
   getAllBlocks(){
@@ -93,12 +105,28 @@ class MainController {
       }
     }).then(function(modal) {
       modal.element.modal();
-      modal.close.then(result => {that.saveBlock(that.BlockUtil.createBlock(result, select));
+      modal.close.then(result => {
+        if(result){
+          that.saveBlock(that.BlockUtil.createBlock(result, select));
+        }
       });
     });
 
 
   }
+
+  arraysEqual(arr1, arr2) {
+    if(!arr1 || arr2){
+      return false;
+    }
+    if(arr1.length !== arr2.length)
+      return false;
+    for(var i = arr1.length; i--;) {
+      if(arr1[i].log !== arr2[i].log || arr1[i].timestamp !== arr2[i].timestamp)
+        return false;
+    }
+    return true;
+}
 
 }
 

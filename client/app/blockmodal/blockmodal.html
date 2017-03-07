@@ -8,11 +8,14 @@
       <div class="modal-body">
         <p>Please answer the following questions</p>
 
-        <form class="form-horizontal" role="form">
+        <form name="bmodal.form" class="form-horizontal" role="form">
           <div class="form-group">
             <label for="name" class="col-sm-2 control-label">Title of Block</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="name" placeholder="Title" ng-model="block.title">
+              <input type="text" class="form-control" id="name" placeholder="Title" ng-model="block.title" required>
+            </div>
+            <div ng-messages="bmodal.form.name.$error" ng-show="bmodal.form.$submitted || bmodal.form.name.$touched">
+              <div ng-message="required">Required</div>
             </div>
           </div>
           <div class="form-group">
@@ -21,12 +24,16 @@
               <input type="text" class="form-control" id="age" placeholder="" ng-model="block.age">
             </div>
           </div>
+
+
+          <button type="button" ng-click="bmodal.close(bmodal.form)" class="btn btn-primary">OK</button>
+          <button type="button" ng-click="bmodal.cancel()" class="btn">Cancel</button>
         </form>
 
       </div>
       <div class="modal-footer">
-        <button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>
-        <button type="button" ng-click="cancel()" class="btn">Cancel</button>
+        <!--<button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>-->
+        <!--<button type="button" ng-click="cancel()" class="btn">Cancel</button>-->
       </div>
     </div>
   </div>
