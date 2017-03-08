@@ -4,13 +4,13 @@
 
 class MainController {
 
-  constructor($http, LocalStorageUtil, $sce, $interval, ModalService, LogUtil, BlockUtil) {
+  constructor($http, StorageUtil, $sce, $interval, ModalService, LogUtil, BlockUtil) {
     this.user = undefined;
     this.selectFocus = false;
     this.userDefined = false;
     this.$http = $http;
     this.$interval = $interval;
-    this.LocalStorageUtil = LocalStorageUtil;
+    this.StorageUtil = StorageUtil;
     this.ModalService = ModalService;
     this.BlockUtil = BlockUtil;
     this.LogUtil = LogUtil;
@@ -35,8 +35,8 @@ class MainController {
   }
 
   init(){
-    this.user = this.LocalStorageUtil.retrieve('user');
-    console.log('retrieved user from localstorage', this.user);
+    this.user = this.StorageUtil.retrieveSStorage('user');
+    console.log('retrieved user from sessionstorage', this.user);
     if(this.user){
       this.userDefined = true;
       this.startPolling();
@@ -45,7 +45,7 @@ class MainController {
   }
 
   setUser(){
-    this.LocalStorageUtil.save('user',this.user);
+    this.StorageUtil.saveSStorage('user',this.user);
     this.userDefined = true;
     this.startPolling();
   }
@@ -59,12 +59,12 @@ class MainController {
   saveBlock(blockString) {
     // var bs = this.BlockUtil.encodeBlock(this.blockList);
     console.log('saving new block', blockString);
-      // this.$http.post('/api/blocks', {blockString: blockString, user: this.user }).then(response => {
-      //   console.log('response', response);
-      //   if(response.data){
-      //     this.blockList = this.BlockUtil.decodeBlock(response.data);
-      //   }
-      // });
+      this.$http.post('/api/blocks', {blockString: blockString, user: this.user }).then(response => {
+        console.log('response', response);
+        if(response.data){
+          this.blockList = this.BlockUtil.decodeBlock(response.data);
+        }
+      });
   }
 
   pollLogs(){
@@ -77,10 +77,8 @@ class MainController {
   }
 
   getAllBlocks(){
-    console.log('get all blocks');
 
     this.$http.get('/api/blocks/'+this.user).then(response => {
-      console.log('response', response);
       if(response.data.length > 0){
         this.blockList = this.BlockUtil.decodeBlock(response.data);
         console.log(this.blockList);
@@ -93,25 +91,26 @@ class MainController {
 
 
   createBlock(){
-    console.log(this.selection);
-    var that = this;
-    let select = this.selection;
 
-    this.ModalService.showModal({
-      templateUrl: "app/blockmodal/blockmodal.html",
-      controller: "BlockModalController",
-      inputs: {
-        title: "Add a new block"
-      }
-    }).then(function(modal) {
-      modal.element.modal();
-      modal.close.then(result => {
-        if(result){
-          that.saveBlock(that.BlockUtil.createBlock(result, select));
+    if(this.selection && this.selection.length > 0){
+      var that = this;
+      let select = this.selection;
+
+      this.ModalService.showModal({
+        templateUrl: "app/blockmodal/blockmodal.html",
+        controller: "BlockModalController",
+        inputs: {
+          title: "Add a new block"
         }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          if(result){
+            that.saveBlock(that.BlockUtil.createBlock(result, select));
+          }
+        });
       });
-    });
-
+    }
 
   }
 

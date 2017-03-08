@@ -18,6 +18,7 @@ angular.module('rationalecapApp')
       form.$setSubmitted();
       console.log(form.$valid);
       if(form.$valid){
+        $element.modal('hide');
         close($scope.block, 500); // close, but give 500ms for bootstrap to animate
       }
     };
