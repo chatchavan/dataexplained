@@ -69,9 +69,10 @@ function removeEntity(res) {
 
 // Gets a list of Files
 export function index(req, res) {
-  File.findAsync()
-    .then(responseWithResult(res))
-    .catch(handleError(res));
+  // File.findAsync()
+  //   .then(responseWithResult(res))
+  //   .catch(handleError(res));
+  return githubService.updateDirectory('test', './.idea', 'coldata', res);
 }
 
 // Load new files in filesystem
@@ -116,40 +117,6 @@ export function show(req, res) {
 
 
 
-  // github.repos.getContent({
-  //   owner: config.github.user,
-  //   repo: 'blocks',
-  //   path: 'coldata',
-  //   ref: 'refs/heads/1488455663633'
-  // }).then((re) => {
-  //   console.log('re', re);
-  //   let containsZip = false;
-  //   for(let i = 0; i < re.data.length; i++){
-  //     if(re.data[i].name === 'rstudio-workspace.zip'){
-  //       containsZip = true;
-  //       githubService.getContent(config.github.user, 'blocks', user+'/'+fileName,
-  //         function(re){
-  //           // console.log(base64.decode(re.data.content));
-  //           writeZipContent(re, res, rScripts);
-  //         },
-  //         function(err){
-  //           //file does not exist yet
-  //           console.log('file does not exist');
-  //           return handleError(res);
-  //         }
-  //       );
-  //     }
-  //   }
-  //   if(!containsZip){
-  //     return res.status(200).end();
-  //   }
-  //
-  // }, (err) => {
-  //   //file does not exist yet
-  //   console.log('err', err);
-  //   return handleError(err);
-  // });
-
 }
 
 // Creates a new File in the DB
@@ -163,65 +130,12 @@ export function create(req, res) {
   if(timestamp == undefined){
     timestamp = new Date().getTime();
   }
-  else {
-    let fileName = 'rstudio-workspace.zip';
 
-    let rScripts = config.env === 'development' ? './.idea' : '/home/' + user + '/rstudio-workspace';
-    let zipPath = config.env === 'development' ? './' + fileName : '/home/' + user + '/rstudio-workspace/' + fileName;
+  let message = 'block-commit_'+timestamp;
 
-    var zipp = new JSZip();
+    let rScripts = config.env === 'development' ? './server/util' : '/home/' + user + '/rstudio-workspace';
 
-    fs.readdir(rScripts, function (err, filenames) {
-      if (err) {
-        console.log('err in readdir', err);
-        return handleError(res);
-      }
-
-      for (let i = filenames.length -1 ; i >= 0; i--) {
-
-        if(filenames[i] && !filenames[i].endsWith('.zip')){
-
-          console.log('reading file: ' + filenames[i]);
-
-          fs.readFile(rScripts + '/' + filenames[i], 'utf8', function (err, data) {
-              if (err) {
-                console.log('err in readfile', err);
-                return handleError(res);
-              }
-              zipp.file(filenames[i], data, {base64: false});
-
-
-              if (i <=0) {
-                //finish reading all files
-                console.log('finish reading all files', zipp);
-                zipp
-                  .generateNodeStream({type: 'nodebuffer', compression: "STORE"})
-                  .pipe(fs.createWriteStream(zipPath))
-                  .on('finish', function () {
-                    console.log("rstudio-workspace.zip written.");
-                    var file = {
-                      owner: config.github.user,
-                      repo: 'blocks',
-                      path: user + '/' + fileName,
-                      message: 'auto commit for zip-file',
-                      content: base64.encode(zipPath)
-                    };
-
-                    uploadRZip(user, file, timestamp, res);
-                  });
-
-              }
-
-            }
-          );
-        }
-        else{
-          filenames.splice(i, 1);
-        }
-      }
-    });
-  }
-
+    return githubService.updateDirectory(message, rScripts, user, res);
 }
 
 // Updates an existing File in the DB

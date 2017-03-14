@@ -43,7 +43,8 @@ var all = {
 
   github: {
     user: process.env.GITHUB_USER,
-    password: process.env.GITHUB_SECRET
+    password: process.env.GITHUB_SECRET,
+    token: process.env.GITHUB_TOKEN
   },
 
 };
