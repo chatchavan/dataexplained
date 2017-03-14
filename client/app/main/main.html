@@ -18,7 +18,7 @@
   <div class="row" ng-show="main.userDefined">
 
     <div  class="col-lg-7 col-md-7" id="iframe-container" style="overflow: scroll">
-      <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
+      <iframe style="width: 800px !important;" class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
         <p>iframes are not supported by your browser.</p>
       </iframe>
     </div>
@@ -28,6 +28,15 @@
       </div>
       <div>
         <a ng-click="main.getAllBlocks()">Get all Blocks</a>
+      </div>
+      <div>
+        <a ng-click="main.saveFiles()">Save Files</a>
+      </div>
+      <div>
+        <a ng-click="main.loadFiles()">Load Files</a>
+      </div>
+      <div>
+        <a ng-click="main.filesIndex()">Test files/index</a>
       </div>
       <h2>Live Logs</h2>
       <form class="fullDimension">
@@ -49,7 +58,7 @@
       <button ng-click="main.createBlock()">Create Block</button>
 
       <ul class="list-group" ng-repeat="block in main.blockList">
-          <li class="list-group-item">{{block.title}}</li>
+          <li class="list-group-item" ng-click="main.loadFiles(block)">{{block.title}}</li>
           <p>{{block.content}}</p>
       </ul>
 

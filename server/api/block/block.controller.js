@@ -13,7 +13,7 @@ import _ from 'lodash';
 var Block = require('./block.model');
 var fs = require('fs');
 var config = require('../../config/environment');
-var GitHubApi = require("github");
+var githubService = require('../../util/github.service');
 var base64 = require('js-base64').Base64;
 
 function handleError(res, statusCode) {
@@ -72,62 +72,45 @@ export function index(req, res) {
 export function show(req, res) {
   let user = req.params.user;
 
-  // //TODO get file from user
-  var github = authGithub();
-
-  github.repos.getContent({
-    owner: config.github.user,
-    repo: 'blocks',
-    path: user+'_blocks.txt'
-  }).then((re) => {
-    //file does exist
-    console.log('file does exist');
-    return res.status(200).json(base64.decode(re.data.content));
-  }, (err) => {
-    //file does not exist yet
-    console.log('file does not exist');
-    return res.status(200).json({});
-  });
+  githubService.getContent(config.github.user, 'blocks',  user+'/blocks.txt', undefined,
+    function(re){
+      console.log('file does exist');
+      return res.status(200).json(base64.decode(re.data.content));
+    },
+    function(err){
+      console.log('file does not exist');
+      return res.status(200).json({});
+    });
 
 
 }
 
 // Creates a new Block in the DB
 export function create(req, res) {
-  var content = req.body.blockString;
-  var user = req.body.user;
-
-
-  var github = authGithub();
+  let content = req.body.block.blockString;
+  let user = req.body.user;
+  let timestamp = req.body.block.timestamp;
 
   var file = {
     owner: config.github.user,
     repo: 'blocks',
-    path: user+'_blocks.txt',
+    path: user+'/blocks.txt',
     message: 'auto commit',
     content: base64.encode(content)
   };
 
-  github.repos.getContent({
-    owner: config.github.user,
-    repo: 'blocks',
-    path: user+'_blocks.txt'
-  }).then((re) => {
-
-    //file does exist
-    let sha = re.data.sha;
-    let newContent = base64.decode(re.data.content)+'\\n'+ content;
-    file.content = base64.encode(newContent);
-    console.log('sha', sha);
-    updateFile(github,sha, file, newContent, res);
-
-  }, (err) => {
-    //file does not exist yet
-    console.log('file does not exist yet, creating new one');
-    // console.log('errror', err)
-    createFile(github, file, content, res);
-  });
-
+  githubService.getContent(config.github.user, file.repo, file.path, undefined,
+    function(re){
+        let sha = re.data.sha;
+        let newContent = base64.decode(re.data.content)+'\\n'+ content;
+        file.content = base64.encode(newContent);
+        console.log('sha', sha);
+        githubService.updateFile(user, timestamp, sha, file, newContent, false, res);
+    },
+    function(err){
+        console.log('file does not exist yet, creating new one');
+        githubService.createFile(user, timestamp, file, content, false, res);
+    });
 
 }
 
@@ -152,40 +135,3 @@ export function destroy(req, res) {
 }
 
 //HELPER FUNCTIONS
-function createFile(github, file, content, res){
-  github.repos.createFile(file).then((re) => {
-    console.log('FILE SUCCESSFULLY CREATED');
-    console.log(re);
-    return res.status(200).json(content);
-  }, (err) => {
-    console.log('file could not be created');
-    console.log(err);
-    return null;
-
-  });
-}
-
-
-function updateFile(github, sha, file, content, res){
-  file.sha = sha;
-  github.repos.updateFile(file).then((re) => {
-    console.log('FILE SUCCESSFULLY UPDATED');
-    // return base64.decode(re.data.content);
-    return res.status(200).json(content);
-
-  }, (err) => {
-    console.log('file could not be updated');
-    console.log(err);
-    return null;
-  });
-}
-
-function authGithub(){
-  var github = new GitHubApi();
-  github.authenticate({
-    type: "basic",
-    username: config.github.user,
-    password: config.github.password
-  });
-  return github;
-}

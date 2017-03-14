@@ -13,7 +13,6 @@ import _ from 'lodash';
 var Log = require('./log.model');
 var fs = require('fs');
 var config = require('../../config/environment');
-var rHistory = config.env === 'development' ? './history_database' : '/home/coldata/.rstudio/history_database';
 
 
 function handleError(res, statusCode) {
@@ -65,8 +64,9 @@ function removeEntity(res) {
 
 // Gets a list of Logs
 export function index(req, res) {
-  //TODO read user from body
   let user = req.params.user;
+
+  let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
 
   fs.readFile(rHistory, 'utf8', function (err,data) {
     if (err) {
@@ -79,8 +79,15 @@ export function index(req, res) {
 
 // Gets a single Log from the DB
 export function show(req, res) {
-  Log.findByIdAsync(req.params.id)
-    .then(handleEntityNotFound(res))
-    .then(responseWithResult(res))
-    .catch(handleError(res));
+  let user = req.params.user;
+
+  let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
+
+  fs.readFile(rHistory, 'utf8', function (err,data) {
+    if (err) {
+      return console.log(err);
+    }
+    var result = {'content': data.toString()};
+    return res.status(200).json(result);
+  });
 }

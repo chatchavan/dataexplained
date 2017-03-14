@@ -9,9 +9,9 @@
       /**
        * Decodes a formatted string structured with //startblock\nBLOCKCONTENT//endblock into an array of blocks
        * */
-      decodeBlock(block){
+      decodeBlock(blockString){
 
-        var split = block.split('\\n');
+        var split = blockString.split('\\n');
         var blocks = [];
         let currentBlock;
         let timestamp;
@@ -21,16 +21,20 @@
           let indexColon = split[i].indexOf(':');
           let indexSuffix = split[i].indexOf(BlockUtil.getBlockSuffix());
 
+          //Start new block
           if(indexPrefix > -1 && indexColon > -1){
             blocks.push({title : split[i].substr(indexColon+1, split[i].length-1)});
             currentBlock = blocks[blocks.length -1];
           }
+
+          //End of current Block
           else if(indexSuffix > -1 &&  currentBlock){
             currentBlock.timestamp = timestamp;
             blocks[blocks.length-1] = currentBlock;
             timestamp = undefined;
             currentBlock = undefined;
           }
+          //Inside current Block
           else if(indexColon > -1 && currentBlock){
             timestamp = split[i].substr(0, indexColon);
             let content = split[i].substr(indexColon+1, split[i].length-1);
@@ -68,16 +72,26 @@
         return blockString;
       },
 
+
+      /**
+       * Return timestamp of latest log entry in blockString
+       * */
+      getLatestTimestamp(blockString){
+        return BlockUtil.decodeBlock(blockString).timestamp;
+      },
+
       /**
        * Creates Block-String from an array of single log statements (selection)
        * */
       createBlock(block, selection){
+        let timestamp;
         let blockString = BlockUtil.getBlockPrefix()+':'+block.title;
         for(let i = 0; i < selection.length; i++){
           blockString += '\\n'+selection[i].timestamp + ':'+ selection[i].log;
+          timestamp = selection[i].timestamp;
         }
         blockString += '\\n'+BlockUtil.getBlockSuffix();
-        return blockString;
+        return {'blockString' : blockString, 'timestamp' : timestamp};
       },
 
       getBlockPrefix(){
