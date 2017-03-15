@@ -74,11 +74,11 @@ export function show(req, res) {
 
   githubService.getContent(config.github.user, 'blocks',  user+'/blocks.txt', undefined,
     function(re){
-      console.log('file does exist');
+      //file does exist
       return res.status(200).json(base64.decode(re.data.content));
     },
     function(err){
-      console.log('file does not exist');
+      //file does not exist
       return res.status(200).json({});
     });
 
@@ -104,12 +104,11 @@ export function create(req, res) {
         let sha = re.data.sha;
         let newContent = base64.decode(re.data.content)+'\\n'+ content;
         file.content = base64.encode(newContent);
-        console.log('sha', sha);
-        githubService.updateFile(user, timestamp, sha, file, newContent, false, res);
+        githubService.updateFile(sha, file, newContent, res);
     },
     function(err){
         console.log('file does not exist yet, creating new one');
-        githubService.createFile(user, timestamp, file, content, false, res);
+        githubService.createFile(file, content, res);
     });
 
 }
@@ -133,5 +132,3 @@ export function destroy(req, res) {
     .then(removeEntity(res))
     .catch(handleError(res));
 }
-
-//HELPER FUNCTIONS

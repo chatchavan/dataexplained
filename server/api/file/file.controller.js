@@ -69,50 +69,49 @@ function removeEntity(res) {
 
 // Gets a list of Files
 export function index(req, res) {
-  // File.findAsync()
-  //   .then(responseWithResult(res))
-  //   .catch(handleError(res));
-  return githubService.updateDirectory('test', './.idea', 'coldata', res);
+  File.findAsync()
+    .then(responseWithResult(res))
+    .catch(handleError(res));
 }
 
 // Load new files in filesystem
 export function show(req, res) {
   let user = req.params.user;
   let timestamp = req.params.timestamp;
-  let fileName = 'rstudio-workspace.zip';
-  let ref = 'refs/heads/'+timestamp;
 
   let rScripts = config.env === 'development' ? './rstudio-workspace/' : '/home/' + user + '/rstudio-workspace/';
 
   console.log('getting files for '+user+' at '+timestamp);
 
- githubService.getContent(config.github.user, 'blocks', user, ref,
-  function(re){
-    let containsZip = false;
-    for(let i = 0; i < re.data.length; i++){
-      if(re.data[i].name === 'rstudio-workspace.zip'){
-        containsZip = true;
-        githubService.getContent(config.github.user, 'blocks', user+'/'+fileName, ref,
-          function(re){
-            // console.log(base64.decode(re.data.content));
-            writeZipContent(re, res, rScripts);
-          },
-          function(err){
-            //file does not exist yet
-            console.log('file does not exist');
-            return handleError(res);
-          }
-        );
-      }
+  getCommitByTimestamp(user, timestamp, function(commit){
+    if(!commit){
+      return handleError(res);
     }
-    if(!containsZip){
-      return res.status(200).end();
-    }
-  },
-  function(err){
-    //file does not exist yet
-    console.log('err', err);
-    return handleError(err);
+    githubService.restoreFiles(user, commit)
+      .then((files) => {
+        if(files === undefined){
+          return handleError(res);
+        }
+
+        removeFiles(rScripts);
+
+        for (let i = 0; i < files.length; i++) {
+          let filename = files[i].fileName;
+          console.log('writing file '+ filename);
+          fs.writeFile(rScripts + filename, files[i].content, {mode: '0o777'},  function (err) {
+            if(!err){
+              console.log("The file was saved!", rScripts + filename);
+              fs.chmod(rScripts + filename, '777')
+            }
+            else{
+              console.log('error writing file: ', err);
+            }
+            if (i == files.length - 1) {
+              return res.status(200).end();
+            }
+          });
+        }
+      });
   });
 
 
@@ -133,9 +132,9 @@ export function create(req, res) {
 
   let message = 'block-commit_'+timestamp;
 
-    let rScripts = config.env === 'development' ? './server/util' : '/home/' + user + '/rstudio-workspace';
+    let rScripts = config.env === 'development' ? './rstudio-workspace' : '/home/' + user + '/rstudio-workspace';
 
-    return githubService.updateDirectory(message, rScripts, user, res);
+    return githubService.updateDirectory(message, rScripts, user, timestamp, res);
 }
 
 // Updates an existing File in the DB
@@ -161,50 +160,18 @@ export function destroy(req, res) {
 
 //HELPER FUNCTIONS
 
-export function uploadRZip(user, file, timestamp, res) {
+function getCommitByTimestamp(user, timestamp, callback){
+  File.findOne({'user': user}).exec(function (errFind, files){
+      if(errFind) {callback(undefined); return; }
 
-  githubService.getContent(config.github.user, file.repo, file.path, undefined,
-    function(re){
-      let sha = re.data.sha;
-      githubService.updateFile(user, timestamp, sha, file, undefined, true, res);
-    },
-    function(err){
-      console.log('file does not exist yet, creating new one');
-      githubService.createFile(user, timestamp, file, undefined, true, res);
-    });
-
-}
-
-function writeZipContent(re, res, rScripts) {
-  fs.readFile(base64.decode(re.data.content), function (err, data) {
-    if (err) {
-      return handleError(res);
-    }
-    JSZip.loadAsync(data).then(function (zip) {
-
-      let files = Object.keys(zip.files);
-      if(files.length == 0){
-        return res.status(200).end();
+      for(let commit in files.commits){
+        if(files.commits[commit].timestamp === timestamp){
+          callback(files.commits[commit].commit);
+          return;
+        }
       }
-
-      removeFiles(rScripts);
-
-      for (let i = 0; i < files.length; i++) {
-        let filename = files[i];
-        zip.files[filename].async('nodebuffer').then(function (fileData) {
-          console.log('writing file '+ filename);
-          fs.writeFile(rScripts + filename, fileData, {mode: '0o755'},  function (err) {
-            console.log("The file was saved!", rScripts + filename);
-            if (i == files.length - 1) {
-              return res.status(200).end();
-            }
-          });
-        })
-
-      }
-
-    });
-  });
+      callback(undefined);
+     });
 }
 
 function removeFiles(dirPath){
@@ -214,17 +181,18 @@ function removeFiles(dirPath){
   catch(e) {
     return;
   }
-  if (files.length > 0)
+  if (files.length > 0){
     for (var i = 0; i < files.length; i++) {
       var filePath = dirPath + '/' + files[i];
       if (fs.statSync(filePath).isFile()){
         fs.unlinkSync(filePath);
-        return;
       }
       else{
         removeFiles(filePath);
       }
     }
+  }
+
   // fs.rmdirSync(dirPath);
 }
 

@@ -6,10 +6,13 @@ var GitHubApi = require("github");
 var File = require('../api/file/file.model');
 var fs = require('fs');
 var Octokat = require('octokat');
+var base64 = require('js-base64').Base64;
+
 
 
 let m_repo;
 let m_filesToCommit = [];
+let m_filesToRestore = [];
 let m_currentBranch = {};
 let m_newCommit = {};
 
@@ -52,16 +55,11 @@ function getContent(owner, repo, path, ref, cbSuccess, cbError) {
 
 }
 
-function createFile(user, timestamp, file, content, withReference, res) {
+function createFile(file, content, res) {
   let github = authGithub();
   github.repos.createFile(file).then((re) => {
     console.log('FILE SUCCESSFULLY CREATED');
-    if (withReference) {
-      createReference(user, re.data.commit.sha, content, timestamp, res);
-    }
-    else {
       return res.status(200).json(content);
-    }
   }, (err) => {
     console.log('file could not be created');
     console.log(err);
@@ -70,18 +68,12 @@ function createFile(user, timestamp, file, content, withReference, res) {
   });
 }
 
-function updateFile(user, timestamp, sha, file, content, withReference, res) {
+function updateFile(sha, file, content, res) {
   let github = authGithub();
   file.sha = sha;
   github.repos.updateFile(file).then((re) => {
     console.log('FILE SUCCESSFULLY UPDATED');
-    // return base64.decode(re.data.content);
-    if (withReference) {
-      createReference(user, re.data.commit.sha, content, timestamp, res);
-    }
-    else {
       return res.status(200).json(content);
-    }
 
   }, (err) => {
     console.log('file could not be updated');
@@ -90,66 +82,45 @@ function updateFile(user, timestamp, sha, file, content, withReference, res) {
   });
 }
 
-function createReference(user, commitSha, content, timestamp, res) {
-  let github = authGithub();
-  let newRef = 'refs/heads/' + timestamp;
-  console.log('creating reference: ' + newRef);
 
-
-  github.gitdata.createReference({
-    owner: config.github.user,
-    repo: 'blocks',
-    sha: commitSha,
-    ref: newRef
-  }).then((re) => {
-    console.log('reference created', re);
-    createOrUpdateUserFiles(user, newRef, timestamp);
-    return res.status(200).json(content);
-
-  }, (err) => {
-    //file does not exist yet
-    console.log('could not create reference', err);
-    return handleError(res);
-  });
-
-  // return res.status(200).json(content);
-
-}
-
-function createOrUpdateUserFiles(user, ref, timestamp) {
+function createOrUpdateUserFiles(user, commit, timestamp, res) {
 
   let newRef = {
     timestamp: timestamp,
-    ref: ref
+    commit: commit
   };
 
   File.findOne({'user': user}).exec(function (err, file) {
 
     if (err || !file) {
-      console.log('Something is wrong with finding the files');
-      console.log(err);
+      //creating first entry for user
       let f = {
         user: user,
         commits: [newRef]
       };
       File.create(f, function (err, result) {
         if (err) {
-          console.log('could not create file', err);
+          console.log('could not create file');
+          // console.log(err);
+          return handleError(res);
         }
         else {
-          console.log('file cerated', result);
+          console.log('new file entry created');
+          return res.status(200).end();
         }
       });
     }
     else {
-      console.log('file from user exits');
+      //files for user already exist
       file.commits.push(newRef);
       file.save(function (err) {
         if (err) {
-          console.log('could not save/update file', err);
+          console.log('could not save/update file');
+          return handleError(res);
         }
         else {
-          console.log('file in mongodb updated');
+          console.log('new file in added');
+          return res.status(200).end();
         }
       });
     }
@@ -157,7 +128,7 @@ function createOrUpdateUserFiles(user, ref, timestamp) {
   });
 }
 
-function updateDirectory(message, dir, user, res) {
+function updateDirectory(message, dir, user, timestamp, res) {
 
   let octo = new Octokat({
     token: config.github.token
@@ -187,7 +158,7 @@ function updateDirectory(message, dir, user, res) {
             datas.push({path: user + '/' + filenames[i], content: data});
 
             if (i <= 0) {
-              return pushFiles(message, datas, res);
+              return pushFiles(message, datas, user, timestamp, res);
             }
           }
         );
@@ -201,16 +172,87 @@ function updateDirectory(message, dir, user, res) {
 
 }
 
-function pushFiles(message, files, res) {
+function restoreFiles(user, commit){
+
+  m_filesToRestore = [];
+
+  let octo = new Octokat({
+    token: config.github.token
+  });
+  m_repo = octo.repos(config.github.user, 'blocks');
+
+  return getTreeBySha(commit)
+    .then((re) => getUserTreeFromTree(re.tree, user))
+    .then((tree) => getFiles(tree))
+    .then((r) => {
+      if(r === undefined){
+        return undefined;
+      }
+      return m_filesToRestore;
+    });
+
+}
+
+function getTreeBySha(sha){
+  return m_repo.git.trees(sha).fetch();
+}
+function getUserTreeFromTree(tree, user){
+  for(let entry in tree){
+    if(tree[entry].path === user){
+      return getTreeBySha(tree[entry].sha);
+    }
+  }
+  return undefined;
+}
+
+function getFiles(treeObject){
+   if(!treeObject || !treeObject.tree){
+      return undefined;
+    }
+    else{
+     let promises = [];
+     let tree = treeObject.tree;
+     for (let i = 0; i < tree.length; i++) {
+       promises.push(getFile(tree[i]));
+     }
+     return Promise.all(promises);
+    }
+
+}
+
+function getFile(file){
+  if(file.type === 'blob'){
+    let gh = authGithub();
+    return gh.gitdata.getBlob({owner: config.github.user, repo: 'blocks', sha: file.sha})
+      .then((blob) => {
+          let content = base64.decode(blob.data.content);
+            m_filesToRestore.push({fileName: file.path , content: content});
+      });
+
+    // return m_repo.git.blobs(file.sha).read()
+    //   .then((blob) => {
+    //     m_filesToRestore.push({fileName: file.path , content: blob});
+    //   });
+  }
+  else{
+    return undefined;
+  }
+
+}
+
+function pushFiles(message, files, user, timestamp, res) {
+  m_newCommit = {};
+  m_filesToCommit = [];
   return fetchHead()
     .then(() => getCurrentTreeSHA())
-    .then(() => createFiles(files))
+    .then(() => createFilesSilent(files))
     .then(() => createTree())
     .then(() => createCommit(message))
     .then((commit) => updateHead(commit))
-    .then(() => {
-      console.log('files pushed');
-      return res.status(200).end()
+    .then((head) => {
+      return createOrUpdateUserFiles(user, m_newCommit.treeSHA, timestamp, res);
+      //head.object.sh
+      // return res.status(200).end()
     })
     .catch((e) => {
       console.error(e);
@@ -233,15 +275,15 @@ function getCurrentTreeSHA() {
     });
 }
 
-function createFiles(files) {
+function createFilesSilent(files) {
   let promises = [];
   for (let i = 0; i < files.length; i++) {
-    promises.push(createFile(files[i]));
+    promises.push(createFileSilent(files[i]));
   }
   return Promise.all(promises);
 }
 
-function createFile(file) {
+function createFileSilent(file) {
   return m_repo.git.blobs.create({
     content: file.content,
     encoding: 'utf-8'
@@ -288,4 +330,4 @@ exports.authGithub = authGithub;
 exports.getContent = getContent;
 exports.createFile = createFile;
 exports.updateFile = updateFile;
-exports.createReference = createReference;
+exports.restoreFiles = restoreFiles;

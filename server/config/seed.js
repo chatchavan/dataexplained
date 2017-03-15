@@ -5,6 +5,7 @@
 
 'use strict';
 import Thing from '../api/thing/thing.model';
+import File from '../api/file/file.model';
 
 Thing.find({}).removeAsync()
   .then(() => {
@@ -37,4 +38,12 @@ Thing.find({}).removeAsync()
              'and openshift subgenerators'
     });
   });
+//
+// File.find({}).removeAsync()
+//   .then(() => {
+//     File.create({
+//       user: 'Test-User',
+//       commits: [{timestamp: 'testtimestamp', commit: 'testcommit'}]
+//     });
+//   });
 
