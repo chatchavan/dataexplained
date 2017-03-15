@@ -145,16 +145,12 @@ function updateDirectory(message, dir, user, timestamp, res) {
     var datas = [];
 
     for (let i = filenames.length - 1; i >= 0; i--) {
-
-      if (filenames[i] && !filenames[i].endsWith('.zip')) {
-
         console.log('reading file: ' + filenames[i]);
         fs.readFile(dir + '/' + filenames[i], 'utf8', function (err, data) {
             if (err) {
               console.log('err in readfile', err);
               return handleError(res);
             }
-
             datas.push({path: user + '/' + filenames[i], content: data});
 
             if (i <= 0) {
@@ -162,10 +158,6 @@ function updateDirectory(message, dir, user, timestamp, res) {
             }
           }
         );
-      }
-      else {
-        filenames.splice(i, 1);
-      }
     }
   });
 

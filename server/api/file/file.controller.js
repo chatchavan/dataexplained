@@ -98,18 +98,21 @@ export function show(req, res) {
         for (let i = 0; i < files.length; i++) {
           let filename = files[i].fileName;
           console.log('writing file '+ filename);
-          fs.writeFile(rScripts + filename, files[i].content, {mode: '0o777'},  function (err) {
-            if(!err){
-              console.log("The file was saved!", rScripts + filename);
-              fs.chmod(rScripts + filename, '777')
-            }
-            else{
-              console.log('error writing file: ', err);
-            }
-            if (i == files.length - 1) {
-              return res.status(200).end();
-            }
-          });
+          if(filename !== 'blocks.txt'){
+            fs.writeFile(rScripts + filename, files[i].content, {mode: '0o777'},  function (err) {
+              if(!err){
+                console.log("The file was saved!", rScripts + filename);
+                fs.chmod(rScripts + filename, '777')
+              }
+              else{
+                console.log('error writing file: ', err);
+              }
+              if (i == files.length - 1) {
+                return res.status(200).end();
+              }
+            });
+          }
+
         }
       });
   });
