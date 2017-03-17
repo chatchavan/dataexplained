@@ -70,7 +70,7 @@ class MainController {
           this.loglist = this.LogUtil.formatLogs(log.split("\n"));
         }
       }, (err) => {
-        console.log(err);
+        // console.log(err);
       });
   }
 
