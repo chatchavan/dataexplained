@@ -57,6 +57,8 @@ class MainController {
           this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
           this.saveFiles(newBlock.timestamp);
         }
+      }, (err) => {
+        console.log(err);
       });
 
   }
@@ -67,6 +69,8 @@ class MainController {
         if(!this.selectFocus) {
           this.loglist = this.LogUtil.formatLogs(log.split("\n"));
         }
+      }, (err) => {
+        console.log(err);
       });
   }
 
@@ -99,6 +103,8 @@ class MainController {
       if(response.data){
         console.log('files saved', response.data);
       }
+    }, (err) => {
+      console.log(err);
     });
   }
 
