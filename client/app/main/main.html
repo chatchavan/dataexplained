@@ -1,10 +1,10 @@
-<navbar ng-show="main.userDefined" user="main.user"></navbar>
+<navbar ng-if="main.userDefined" user="main.user"></navbar>
 
 <div id="sss" class="container">
   <div class="row" ng-if="!main.userDefined">
     <h2>Please set active user</h2>
     <input type="text" ng-model="main.user"/>
-    <button ng-click="main.setUser()">Set User</button>
+    <button ng-click="main.setUser(main.user)">Set User</button>
 
   </div>
   <div class="row content height" ng-show="main.userDefined">
@@ -15,7 +15,7 @@
       </iframe>
     </div>
     <div class="col-md-3" style="height: 100%">
-      <div ng-if="main.user === 'coldata'">
+      <div ng-if="main.user === 'coldata2'">
         <div>
           <a ng-click="main.pollLogs()">Poll Logs</a>
         </div>
@@ -27,9 +27,6 @@
         </div>
         <div>
           <a ng-click="main.loadFiles()">Load Files</a>
-        </div>
-        <div>
-          <a ng-click="main.filesIndex()">Test files/index</a>
         </div>
       </div>
 
@@ -55,12 +52,12 @@
       </div>
     </div>
 
-    <div class="dual-list list-right col-lg-2 col-md-2">
+    <div class="dual-list list-right col-md-1">
       <ul class="list-group" ng-repeat="block in main.blockList">
         <div ng-click="main.editBlock(block)">
           <li style="padding: 5px" class="row list-group-item">
-            <div class="col-xs-10 ">{{block.title}}</div>
-              <div class="col-xs-2 vcenter"><i class="fa fa-pencil pull-right"></i></div>
+            <div class="col-xs-10 padding-side-small">{{block.title}}</div>
+              <div class="col-xs-2 padding-side-small vcenter"><i class="fa fa-pencil pull-right"></i></div>
           </li>
         </div>
       </ul>

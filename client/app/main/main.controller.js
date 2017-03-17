@@ -43,8 +43,8 @@ class MainController {
 
   startPolling(){
     this.pollLogs();
-    // this.getAllBlocks();
-    // this.$interval(this.pollLogs.bind(this), 5000);
+    this.getAllBlocks();
+    this.$interval(this.pollLogs.bind(this), 5000);
   }
 
   saveBlock(newBlock) {
@@ -68,12 +68,6 @@ class MainController {
           this.loglist = this.LogUtil.formatLogs(log.split("\n"));
         }
       });
-  }
-
-  filesIndex(){
-    this.$http.get('/api/files').then(response => {
-      console.log('filesindex-response', response);
-    });
   }
 
   getAllBlocks(){

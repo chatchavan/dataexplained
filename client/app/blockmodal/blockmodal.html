@@ -44,7 +44,7 @@
         </div>
 
         <div ng-if="edit" class="col-sm-4">
-          {{block.content}}
+          <p ng-repeat="c in renderedContent" class="content-line">{{c}}</p>
         </div>
 
 

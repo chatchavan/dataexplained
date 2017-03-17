@@ -3,15 +3,11 @@
 angular.module('rationalecapApp')
   .controller('BlockModalController', function($scope, $element, title, close, block, edit) {
 
-    // var vm = this;
-    // $scope.block = {
-    //   title : null,
-    //   age : null
-    // };
-
     $scope.title = title;
     $scope.block = block;
     $scope.edit = edit;
+    $scope.renderedContent = $scope.block.content.split('\\n');
+
 
     //  This close function doesn't need to use jQuery or bootstrap, because
     //  the button has the 'data-dismiss' attribute.
