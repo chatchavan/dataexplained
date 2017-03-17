@@ -133,7 +133,7 @@ export function update(req, res) {
     },
     function(err){
       console.log('file does not exist yet, coudl not update');
-      return handleError(res);
+      return res.status(404).send('file does not exist yet, coudl not update');
     });
 }
 

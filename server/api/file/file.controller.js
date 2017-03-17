@@ -85,12 +85,12 @@ export function show(req, res) {
 
   getCommitByTimestamp(user, timestamp, function(commit){
     if(!commit){
-      return handleError(res);
+      return res.status(404).send('no commit found for timestamp ' + timestamp);
     }
     githubService.restoreFiles(user, commit)
       .then((files) => {
         if(files === undefined){
-          return handleError(res);
+          return res.status(404).send('could not find files on github');
         }
 
         removeFiles(rScripts);
@@ -127,7 +127,8 @@ export function create(req, res) {
   let timestamp = req.body.timestamp;
   if (user === undefined) {
     console.log('user undefined');
-    return handleError(res);
+    return res.status(404).send('user undefined - could not create new file');
+
   }
   if(timestamp == undefined){
     timestamp = new Date().getTime();

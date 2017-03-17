@@ -17,13 +17,6 @@ let m_currentBranch = {};
 let m_newCommit = {};
 
 
-function handleError(res, statusCode) {
-  statusCode = statusCode || 500;
-  return function (err) {
-    res.status(statusCode).send(err);
-  };
-}
-
 function authGithub() {
   var github = new GitHubApi();
   github.authenticate({
@@ -61,9 +54,9 @@ function createFile(file, content, res) {
     console.log('FILE SUCCESSFULLY CREATED');
       return res.status(200).json(content);
   }, (err) => {
-    console.log('file could not be created');
-    console.log(err);
-    return handleError(res);
+    console.log('file could not be created:', err);
+    return res.status(500).send('error in creating file' + err);
+
 
   });
 }
@@ -76,9 +69,8 @@ function updateFile(sha, file, content, res) {
       return res.status(200).json(content);
 
   }, (err) => {
-    console.log('file could not be updated');
-    console.log(err);
-    return handleError(res);
+    console.log('file could not be updated', err);
+    return res.status(500).send('error while updating file' + err);
   });
 }
 
@@ -100,9 +92,9 @@ function createOrUpdateUserFiles(user, commit, timestamp, res) {
       };
       File.create(f, function (err, result) {
         if (err) {
-          console.log('could not create file');
+          console.log('could not create file', err);
           // console.log(err);
-          return handleError(res);
+          return res.status(500).send('error in creating file for user'+ user+':' + err);
         }
         else {
           console.log('new file entry created');
@@ -115,8 +107,8 @@ function createOrUpdateUserFiles(user, commit, timestamp, res) {
       file.commits.push(newRef);
       file.save(function (err) {
         if (err) {
-          console.log('could not save/update file');
-          return handleError(res);
+          console.log('could not save/update file', err);
+          return res.status(500).send('error in saving/updating file for user'+ user+':' + err);
         }
         else {
           console.log('new file in added');
@@ -139,7 +131,7 @@ function updateDirectory(message, dir, user, timestamp, res) {
 
     if (err) {
       console.log('err in readdir', err);
-      return handleError(res);
+      return res.status(500).send('error in readdir:' + err);
     }
 
     var datas = [];
@@ -153,7 +145,7 @@ function updateDirectory(message, dir, user, timestamp, res) {
         fs.readFile(dir + '/' + filenames[i], 'utf8', function (err, data) {
             if (err) {
               console.log('err in readfile', err);
-              return handleError(res);
+              return res.status(500).send('error in readfile:' + err);
             }
             datas.push({path: user + '/' + filenames[i], content: data});
 
@@ -252,7 +244,8 @@ function pushFiles(message, files, user, timestamp, res) {
     })
     .catch((e) => {
       console.error(e);
-      return handleError(res);
+      return res.status(500).send('error while pushing files:' + e);
+
     });
 }
 

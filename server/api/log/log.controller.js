@@ -71,7 +71,7 @@ export function index(req, res) {
   fs.readFile(rHistory, 'utf8', function (err,data) {
     if (err) {
       console.log('no user history found for user '+user,err);
-      return handleError(res);
+      return res.status(404).send(err);
     }
     var result = {'content': data.toString()};
     return res.status(200).json(result);
@@ -87,7 +87,7 @@ export function show(req, res) {
   fs.readFile(rHistory, 'utf8', function (err,data) {
     if (err) {
       console.log('no user history found for user '+user,err);
-      return handleError(res);;
+      return res.status(404).send(err);
     }
     var result = {'content': data.toString()};
     return res.status(200).json(result);
