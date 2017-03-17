@@ -70,7 +70,8 @@ export function index(req, res) {
 
   fs.readFile(rHistory, 'utf8', function (err,data) {
     if (err) {
-      return console.log(err);
+      console.log('no user history found for user '+user,err);
+      return handleError(res);
     }
     var result = {'content': data.toString()};
     return res.status(200).json(result);
