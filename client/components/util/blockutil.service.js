@@ -76,9 +76,9 @@
       /**
        * Return timestamp of latest log entry in blockString
        * */
-      getLatestTimestamp(blockString){
-        return BlockUtil.decodeBlock(blockString).timestamp;
-      },
+      // getLatestTimestamp(blockString){
+      //   return BlockUtil.decodeBlock(blockString).timestamp;
+      // },
 
       /**
        * Creates Block-String from an array of single log statements (selection)
@@ -92,6 +92,17 @@
         }
         blockString += '\\n'+BlockUtil.getBlockSuffix();
         return {'blockString' : blockString, 'timestamp' : timestamp};
+      },
+
+      stripeBlockFromList(block, blockList){
+        console.log('blocklist',blockList);
+        for(var i = 0; i < blockList.length; i++){
+          if(blockList[i].content === block.content){
+            blockList.splice(i, 1);
+            break;
+          }
+        }
+        return BlockUtil.encodeBlock(blockList);
       },
 
       getBlockPrefix(){

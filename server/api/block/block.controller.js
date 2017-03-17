@@ -115,17 +115,29 @@ export function create(req, res) {
 
 // Updates an existing Block in the DB
 export function update(req, res) {
-  if (req.body._id) {
-    delete req.body._id;
-  }
-  Block.findByIdAsync(req.params.id)
-    .then(handleEntityNotFound(res))
-    .then(saveUpdates(req.body))
-    .then(responseWithResult(res))
-    .catch(handleError(res));
+  let content = req.body.blockString;
+  let user = req.body.user;
+
+  var file = {
+    owner: config.github.user,
+    repo: 'blocks',
+    path: user+'/blocks.txt',
+    message: 'auto commit (update Block)',
+    content: base64.encode(content)
+  };
+
+  githubService.getContent(config.github.user, file.repo, file.path, undefined,
+    function(re){
+      let sha = re.data.sha;
+      githubService.updateFile(sha, file, content, res);
+    },
+    function(err){
+      console.log('file does not exist yet, coudl not update');
+      return handleError(res);
+    });
 }
 
-// Deletes a Block from the DB
+// Deletes a Block from the DB (send new BlockString without oldBlock -> hardUpdate)
 export function destroy(req, res) {
   Block.findByIdAsync(req.params.id)
     .then(handleEntityNotFound(res))

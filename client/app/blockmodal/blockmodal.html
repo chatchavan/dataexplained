@@ -3,56 +3,57 @@
     <div class="modal-content">
       <div class="modal-header">
 
-        <div>
-          <div class="col-sm-2">
+          <div class="col-sm-10">
             <h4 class="modal-title">{{title}}</h4>
           </div>
-          <div ng-if="edit" class="col-sm-2">
-            <button type="button" ng-click="loadFiles()" class="btn btn-primary">Load Files</button>
-          </div>
+
 
           <div class="text-right">
             <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
           </div>
+
+
+      </div>
+      <div class="modal-body row">
+
+        <div ng-class="{'questions-edit col-sm-8': edit, 'questions-container' : !edit}">
+          <span ng-if="!edit">Please answer the following questions</span>
+
+          <form name="bmodal.form" class="form-horizontal" role="form">
+            <div class="form-group question-group">
+              <label for="name" class="control-label">Question 1</label>
+                <input type="text" class="form-control" id="name" placeholder="Title" ng-model="block.title" required>
+              <div ng-messages="bmodal.form.name.$error" ng-show="bmodal.form.$submitted || bmodal.form.name.$touched">
+                <div ng-message="required">Required</div>
+              </div>
+            </div>
+
+              <div class="form-group question-group">
+                <label for="age" class="control-label">Question 2</label>
+                <input type="text" class="form-control" id="age" placeholder="Title" ng-model="block.age">
+              </div>
+
+            <div ng-class="{'button-group' : edit}">
+              <button type="button" ng-click="close(bmodal.form)" class="btn btn-primary">OK</button>
+              <button type="button" ng-click="cancel()" class="btn">Cancel</button>
+              <button ng-if="edit" type="button" ng-click="deleteBlock()" class="btn btn-primary pull-right">Delete Block</button>
+              <button ng-if="edit" type="button" ng-click="loadFiles()" class="btn btn-primary pull-right">Load Files</button>
+            </div>
+
+          </form>
+        </div>
+
+        <div ng-if="edit" class="col-sm-4">
+          {{block.content}}
         </div>
 
 
-          <div ng-if="edit" class="block-content col-sm-12">
-            {{block.content}}
-          </div>
 
-
-      </div>
-      <div class="modal-body">
-        <p>Please answer the following questions</p>
-
-        <form name="bmodal.form" class="form-horizontal" role="form">
-          <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">Title of Block</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="name" placeholder="Title" ng-model="block.title" required>
-            </div>
-            <div ng-messages="bmodal.form.name.$error" ng-show="bmodal.form.$submitted || bmodal.form.name.$touched">
-              <div ng-message="required">Required</div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="age" class="col-sm-2 control-label">Question 2</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="age" placeholder="" ng-model="block.age">
-            </div>
-          </div>
-
-
-          <button type="button" ng-click="close(bmodal.form)" class="btn btn-primary">OK</button>
-          <button type="button" ng-click="cancel()" class="btn">Cancel</button>
-        </form>
-
-      </div>
-      <div class="modal-footer">
+        </div>
+      <!--<div class="modal-footer">-->
         <!--<button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>-->
         <!--<button type="button" ng-click="cancel()" class="btn">Cancel</button>-->
-      </div>
+      <!--</div>-->
     </div>
   </div>
 </div>

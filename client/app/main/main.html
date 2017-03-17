@@ -15,43 +15,49 @@
     <button ng-click="main.setUser()">Set User</button>
 
   </div>
-  <div class="row" ng-show="main.userDefined">
+  <div class="row content height" ng-show="main.userDefined">
 
-    <div  class="col-lg-7 col-md-7" id="iframe-container" style="overflow: scroll">
-      <iframe style="width: 800px !important;" class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
+    <div class="iframe-container col-md-7">
+      <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
         <p>iframes are not supported by your browser.</p>
       </iframe>
     </div>
-    <div class="col-lg-3 col-md-3">
-      <div>
-        <a ng-click="main.pollLogs()">Poll Logs</a>
-      </div>
-      <div>
-        <a ng-click="main.getAllBlocks()">Get all Blocks</a>
-      </div>
-      <div>
-        <a ng-click="main.saveFiles()">Save Files</a>
-      </div>
-      <div>
-        <a ng-click="main.loadFiles()">Load Files</a>
-      </div>
-      <div>
-        <a ng-click="main.filesIndex()">Test files/index</a>
-      </div>
-      <h2>Live Logs</h2>
-      <form class="fullDimension">
-        <div class="form-group">
-          <label for="sel2">Select logs to form blocks (hold shift to select more than one):</label>
-          <select ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension" id="sel2" ng-model="main.selection"
-                  ng-options="item as item.log for item in main.loglist"
-                  ng-multiple="true" multiple>
-
-          </select>
-          <!--<select ng-model="main.selection" multiple class="form-control" id="sel2">-->
-            <!--<option ng-repeat="log in main.loglist">{{log.log}}</option>-->
-          <!--</select>-->
+    <div class="col-md-3" style="height: 100%">
+      <div ng-if="main.user === 'coldata'">
+        <div>
+          <a ng-click="main.pollLogs()">Poll Logs</a>
         </div>
-      </form>
+        <div>
+          <a ng-click="main.getAllBlocks()">Get all Blocks</a>
+        </div>
+        <div>
+          <a ng-click="main.saveFiles()">Save Files</a>
+        </div>
+        <div>
+          <a ng-click="main.loadFiles()">Load Files</a>
+        </div>
+        <div>
+          <a ng-click="main.filesIndex()">Test files/index</a>
+        </div>
+      </div>
+
+      <div class="height100">
+        <h2>Live Logs</h2>
+        <div class="form-group height100">
+          <label for="selection">Select logs to form blocks (hold shift to select more than one):</label>
+          <!--<select ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection" ng-model="main.selection"-->
+                  <!--ng-options="item |addClass:{eligible:item.eligible,className:'eligible',scope:main,item:item} as item.log for item in main.loglist"-->
+                  <!--ng-multiple="true" multiple>-->
+
+          <!--</select>-->
+
+          <select ng-model="main.selection" multiple ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection">
+            <option ng-value="log" ng-class="{'not-eligible' : log.used}"
+                    ng-disabled="log.used"
+                    ng-repeat="log in main.loglist">{{log.log}}</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <div class="dual-list list-right col-lg-2 col-md-2">
@@ -63,10 +69,7 @@
             <div class="col-xs-10 ">{{block.title}}</div>
               <div class="col-xs-2 vcenter"><i class="fa fa-pencil pull-right"></i></div>
           </li>
-
         </div>
-
-        <!--<p>{{block.content}}</p>-->
       </ul>
 
       <!--<ul class="list-group" ng-repeat="block in main.blockList">-->

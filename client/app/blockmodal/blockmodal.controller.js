@@ -39,6 +39,11 @@ angular.module('rationalecapApp')
     $scope.loadFiles = function(){
       $element.modal('hide');
       close('loadFiles', 500);
-    }
+    };
+
+    $scope.deleteBlock = function(){
+      $element.modal('hide');
+      close('deleteBlock', 500);
+    };
 
 });

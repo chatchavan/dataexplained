@@ -143,6 +143,10 @@ function updateDirectory(message, dir, user, timestamp, res) {
     }
 
     var datas = [];
+    var blocksIndex = filenames.indexOf('blocks.txt');    // <-- Not supported in <IE9
+    if (blocksIndex !== -1) {
+      filenames.splice(blocksIndex, 1);
+    }
 
     for (let i = filenames.length - 1; i >= 0; i--) {
         console.log('reading file: ' + filenames[i]);

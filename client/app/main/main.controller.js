@@ -49,11 +49,12 @@ class MainController {
 
   saveBlock(newBlock) {
     // var bs = this.BlockUtil.encodeBlock(this.blockList);
-    console.log('saving new block', newBlock.blockString);
+    console.log('saving new block', newBlock);
       this.$http.post('/api/blocks', {block: newBlock, user: this.user }).then(response => {
         console.log('response', response);
         if(response.data){
           this.blockList = this.BlockUtil.decodeBlock(response.data);
+          this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
           this.saveFiles(newBlock.timestamp);
         }
       });
@@ -77,19 +78,22 @@ class MainController {
 
   getAllBlocks(){
 
-    this.blockList = [{title: 'Dummy Block title', content: 'Dummy-Content;'}];
-    this.blockList.push({title: 'Dummy Block title2', content: 'Dummy-Content2;'});
+    // this.blockList = [{title: 'Dummy Block title', content: 'Dummy-Content;'}];
+    // this.blockList.push({title: 'Dummy Block title2', content: 'Dummy-Content2;'});
 
     this.$http.get('/api/blocks/'+this.user).then(response => {
       if(response.data.length > 0){
+        console.log(response.data);
         this.blockList = this.BlockUtil.decodeBlock(response.data);
         console.log(this.blockList);
+        this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
       }
     }, (err) => {
       //file does not exist yet
       console.log('error fetching blocks', err);
     });
   }
+
 
   saveFiles(timestamp){
     if(!timestamp){
@@ -138,18 +142,59 @@ class MainController {
       modal.close.then(result => {
         if(result === 'loadFiles'){
           that.loadFiles(block);
-        } else if(result){
+        }
+        else if(result === 'deleteBlock'){
+          that.deleteBlock(block);
+        }
+        else if(result){
           that.saveBlock(that.BlockUtil.createBlock(result, select));
         }
       });
     });
   }
 
-  toggleBlock(index){
-    let target = $('#detail-'+index);
-    console.log('target', target);
-    target.slideToggle();
+  deleteBlock(block){
+    var that = this;
+    let actionText1 = 'Yes';
+    let actionText2 = 'No';
+
+    this.ModalService.showModal({
+      templateUrl: "app/custommodal/custommodal.html",
+      controller: "CustomModalController",
+      inputs: {
+        title: "Delete block",
+        text: 'Do you really want to delete this block?',
+        actionText1: actionText1,
+        actionText2: actionText2
+      }
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(result => {
+        if(result === actionText1){
+
+          let newBlockString = that.BlockUtil.stripeBlockFromList(block, that.blockList);
+          that.$http.put('/api/blocks/', {user: that.user, blockString: newBlockString}).then(response => {
+            if(response.data){
+              console.log('response.data', response.data);
+              that.blockList = that.BlockUtil.decodeBlock(response.data);
+              console.log('that.blockList', that.blockList);
+              that.loglist = that.LogUtil.markLogs(that.loglist, that.blockList);
+
+            }
+          }, (err) => {
+            console.log('error deleting block', err);
+          });
+
+        }
+      });
+    });
   }
+
+  // toggleBlock(index){
+  //   let target = $('#detail-'+index);
+  //   console.log('target', target);
+  //   target.slideToggle();
+  // }
 
 
   createBlock(){
