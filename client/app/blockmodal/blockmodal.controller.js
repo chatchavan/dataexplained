@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModalController', function($scope, $element, title, close) {
+  .controller('BlockModalController', function($scope, $element, title, close, block, edit) {
 
     // var vm = this;
     // $scope.block = {
@@ -10,6 +10,8 @@ angular.module('rationalecapApp')
     // };
 
     $scope.title = title;
+    $scope.block = block;
+    $scope.edit = edit;
 
     //  This close function doesn't need to use jQuery or bootstrap, because
     //  the button has the 'data-dismiss' attribute.
@@ -33,5 +35,10 @@ angular.module('rationalecapApp')
       //  Now call close, returning control to the caller.
       close(undefined, 500); // close, but give 500ms for bootstrap to animate
     };
+
+    $scope.loadFiles = function(){
+      $element.modal('hide');
+      close('loadFiles', 500);
+    }
 
 });

@@ -77,6 +77,9 @@ class MainController {
 
   getAllBlocks(){
 
+    this.blockList = [{title: 'Dummy Block title', content: 'Dummy-Content;'}];
+    this.blockList.push({title: 'Dummy Block title2', content: 'Dummy-Content2;'});
+
     this.$http.get('/api/blocks/'+this.user).then(response => {
       if(response.data.length > 0){
         this.blockList = this.BlockUtil.decodeBlock(response.data);
@@ -118,6 +121,36 @@ class MainController {
 
   }
 
+  editBlock(block){
+    var that = this;
+    let select = this.selection;
+
+    this.ModalService.showModal({
+      templateUrl: "app/blockmodal/blockmodal.html",
+      controller: "BlockModalController",
+      inputs: {
+        title: "Edit block",
+        edit: true,
+        block: block
+      }
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(result => {
+        if(result === 'loadFiles'){
+          that.loadFiles(block);
+        } else if(result){
+          that.saveBlock(that.BlockUtil.createBlock(result, select));
+        }
+      });
+    });
+  }
+
+  toggleBlock(index){
+    let target = $('#detail-'+index);
+    console.log('target', target);
+    target.slideToggle();
+  }
+
 
   createBlock(){
 
@@ -129,7 +162,9 @@ class MainController {
         templateUrl: "app/blockmodal/blockmodal.html",
         controller: "BlockModalController",
         inputs: {
-          title: "Add a new block"
+          title: "Add a new block",
+          edit: false,
+          block: undefined
         }
       }).then(function(modal) {
         modal.element.modal();

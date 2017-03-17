@@ -58,9 +58,35 @@
       <button ng-click="main.createBlock()">Create Block</button>
 
       <ul class="list-group" ng-repeat="block in main.blockList">
-          <li class="list-group-item" ng-click="main.loadFiles(block)">{{block.title}}</li>
-          <p>{{block.content}}</p>
+        <div ng-click="main.editBlock(block)">
+          <li style="padding: 5px" class="row list-group-item">
+            <div class="col-xs-10 ">{{block.title}}</div>
+              <div class="col-xs-2 vcenter"><i class="fa fa-pencil pull-right"></i></div>
+          </li>
+
+        </div>
+
+        <!--<p>{{block.content}}</p>-->
       </ul>
+
+      <!--<ul class="list-group" ng-repeat="block in main.blockList">-->
+        <!--<li class="list-group-item">-->
+          <!--<div class="row toggle" ng-click="main.toggleBlock($index)">-->
+            <!--<div class="col-xs-10">-->
+              <!--{{block.title}}-->
+            <!--</div>-->
+            <!--<div class="col-xs-2"><i class="fa fa-chevron-down pull-right"></i></div>-->
+          <!--</div>-->
+          <!--<div id="detail-{{$index}}" hidden>-->
+            <!--<hr>-->
+            <!--<div class="container">-->
+              <!--<div class="fluid-row">-->
+                <!--{{block.content}}-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</li>-->
+      <!--</ul>-->
 
 
     </div>

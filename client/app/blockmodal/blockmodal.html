@@ -1,9 +1,27 @@
-<div class="modal fade">
+<div class="modal fade blockmodal">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">{{title}}</h4>
+
+        <div>
+          <div class="col-sm-2">
+            <h4 class="modal-title">{{title}}</h4>
+          </div>
+          <div ng-if="edit" class="col-sm-2">
+            <button type="button" ng-click="loadFiles()" class="btn btn-primary">Load Files</button>
+          </div>
+
+          <div class="text-right">
+            <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
+          </div>
+        </div>
+
+
+          <div ng-if="edit" class="block-content col-sm-12">
+            {{block.content}}
+          </div>
+
+
       </div>
       <div class="modal-body">
         <p>Please answer the following questions</p>
