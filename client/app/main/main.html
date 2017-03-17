@@ -1,13 +1,5 @@
 <navbar ng-show="main.userDefined" user="main.user"></navbar>
 
-<!--<header class="hero-unit" id="banner">-->
-  <!--<div class="container">-->
-    <!--<h1>'Allo, 'Allo!</h1>-->
-    <!--<p class="lead">Kick-start your next web app with Angular Fullstack</p>-->
-    <!--<img src="assets/images/yeoman.png" alt="I'm Yeoman">-->
-  <!--</div>-->
-<!--</header>-->
-
 <div id="sss" class="container">
   <div class="row" ng-if="!main.userDefined">
     <h2>Please set active user</h2>
@@ -18,7 +10,7 @@
   <div class="row content height" ng-show="main.userDefined">
 
     <div class="iframe-container col-md-7">
-      <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="rstudio">
+      <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="ide-iframe">
         <p>iframes are not supported by your browser.</p>
       </iframe>
     </div>
@@ -50,6 +42,9 @@
                   <!--ng-multiple="true" multiple>-->
 
           <!--</select>-->
+          <div class="btn-container">
+            <button ng-click="main.createBlock()">Create Block</button>
+          </div>
 
           <select ng-model="main.selection" multiple ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection">
             <option ng-value="log" ng-class="{'not-eligible' : log.used}"
@@ -61,8 +56,6 @@
     </div>
 
     <div class="dual-list list-right col-lg-2 col-md-2">
-      <button ng-click="main.createBlock()">Create Block</button>
-
       <ul class="list-group" ng-repeat="block in main.blockList">
         <div ng-click="main.editBlock(block)">
           <li style="padding: 5px" class="row list-group-item">
