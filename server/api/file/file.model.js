@@ -3,7 +3,7 @@
 var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
 var CommitSchema = new mongoose.Schema({
-  timestamp: String,
+  timestamp: Date,
   commit: String
 });
 

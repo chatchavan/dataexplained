@@ -65,6 +65,7 @@ class MainController {
   //=========BLOCKS=========
   getAllBlocks(){
 
+
     this.$http.get('/api/blocks/'+this.user).then(response => {
       if(response.data.length > 0){
         console.log('got all blocks', response.data);

@@ -169,7 +169,8 @@ function getCommitByTimestamp(user, timestamp, callback){
       if(errFind) {callback(undefined); return; }
 
       for(let commit in files.commits){
-        if(files.commits[commit].timestamp === timestamp){
+        let time =  files.commits[commit].timestamp;
+        if(time && time.getTime() === new Date(timestamp).getTime()){
           callback(files.commits[commit].commit);
           return;
         }
