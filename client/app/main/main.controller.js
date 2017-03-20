@@ -4,13 +4,12 @@
 
 class MainController {
 
-  constructor($http, StorageUtil, $sce, $interval,  ModalService, LogUtil, BlockUtil) {
+  constructor($http, StorageUtil, Util, $interval,  ModalService, LogUtil, BlockUtil) {
     this.user = undefined;
     this.selectFocus = false;
     this.userDefined = false;
     this.$http = $http;
     this.$interval = $interval;
-    // this.$route = $route;
     this.StorageUtil = StorageUtil;
     this.ModalService = ModalService;
     this.BlockUtil = BlockUtil;
@@ -18,12 +17,14 @@ class MainController {
     this.selection = '';
     this.blockList = [];
 
-    this.rStudioEndpoint = $sce.trustAsResourceUrl('http://34.251.106.133:8787');
-    //this.rStudioEndpoint = $sce.trustAsResourceUrl('http://192.168.56.101:8787');
+    this.rStudioEndpoint = Util.getRStudioUri();
 
     this.init();
 
   }
+
+  //=========INIT=========
+
 
   init(){
     this.user = this.StorageUtil.retrieveSStorage('user');
@@ -47,43 +48,27 @@ class MainController {
     this.$interval(this.pollLogs.bind(this), 5000);
   }
 
-  saveBlock(newBlock) {
-    // var bs = this.BlockUtil.encodeBlock(this.blockList);
-    console.log('saving new block', newBlock);
-      this.$http.post('/api/blocks', {block: newBlock, user: this.user }).then(response => {
-        console.log('response', response);
-        if(response.data){
-          this.blockList = this.BlockUtil.decodeBlock(response.data);
-          this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
-          this.saveFiles(newBlock.timestamp);
-        }
-      }, (err) => {
-        console.log(err);
-      });
 
-  }
+  //=========LOGS=========
 
   pollLogs(){
-      this.$http.get('/api/logs/'+this.user).then(response => {
-        let log = response.data.content;
-        if(!this.selectFocus) {
-          this.loglist = this.LogUtil.formatLogs(log.split("\n"));
-        }
-      }, (err) => {
-        // console.log(err);
-      });
+    this.$http.get('/api/logs/'+this.user).then(response => {
+      let log = response.data.content;
+      if(!this.selectFocus) {
+        this.loglist = this.LogUtil.formatLogs(log.split("\n"));
+      }
+    }, (err) => {
+      console.log(err);
+    });
   }
 
+  //=========BLOCKS=========
   getAllBlocks(){
-
-    // this.blockList = [{title: 'Dummy Block title', content: 'Dummy-Content;'}];
-    // this.blockList.push({title: 'Dummy Block title2', content: 'Dummy-Content2;'});
 
     this.$http.get('/api/blocks/'+this.user).then(response => {
       if(response.data.length > 0){
-        console.log(response.data);
-        this.blockList = this.BlockUtil.decodeBlock(response.data);
-        console.log(this.blockList);
+        console.log('got all blocks', response.data);
+        this.blockList = response.data;
         this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
       }
     }, (err) => {
@@ -92,34 +77,27 @@ class MainController {
     });
   }
 
+  createBlock(){
 
-  saveFiles(timestamp){
-    if(!timestamp){
-      timestamp = '';
-    }
-    console.log('saving files with timestamp: '+ timestamp);
-    this.$http.post('/api/files', {user: this.user, timestamp: timestamp }).then(response => {
-      console.log('response', response);
-      if(response.data){
-        console.log('files saved', response.data);
-      }
-    }, (err) => {
-      console.log(err);
-    });
-  }
+    if(this.selection && this.selection.length > 0){
+      var that = this;
+      let select = this.selection;
 
-  loadFiles(block){
-    console.log(block);
-    if(block && block.timestamp){
-      this.$http.get('/api/files/'+this.user+'/'+block.timestamp).then(response => {
-        if(response.data.length > 0){
-          console.log(response.data);
-          // this.$route.reload();
-          $window.location.reload();
+      this.ModalService.showModal({
+        templateUrl: "app/blockmodal/blockmodal.html",
+        controller: "BlockModalController",
+        inputs: {
+          title: "Add a new block",
+          edit: false,
+          block: undefined
         }
-      }, (err) => {
-        //file does not exist yet
-        console.log('error loading files', err);
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          if(result){
+            that.saveBlock(that.BlockUtil.createBlock(result, select));
+          }
+        });
       });
     }
 
@@ -147,11 +125,27 @@ class MainController {
           that.deleteBlock(block);
         }
         else if(result){
-          that.saveBlock(that.BlockUtil.createBlock(result, select));
+          that.updateBlock(that.BlockUtil.createBlock(result, select));
         }
       });
     });
   }
+
+  updateBlock(newBlock) {
+    console.log('updating block', newBlock);
+    this.$http.put('/api/blocks', {block: newBlock, user: this.user }).then(response => {
+      console.log('response', response);
+      if(response.data.length > 0){
+        this.blockList = response.data;
+        this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
+      }
+
+    }, (err) => {
+      console.log(err);
+    });
+
+  }
+
 
   deleteBlock(block){
     var that = this;
@@ -172,11 +166,10 @@ class MainController {
       modal.close.then(result => {
         if(result === actionText1){
 
-          let newBlockString = that.BlockUtil.stripeBlockFromList(block, that.blockList);
-          that.$http.put('/api/blocks/', {user: that.user, blockString: newBlockString}).then(response => {
+          that.$http.delete('/api/blocks/'+that.user+'/'+block._id).then(response => {
             if(response.data){
               console.log('response.data', response.data);
-              that.blockList = that.BlockUtil.decodeBlock(response.data);
+              that.blockList = response.data;
               console.log('that.blockList', that.blockList);
               that.loglist = that.LogUtil.markLogs(that.loglist, that.blockList);
 
@@ -190,38 +183,62 @@ class MainController {
     });
   }
 
-  // toggleBlock(index){
-  //   let target = $('#detail-'+index);
-  //   console.log('target', target);
-  //   target.slideToggle();
-  // }
 
 
-  createBlock(){
 
-    if(this.selection && this.selection.length > 0){
-      var that = this;
-      let select = this.selection;
-
-      this.ModalService.showModal({
-        templateUrl: "app/blockmodal/blockmodal.html",
-        controller: "BlockModalController",
-        inputs: {
-          title: "Add a new block",
-          edit: false,
-          block: undefined
+  saveBlock(newBlock) {
+    console.log('saving new block', newBlock);
+      this.$http.post('/api/blocks', {block: newBlock, user: this.user }).then(response => {
+        console.log('response', response);
+        if(response.data){
+          this.blockList = response.data;
+          this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
+          this.saveFiles(newBlock.timestamp);
         }
-      }).then(function(modal) {
-        modal.element.modal();
-        modal.close.then(result => {
-          if(result){
-            that.saveBlock(that.BlockUtil.createBlock(result, select));
-          }
-        });
+      }, (err) => {
+        console.log(err);
+      });
+
+  }
+
+
+  //=========FILES=========
+
+  loadFiles(block){
+    console.log(block);
+    if(block && block.timestamp){
+      this.$http.get('/api/files/'+this.user+'/'+block.timestamp).then(response => {
+        if(response.data.length > 0){
+          console.log(response.data);
+          $window.location.reload();
+        }
+      }, (err) => {
+        //file does not exist yet
+        console.log('error loading files', err);
       });
     }
 
   }
+
+  saveFiles(timestamp){
+    if(!timestamp){
+      timestamp = '';
+    }
+    console.log('saving files with timestamp: '+ timestamp);
+    this.$http.post('/api/files', {user: this.user, timestamp: timestamp }).then(response => {
+      console.log('response', response);
+      if(response.data){
+        console.log('files saved', response.data);
+      }
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+
+
+
+  //=========HELPER FUNCTIONS=========
 
   arraysEqual(arr1, arr2) {
     if(!arr1 || arr2){

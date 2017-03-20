@@ -27,16 +27,13 @@ function authGithub() {
   return github;
 }
 
-function getContent(owner, repo, path, ref, cbSuccess, cbError) {
+function getContent(owner, repo, path, cbSuccess, cbError) {
   let github = authGithub();
   let params = {
     owner: owner,
     repo: repo,
     path: path
   };
-  if (ref) {
-    params.ref = ref;
-  }
 
   github.repos.getContent(params).then((re) => {
     //file does exist
@@ -74,51 +71,19 @@ function updateFile(sha, file, content, res) {
   });
 }
 
+function deleteFile(sha, file, content, res) {
+  let github = authGithub();
+  file.sha = sha;
+  github.repos.deleteFile(file).then((re) => {
+    console.log('FILE SUCCESSFULLY DELETED');
+    return res.status(200).json(content);
 
-function createOrUpdateUserFiles(user, commit, timestamp, res) {
-
-  let newRef = {
-    timestamp: timestamp,
-    commit: commit
-  };
-
-  File.findOne({'user': user}).exec(function (err, file) {
-
-    if (err || !file) {
-      //creating first entry for user
-      let f = {
-        user: user,
-        commits: [newRef]
-      };
-      File.create(f, function (err, result) {
-        if (err) {
-          console.log('could not create file', err);
-          // console.log(err);
-          return res.status(500).send('error in creating file for user'+ user+':' + err);
-        }
-        else {
-          console.log('new file entry created');
-          return res.status(200).end();
-        }
-      });
-    }
-    else {
-      //files for user already exist
-      file.commits.push(newRef);
-      file.save(function (err) {
-        if (err) {
-          console.log('could not save/update file', err);
-          return res.status(500).send('error in saving/updating file for user'+ user+':' + err);
-        }
-        else {
-          console.log('new file in added');
-          return res.status(200).end();
-        }
-      });
-    }
-
+  }, (err) => {
+    console.log('file could not be deleted', err);
+    return res.status(500).send('error while deleting file' + err);
   });
 }
+
 
 function updateDirectory(message, dir, user, timestamp, res) {
 
@@ -159,6 +124,51 @@ function updateDirectory(message, dir, user, timestamp, res) {
 
 
 }
+function createOrUpdateUserFiles(user, commit, timestamp, res) {
+
+  let newRef = {
+    timestamp: timestamp,
+    commit: commit
+  };
+
+  File.findOne({'user': user}).exec(function (err, file) {
+
+    if (err || !file) {
+      //creating first entry for user
+      let f = {
+        user: user,
+        commits: [newRef]
+      };
+      File.create(f, function (err, result) {
+        if (err) {
+          console.log('could not create file', err);
+          // console.log(err);
+          return res.status(500).send('error in creating file for user '+ user+':' + err);
+        }
+        else {
+          console.log('new file entry created');
+          return res.status(200).end();
+        }
+      });
+    }
+    else {
+      //files for user already exist
+      file.commits.push(newRef);
+      file.save(function (err) {
+        if (err) {
+          console.log('could not save/update file', err);
+          return res.status(500).send('error in saving/updating file for user '+ user+':' + err);
+        }
+        else {
+          console.log('new file in added');
+          return res.status(200).end();
+        }
+      });
+    }
+
+  });
+}
+
 
 function restoreFiles(user, commit){
 
@@ -217,10 +227,6 @@ function getFile(file){
             m_filesToRestore.push({fileName: file.path , content: content});
       });
 
-    // return m_repo.git.blobs(file.sha).read()
-    //   .then((blob) => {
-    //     m_filesToRestore.push({fileName: file.path , content: blob});
-    //   });
   }
   else{
     return undefined;
@@ -319,4 +325,5 @@ exports.authGithub = authGithub;
 exports.getContent = getContent;
 exports.createFile = createFile;
 exports.updateFile = updateFile;
+exports.deleteFile = deleteFile;
 exports.restoreFiles = restoreFiles;

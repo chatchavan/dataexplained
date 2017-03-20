@@ -5,8 +5,16 @@
 /**
  * The Util service is for thin, globally reusable, utility functions
  */
-function UtilService($window) {
+function UtilService($window, $sce) {
   var Util = {
+
+    /**
+     * Returns URL of RStudio-Server
+     */
+    getRStudioUri() {
+      return $sce.trustAsResourceUrl('http://34.251.106.133:8787');
+    },
+
     /**
      * Return a callback or noop function
      *

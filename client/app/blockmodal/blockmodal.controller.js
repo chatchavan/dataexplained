@@ -4,9 +4,18 @@ angular.module('rationalecapApp')
   .controller('BlockModalController', function($scope, $element, title, close, block, edit) {
 
     $scope.title = title;
-    $scope.block = block;
     $scope.edit = edit;
-    $scope.renderedContent = $scope.block.content.split('\\n');
+    $scope.block = block;
+    if(!$scope.block){
+      $scope.block = {};
+      $scope.block.alternatives = [{}];
+      // $scope.block.alternativesContra = [{}];
+    }
+    if($scope.block.content){
+      $scope.renderedContent = $scope.block.content.split('\\n');
+    }
+
+    console.log('editing block', $scope.block);
 
 
     //  This close function doesn't need to use jQuery or bootstrap, because
@@ -40,6 +49,17 @@ angular.module('rationalecapApp')
     $scope.deleteBlock = function(){
       $element.modal('hide');
       close('deleteBlock', 500);
+    };
+
+    $scope.addAlternative = function(){
+      $scope.block.alternatives.push({});
+    };
+
+    $scope.spliceAlternative = function(){
+      if($scope.block.alternatives.length > 1){
+        $scope.block.alternatives.splice($scope.block.alternatives.length-1, 1);
+      }
+
     };
 
 });

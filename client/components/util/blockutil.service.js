@@ -10,47 +10,50 @@
        * Decodes a formatted string structured with //startblock\nBLOCKCONTENT//endblock into an array of blocks
        * */
       decodeBlock(blockString){
-
-        var split = blockString.split('\\n');
-        var blocks = [];
-        let currentBlock;
-        let timestamp;
-
-        for(let i = 0; i < split.length; i++){
-          let indexPrefix = split[i].indexOf(BlockUtil.getBlockPrefix());
-          let indexColon = split[i].indexOf(':');
-          let indexSuffix = split[i].indexOf(BlockUtil.getBlockSuffix());
-
-          //Start new block
-          if(indexPrefix > -1 && indexColon > -1){
-            blocks.push({title : split[i].substr(indexColon+1, split[i].length-1)});
-            currentBlock = blocks[blocks.length -1];
-          }
-
-          //End of current Block
-          else if(indexSuffix > -1 &&  currentBlock){
-            currentBlock.timestamp = timestamp;
-            blocks[blocks.length-1] = currentBlock;
-            timestamp = undefined;
-            currentBlock = undefined;
-          }
-          //Inside current Block
-          else if(indexColon > -1 && currentBlock){
-            timestamp = split[i].substr(0, indexColon);
-            let content = split[i].substr(indexColon+1, split[i].length-1);
-            if(!currentBlock.content){
-              currentBlock.content = content;
-              currentBlock.contentRaw = [{'content' : content, 'timestamp': timestamp}];
-            }
-            else{
-              currentBlock.content += '\\n'+content;
-              currentBlock.contentRaw.push({'content' : content, 'timestamp': timestamp});
-
-            }
-          }
-
-        }
-        return blocks;
+        // console.log('decodeBlock', blockString);
+        //
+        // var split = blockString.split('\\n');
+        // var blocks = [];
+        // let currentBlock;
+        // let timestamp;
+        //
+        // for(let i = 0; i < split.length; i++){
+        //   let indexPrefix = split[i].indexOf(BlockUtil.getBlockPrefix());
+        //   let indexColon = split[i].indexOf(':');
+        //   let indexSuffix = split[i].indexOf(BlockUtil.getBlockSuffix());
+        //
+        //   //Start new block
+        //   if(indexPrefix > -1 && indexColon > -1){
+        //     blocks.push({title : split[i].substr(indexColon+1, split[i].length-1)});
+        //     currentBlock = blocks[blocks.length -1];
+        //   }
+        //
+        //   //End of current Block
+        //   else if(indexSuffix > -1 &&  currentBlock){
+        //     let id = split[i].substr(BlockUtil.getBlockSuffix().length+1, split[i].length);
+        //     currentBlock.timestamp = timestamp;
+        //     currentBlock.blockId = id;
+        //     blocks[blocks.length-1] = currentBlock;
+        //     timestamp = undefined;
+        //     currentBlock = undefined;
+        //   }
+        //   //Inside current Block
+        //   else if(indexColon > -1 && currentBlock){
+        //     timestamp = split[i].substr(0, indexColon);
+        //     let content = split[i].substr(indexColon+1, split[i].length-1);
+        //     if(!currentBlock.content){
+        //       currentBlock.content = content;
+        //       currentBlock.contentRaw = [{'content' : content, 'timestamp': timestamp}];
+        //     }
+        //     else{
+        //       currentBlock.content += '\\n'+content;
+        //       currentBlock.contentRaw.push({'content' : content, 'timestamp': timestamp});
+        //
+        //     }
+        //   }
+        //
+        // }
+        return blockString;
       },
 
       /**
@@ -84,14 +87,20 @@
        * Creates Block-String from an array of single log statements (selection)
        * */
       createBlock(block, selection){
+        console.log('create block', block);
         let timestamp;
-        let blockString = BlockUtil.getBlockPrefix()+':'+block.title;
+        let content = '';
         for(let i = 0; i < selection.length; i++){
-          blockString += '\\n'+selection[i].timestamp + ':'+ selection[i].log;
+          content += selection[i].log;
+          if(selection.length-1 > i){
+            content += '\\n';
+          }
+
           timestamp = selection[i].timestamp;
         }
-        blockString += '\\n'+BlockUtil.getBlockSuffix();
-        return {'blockString' : blockString, 'timestamp' : timestamp};
+        block.timestamp = timestamp;
+        block.content = content;
+        return block;
       },
 
       stripeBlockFromList(block, blockList){
