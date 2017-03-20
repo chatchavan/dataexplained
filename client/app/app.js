@@ -5,6 +5,7 @@ angular.module('rationalecapApp', [
   'rationalecapApp.util',
   'ngCookies',
   'ngResource',
+  'ngMessages',
   'ngSanitize',
   'ui.router',
   'ui.bootstrap',

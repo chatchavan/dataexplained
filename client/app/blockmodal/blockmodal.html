@@ -12,6 +12,8 @@
             <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
           </div>
 
+        <div class="attention-text col-sm-12">Attention: Please make sure that all your files (e.g. R-Scripts) are Saved in R-Studio (in rstudio-workspace directory)!
+          <br> Otherwise they might get lost when restoring previous block-states</div>
 
       </div>
       <div class="modal-body row">
@@ -22,7 +24,7 @@
           <form name="bmodal.form" class="form-horizontal" role="form">
             <div class="form-group question-group">
               <label for="title" class="control-label">Indicate a title of your Block</label>
-                <input type="text" class="form-control" id="title" placeholder="" ng-model="block.title" required>
+                <input type="text" class="form-control" name="title" id="title" placeholder="" ng-model="block.title" required>
               <div ng-messages="bmodal.form.title.$error" ng-show="bmodal.form.$submitted || bmodal.form.title.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
@@ -30,7 +32,7 @@
 
             <div class="form-group question-group">
               <label for="goal" class="control-label">Shorty summarize <span style="font-style: italic">what</span> you did in this block?</label>
-              <input type="text" class="form-control" id="goal" placeholder="" ng-model="block.goal" required>
+              <input type="text" class="form-control" name="goal" id="goal" placeholder="" ng-model="block.goal" required>
               <div ng-messages="bmodal.form.goal.$error" ng-show="bmodal.form.$submitted || bmodal.form.goal.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
@@ -43,33 +45,33 @@
                   <div class="sublabel" class="control-label">Alternative</div>
                   <input type="text" class="sublabel-input form-control" name="alternativeTitle{{$index}}" placeholder="" ng-model="block.alternatives[$index].title" required>
                 </div>
-                <div ng-messages="bmodal.form.alternativeTitle+{{$index}}.$error" ng-show="bmodal.form.$submitted || bmodal.form.alternativeTitle{{$index}}.$touched">
+                <div ng-messages="bmodal.form['alternativeTitle'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeTitle'+$index].$touched">
                   <div class="required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="control-label">Pros</div>
-                  <input type="text" class="sublabel-input form-control" name="alternativesPro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro" required>
+                  <input type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro" required>
                 </div>
-                <div ng-messages="bmodal.form.alternativesPro+{{$index}}.$error" ng-show="bmodal.form.$submitted || bmodal.form.alternativesPro{{$index}}.$touched">
+                <div ng-messages="bmodal.form['alternativePro'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativePro'+$index].$touched">
                   <div class="required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="control-label">Contra</div>
-                  <input type="text" class="sublabel-input form-control" name="alternativesContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra" required>
+                  <input type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra" required>
                 </div>
-                <div ng-messages="bmodal.form.alternativesContra{{$index}}.$error" ng-show="bmodal.form.$submitted || bmodal.form.alternativesContra{{$index}}.$touched">
+                <div ng-messages="bmodal.form['alternativeContra'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeContra'+$index].$touched">
                   <div class="required" ng-message="required">Input required</div>
                 </div>
               </div>
               <!--<button ng-click="addAlternative()">Add another alternative</button>-->
-              <button type="button" ng-click="addAlternative()" class="btn btn-primary">Add another alternative</button>
-              <button ng-if="block.alternatives.length > 1" type="button" ng-click="spliceAlternative()" class="btn">Remove alternative</button>
+              <button type="button" ng-click="addAlternative()" class="margin-top-medium btn btn-primary">Add another alternative</button>
+              <button ng-if="block.alternatives.length > 1" type="button" ng-click="spliceAlternative()" class="margin-top-medium btn">Remove last alternative</button>
 
             </div>
 
             <div class="form-group question-group">
               <label for="criteria" class="control-label">What are the <span style="font-style: italic">criteria</span> according to which this judgement is made?</label>
-              <input type="text" class="form-control" id="criteria" placeholder="" ng-model="block.criteria" required>
+              <input type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required>
               <div ng-messages="bmodal.form.criteria.$error" ng-show="bmodal.form.$submitted || bmodal.form.criteria.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
@@ -77,11 +79,22 @@
 
             <div class="form-group question-group">
               <label for="preconditions" class="control-label">What criteria need to be fulfilled to run this block?</label>
-              <input type="text" class="form-control" id="preconditions" placeholder="" ng-model="block.preconditions" required>
+              <input type="text" class="form-control" name="preconditions" id="preconditions" placeholder="" ng-model="block.preconditions" required>
               <div ng-messages="bmodal.form.preconditions.$error" ng-show="bmodal.form.$submitted || bmodal.form.preconditions.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
             </div>
+
+            <div class="form-group question-group">
+              <label>
+                <input type="checkbox" name="saveFilesCb" ng-model="saveFilesCb" required>
+                <span>I have saved all my files</span>
+              </label>
+              <div ng-messages="bmodal.form.saveFilesCb.$error" ng-show="bmodal.form.$submitted || bmodal.form.saveFilesCb.$touched">
+                <div class="required" ng-message="required">Please confirm that you have saved your files.</div>
+              </div>
+            </div>
+
 
               <!--<div class="form-group question-group">-->
                 <!--<label for="age" class="control-label">Question 2</label>-->

@@ -101,9 +101,8 @@ export function show(req, res) {
 // Creates a new Block in the DB
 export function create(req, res) {
   let block = req.body.block;
-  let blockString = block.blockString;
   let user = req.body.user;
-  console.log('creating block', blockString);
+  console.log('creating block', block.content);
 
 
   var file = {
@@ -119,7 +118,8 @@ export function create(req, res) {
         let oldContent = base64.decode(re.data.content);
         // file.content = base64.encode(newContent);
         createOrUpdateBlocks(user, block, function(updatedBlock, userBlocks){
-          if(!updatedBlock || userBlocks){
+          if(!updatedBlock || !userBlocks){
+            console.log('updatedBlock', updatedBlock, 'userBlocks', userBlocks);
             return res.status(500).end();
           }
           oldContent+= blockPrefix+updatedBlock._id+'\\n'+blockSuffix;
@@ -133,7 +133,7 @@ export function create(req, res) {
         console.log('file does not exist yet, creating new one');
       createOrUpdateBlocks(user, block, function (createdBlock, userBlocks){
         console.log('created new list with block', createdBlock);
-        if(!createdBlock || userBlocks){
+        if(!createdBlock || !userBlocks){
           return res.status(500).end();
         }
         file.content = base64.encode(blockPrefix+createdBlock._id+'\\n/'+blockSuffix);
