@@ -6,7 +6,7 @@
   function UtilService() {
     var LogUtil = {
 
-      formatLogs(logList){
+      formatLogs(logList, blocks){
         for (let log in logList) {
           let l = logList[log];
           logList[log] = {
@@ -15,7 +15,7 @@
           };
         }
 
-        return logList;
+        return LogUtil.markLogs(logList, blocks);
       },
 
       markLogs(logList, blocks){
@@ -23,7 +23,9 @@
           logList[i].used = false;
 
           for(var j=0; j < blocks.length; j++){
-              if(logList[i].timestamp === blocks[j].timestamp && logList[i].log === blocks[j].content){
+            let logTime = Number(logList[i].timestamp);
+            let blockTime = new Date(blocks[j].timestamp).getTime();
+              if(logTime === blockTime && logList[i].log === blocks[j].content){
                 logList[i].used = true;
                 break;
               }

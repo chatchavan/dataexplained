@@ -55,7 +55,7 @@ class MainController {
     this.$http.get('/api/logs/'+this.user).then(response => {
       let log = response.data.content;
       if(!this.selectFocus) {
-        this.loglist = this.LogUtil.formatLogs(log.split("\n"));
+        this.loglist = this.LogUtil.formatLogs(log.split("\n"), this.blockList);
       }
     }, (err) => {
       console.log(err);
