@@ -1,6 +1,6 @@
 <!--<navbar ng-if="main.userDefined" user="main.user"></navbar>-->
 
-<div id="sss" class="container">
+<div id="container" class="">
   <div class="row" ng-if="!main.userDefined">
     <h2>Please set active user</h2>
     <input type="text" ng-model="main.user"/>
@@ -9,90 +9,77 @@
   </div>
   <div class="row content height" ng-show="main.userDefined">
 
-    <div class="iframe-container col-md-7">
+
+    <div class="right row" ng-class="{'right-closed' : !main.displayPanel}" ng-mouseenter="main.displayPanel = true" ng-mouseleave="main.displayPanel = false">
+      <div class="emptyHoverBar" ng-show="!main.displayPanel">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+      </div>
+
+      <div ng-show="main.displayPanel" class="col-md-7" style="height: 100%">
+        <div ng-if="main.user === 'coldata2'" >
+          <div>
+            <a ng-click="main.pollLogs()">Poll Logs</a>
+          </div>
+          <div>
+            <a ng-click="main.getAllBlocks()">Get all Blocks</a>
+          </div>
+          <div>
+            <a ng-click="main.saveFiles()">Save Files</a>
+          </div>
+          <div>
+            <a ng-click="main.loadFiles()">Load Files</a>
+          </div>
+          <div>
+            <a ng-click="main.testIndex()">Test files index</a>
+          </div>
+        </div>
+
+        <div class="height100">
+          <h2>Live Logs</h2>
+          <div class="form-group height100">
+            <label for="selection">Select logs to form blocks (hold shift to select more than one):</label>
+            <!--<select ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection" ng-model="main.selection"-->
+            <!--ng-options="item |addClass:{eligible:item.eligible,className:'eligible',scope:main,item:item} as item.log for item in main.loglist"-->
+            <!--ng-multiple="true" multiple>-->
+
+            <!--</select>-->
+            <div class="btn-container">
+              <button ng-click="main.createBlock()">Create Block</button>
+            </div>
+
+            <select ng-model="main.selection" multiple ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection">
+              <option ng-value="log" ng-class="{'not-eligible' : log.used}"
+                      ng-disabled="log.used"
+                      ng-repeat="log in main.loglist">{{log.log}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div ng-show="main.displayPanel && main.blockList.length > 0" class="dual-list list-right col-md-5">
+        <h2>Blocks</h2>
+        <ul class="list-group" ng-repeat="block in main.blockList">
+          <div ng-click="main.editBlock(block)">
+            <li style="padding: 5px" class="row list-group-item">
+              <div class="col-xs-10 block-title">{{block.title}}</div>
+              <div class="col-xs-2 padding-side-small vcenter"><i class="fa fa-pencil pull-right"></i></div>
+            </li>
+          </div>
+        </ul>
+
+      </div>
+
+    </div>
+    <div class="left iframe-container col-md-12">
       <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="ide-iframe">
         <p>iframes are not supported by your browser.</p>
       </iframe>
-    </div>
-    <div class="col-md-3" style="height: 100%">
-      <div ng-if="main.user === 'coldata2'">
-        <div>
-          <a ng-click="main.pollLogs()">Poll Logs</a>
-        </div>
-        <div>
-          <a ng-click="main.getAllBlocks()">Get all Blocks</a>
-        </div>
-        <div>
-          <a ng-click="main.saveFiles()">Save Files</a>
-        </div>
-        <div>
-          <a ng-click="main.loadFiles()">Load Files</a>
-        </div>
-        <div>
-          <a ng-click="main.testIndex()">Test files index</a>
-        </div>
-      </div>
-
-      <div class="height100">
-        <h2>Live Logs</h2>
-        <div class="form-group height100">
-          <label for="selection">Select logs to form blocks (hold shift to select more than one):</label>
-          <!--<select ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection" ng-model="main.selection"-->
-                  <!--ng-options="item |addClass:{eligible:item.eligible,className:'eligible',scope:main,item:item} as item.log for item in main.loglist"-->
-                  <!--ng-multiple="true" multiple>-->
-
-          <!--</select>-->
-          <div class="btn-container">
-            <button ng-click="main.createBlock()">Create Block</button>
-          </div>
-
-          <select ng-model="main.selection" multiple ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection">
-            <option ng-value="log" ng-class="{'not-eligible' : log.used}"
-                    ng-disabled="log.used"
-                    ng-repeat="log in main.loglist">{{log.log}}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="dual-list list-right col-md-1">
-      <ul class="list-group" ng-repeat="block in main.blockList">
-        <div ng-click="main.editBlock(block)">
-          <li style="padding: 5px" class="row list-group-item">
-            <div class="col-xs-10 padding-side-small">{{block.title}}</div>
-              <div class="col-xs-2 padding-side-small vcenter"><i class="fa fa-pencil pull-right"></i></div>
-          </li>
-        </div>
-      </ul>
-
-      <!--<ul class="list-group" ng-repeat="block in main.blockList">-->
-        <!--<li class="list-group-item">-->
-          <!--<div class="row toggle" ng-click="main.toggleBlock($index)">-->
-            <!--<div class="col-xs-10">-->
-              <!--{{block.title}}-->
-            <!--</div>-->
-            <!--<div class="col-xs-2"><i class="fa fa-chevron-down pull-right"></i></div>-->
-          <!--</div>-->
-          <!--<div id="detail-{{$index}}" hidden>-->
-            <!--<hr>-->
-            <!--<div class="container">-->
-              <!--<div class="fluid-row">-->
-                <!--{{block.content}}-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</li>-->
-      <!--</ul>-->
-
-
-    </div>
-
-
     </div>
 
 
   <div id="line-by-line"></div>
   <!--<js-plump ng-if="main.plumpList && main.plumpList.length>0" plumplist="main.plumpList"></js-plump>-->
+
   </div>
 
 

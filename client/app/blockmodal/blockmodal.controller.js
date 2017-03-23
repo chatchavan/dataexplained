@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModalController', function($scope, $element, title, close, block, edit) {
+  .controller('BlockModalController', function($scope, $element, title, close, block, content, edit) {
 
     $scope.title = title;
     $scope.edit = edit;
@@ -14,7 +14,11 @@ angular.module('rationalecapApp')
     if($scope.block.content){
       $scope.renderedContent = $scope.block.content.split('\\n');
     }
+    else if(content){
+      $scope.renderedContent = content.content.split('\\n');;
+    }
 
+    console.log(' $scope.renderedContent',  $scope.renderedContent);
     console.log('editing block', $scope.block);
 
 

@@ -16,6 +16,7 @@ class MainController {
     this.LogUtil = LogUtil;
     this.selection = '';
     this.blockList = [];
+    this.displayPanel = false;
 
     this.rStudioEndpoint = Util.getRStudioUri();
 
@@ -94,6 +95,7 @@ class MainController {
     if(this.selection && this.selection.length > 0){
       var that = this;
       let select = this.selection;
+      let content = that.BlockUtil.createBlock({}, select);
 
       this.ModalService.showModal({
         templateUrl: "app/blockmodal/blockmodal.html",
@@ -101,7 +103,8 @@ class MainController {
         inputs: {
           title: "Add a new block",
           edit: false,
-          block: undefined
+          block: undefined,
+          content: content
         }
       }).then(function(modal) {
         modal.element.modal();
@@ -125,7 +128,8 @@ class MainController {
       inputs: {
         title: "Edit block",
         edit: true,
-        block: block
+        block: block,
+        content: undefined
       }
     }).then(function(modal) {
       modal.element.modal();

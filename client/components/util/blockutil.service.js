@@ -87,7 +87,6 @@
        * Creates Block-String from an array of single log statements (selection)
        * */
       createBlock(block, selection){
-        console.log('create block', block);
         let timestamp;
         let content = '';
         for(let i = 0; i < selection.length; i++){

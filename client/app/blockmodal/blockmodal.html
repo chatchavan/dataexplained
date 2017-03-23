@@ -18,7 +18,7 @@
       </div>
       <div class="modal-body row">
 
-        <div ng-class="{'questions-edit col-sm-8': edit, 'questions-container' : !edit}">
+        <div class="questions-edit col-sm-8">
           <span ng-if="!edit">Please answer the following questions</span>
 
           <form name="bmodal.form" class="form-horizontal" role="form">
@@ -111,7 +111,7 @@
           </form>
         </div>
 
-        <div ng-if="edit" class="col-sm-4">
+        <div class="col-sm-4">
           <p ng-repeat="c in renderedContent" class="content-line">{{c}}</p>
         </div>
 

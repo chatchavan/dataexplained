@@ -4,6 +4,7 @@
 .iframe-container{
 
   //.height();
+  padding: 0;
   min-width: 750px;
   overflow: auto;
   border-radius: 5px;
@@ -65,4 +66,99 @@
   text-align: center;
   margin-top: 5px;
   margin-bottom: 15px;
+}
+
+.form-group > label{
+  white-space: initial;
+}
+
+.list-group-item > .block-title{
+  .padding-side-small();
+  white-space: initial;
+}
+
+
+
+
+td, th {
+  vertical-align: middle !important;
+}
+.left, .right {
+  float:right;
+  .height();
+}
+
+.right {
+  background: #e3e3e3;
+  border-radius: 0px 5px 5px 0px;
+  display: inline-block;
+  white-space: nowrap;
+
+  width: 70px;
+  //width: 400px;
+  transition: width 1s ;
+  overflow-y: scroll;
+
+  position: absolute;
+  right: 60px;
+  z-index: 999
+
+}
+
+.right-closed{
+  overflow: hidden;
+}
+
+.left {
+  background: #fff;
+  //width: 350px;
+  transition: width 1s;
+  border-style:solid;
+  border-color:#ccc;
+  border-width:1px;
+
+  float: left;
+  width: 95%;
+  position: relative;
+}
+
+.right:hover {
+  width: 500px;
+}
+
+.item:hover {
+  background-color:#ccc;
+}
+
+.right .glyphicon {
+  margin:15px;
+  width:20px;
+  color:#fff;
+}
+
+.left .glyphicon {
+  color:#a9a9a9;
+}
+
+.emptyHoverBar{
+  height: 100%;
+  display: table;
+  vertical-align: middle;
+  text-align: center;
+  width: 100%;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  span.glyphicon{
+    vertical-align: middle;
+    display: table-cell;
+  }
+}
+
+
+
+
+#container{
+  margin: 20px 60px 20px 60px;
 }
