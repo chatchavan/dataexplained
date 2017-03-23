@@ -98,8 +98,8 @@ class MainController {
       let content = that.BlockUtil.createBlock({}, select);
 
       this.ModalService.showModal({
-        templateUrl: "app/blockmodal/blockmodal.html",
-        controller: "BlockModalController",
+        templateUrl: "app/blockmodal2/blockmodal2.html",
+        controller: "BlockModal2Controller",
         inputs: {
           title: "Add a new block",
           edit: false,

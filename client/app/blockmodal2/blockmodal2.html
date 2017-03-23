@@ -1,0 +1,129 @@
+<div class="modal fade blockmodal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <div class="col-sm-10">
+          <h4 class="modal-title">{{title}}</h4>
+        </div>
+
+
+        <div class="text-right">
+          <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+
+        <div class="attention-text col-sm-12">Attention: Please make sure that all your files (e.g. R-Scripts) are Saved in R-Studio (in rstudio-workspace directory)!
+          <br> Otherwise they might get lost when restoring previous block-states</div>
+
+      </div>
+      <div class="modal-body row">
+
+        <div class="questions-edit col-sm-8">
+          <span ng-if="!edit">Please answer the following questions</span>
+
+          <form name="bmodal.form" class="form-horizontal" role="form">
+            <div ng-if="step==1 || edit" class="form-group question-group">
+              <label for="title" class="control-label">Indicate a title of your Block</label>
+              <textarea type="text" class="form-control" name="title" id="title" placeholder="" ng-model="block.title" required></textarea>
+              <div ng-messages="bmodal.form.title.$error" ng-show="bmodal.form.$submitted || bmodal.form.title.$touched">
+                <div class="required" ng-message="required">Input required</div>
+              </div>
+            </div>
+
+            <div ng-if="step==2 || edit" class="form-group question-group">
+              <label for="goal" class="control-label">Shorty summarize <span style="font-style: italic">what</span> you did in this block?</label>
+              <textarea type="text" class="form-control" name="goal" id="goal" placeholder="" ng-model="block.goal" required></textarea>
+              <div ng-messages="bmodal.form.goal.$error" ng-show="bmodal.form.$submitted || bmodal.form.goal.$touched">
+                <div class="required" ng-message="required">Input required</div>
+              </div>
+            </div>
+
+            <div ng-if="step==3 || edit" class="form-group question-group">
+              <div class="multilabel-title">What different options/alternatives did you consider for achieving what you did in this block?</div>
+              <div ng-repeat="alternative in block.alternatives">
+                <div class="multilabel-container padding-top-medium">
+                  <div class="sublabel" class="control-label">Alternative</div>
+                  <textarea type="text" class="sublabel-input form-control" name="alternativeTitle{{$index}}" placeholder="" ng-model="block.alternatives[$index].title" required></textarea>
+                </div>
+                <div ng-messages="bmodal.form['alternativeTitle'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeTitle'+$index].$touched">
+                  <div class="inline-error required" ng-message="required">Input required</div>
+                </div>
+                <div class="multilabel-container padding-top-medium">
+                  <div class="sublabel" class="control-label">Pros</div>
+                  <textarea type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro" required></textarea>
+                </div>
+                <div ng-messages="bmodal.form['alternativePro'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativePro'+$index].$touched">
+                  <div class="inline-error required" ng-message="required">Input required</div>
+                </div>
+                <div class="multilabel-container padding-top-medium">
+                  <div class="sublabel" class="control-label">Contra</div>
+                  <textarea type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra" required></textarea>
+                </div>
+                <div ng-messages="bmodal.form['alternativeContra'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeContra'+$index].$touched">
+                  <div class="inline-error required" ng-message="required">Input required</div>
+                </div>
+              </div>
+              <!--<button ng-click="addAlternative()">Add another alternative</button>-->
+              <button type="button" ng-click="addAlternative()" class="margin-top-medium btn btn-primary">Add another alternative</button>
+              <button ng-if="block.alternatives.length > 1" type="button" ng-click="spliceAlternative()" class="margin-top-medium btn">Remove last alternative</button>
+
+            </div>
+
+            <div ng-if="step==4 || edit" class="form-group question-group">
+              <label for="criteria" class="control-label">What are the <span style="font-style: italic">criteria</span> according to which this judgement is made?</label>
+              <textarea type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required></textarea>
+              <div ng-messages="bmodal.form.criteria.$error" ng-show="bmodal.form.$submitted || bmodal.form.criteria.$touched">
+                <div class="required" ng-message="required">Input required</div>
+              </div>
+            </div>
+
+            <div ng-if="step==5 || edit" class="form-group question-group">
+              <label for="preconditions" class="control-label">What criteria need to be fulfilled to run this block?</label>
+              <textarea type="text" class="form-control" name="preconditions" id="preconditions" placeholder="" ng-model="block.preconditions" required></textarea>
+              <div ng-messages="bmodal.form.preconditions.$error" ng-show="bmodal.form.$submitted || bmodal.form.preconditions.$touched">
+                <div class="required" ng-message="required">Input required</div>
+              </div>
+            </div>
+
+            <div ng-if="step==6 || edit" class="form-group question-group">
+              <label>
+                <input type="checkbox" name="saveFilesCb" ng-model="saveFilesCb" required>
+                <span>I have saved all my files</span>
+              </label>
+              <div ng-messages="bmodal.form.saveFilesCb.$error" ng-show="bmodal.form.$submitted || bmodal.form.saveFilesCb.$touched">
+                <div class="required" ng-message="required">Please confirm that you have saved your files.</div>
+              </div>
+            </div>
+
+
+            <!--<div class="form-group question-group">-->
+            <!--<label for="age" class="control-label">Question 2</label>-->
+            <!--<input type="text" class="form-control" id="age" placeholder="Title" ng-model="block.age">-->
+            <!--</div>-->
+
+            <div ng-class="{'button-group' : edit}">
+              <button ng-if="step<6 && !edit"  type="button" ng-click="increaseStep(bmodal.form)" class="btn btn-primary pull-right">Next</button>
+              <button ng-if="step>1 && !edit"  type="button" ng-click="decreaseStep()" class="btn btn-primary">Back</button>
+              <button ng-if="step==6 || edit"  type="button" ng-click="close(bmodal.form)" class="btn btn-primary pull-right">OK</button>
+              <button type="button" ng-click="cancel()" class="btn">Cancel</button>
+              <button ng-if="edit" type="button" ng-click="deleteBlock()" class="btn btn-primary">Delete Block</button>
+              <button ng-if="edit" type="button" ng-click="loadFiles()" class="btn btn-primary">Load Files</button>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="col-sm-4">
+          <p ng-repeat="c in renderedContent" class="content-line">{{c}}</p>
+        </div>
+
+
+
+      </div>
+      <!--<div class="modal-footer">-->
+      <!--<button type="button" ng-click="close()" class="btn btn-primary" data-dismiss="modal">OK</button>-->
+      <!--<button type="button" ng-click="cancel()" class="btn">Cancel</button>-->
+      <!--</div>-->
+    </div>
+  </div>
+</div>
