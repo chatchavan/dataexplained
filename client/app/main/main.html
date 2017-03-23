@@ -1,10 +1,10 @@
-<navbar ng-if="main.userDefined" user="main.user"></navbar>
+<!--<navbar ng-if="main.userDefined" user="main.user"></navbar>-->
 
 <div id="sss" class="container">
   <div class="row" ng-if="!main.userDefined">
     <h2>Please set active user</h2>
     <input type="text" ng-model="main.user"/>
-    <button ng-click="main.setUser(main.user)">Set User</button>
+    <button ng-click="main.user && main.setUser(main.user)">Set User</button>
 
   </div>
   <div class="row content height" ng-show="main.userDefined">
@@ -27,6 +27,9 @@
         </div>
         <div>
           <a ng-click="main.loadFiles()">Load Files</a>
+        </div>
+        <div>
+          <a ng-click="main.testIndex()">Test files index</a>
         </div>
       </div>
 
@@ -88,6 +91,9 @@
     </div>
 
 
+  <div id="line-by-line"></div>
+  <!--<js-plump ng-if="main.plumpList && main.plumpList.length>0" plumplist="main.plumpList"></js-plump>-->
+  </div>
 
 
 </div>

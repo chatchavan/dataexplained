@@ -13,6 +13,8 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(client) app/vendor.css -->
       <!-- bower:css -->
+      <link rel="stylesheet" href="bower_components/diff2html/dist/diff2html.css" />
+      <link rel="stylesheet" href="bower_components/highlightjs/styles/default.css" />
       <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css({.tmp,client}) app/app.css -->
@@ -48,6 +50,10 @@
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-modal-service/dst/angular-modal-service.js"></script>
     <script src="bower_components/angular-messages/angular-messages.js"></script>
+    <script src="bower_components/diff2html/dist/diff2html.js"></script>
+    <script src="bower_components/diff2html/dist/diff2html-ui.js"></script>
+    <script src="bower_components/highlightjs/highlight.pack.js"></script>
+    <script src="bower_components/jsplumb/dist/js/jsplumb.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js(.tmp) app/app.js -->
@@ -69,6 +75,7 @@
       <script src="components/util/storageutil.service.js"></script>
       <script src="app/app.constant.js"></script>
       <script src="components/util/util.service.js"></script>
+      <script src="directives/jsPlump/jsPlump.directive.js"></script>
       <!-- endinjector -->
     <!-- endbuild -->
   </body>

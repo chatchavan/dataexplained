@@ -69,9 +69,39 @@ function removeEntity(res) {
 
 // Gets a list of Files
 export function index(req, res) {
-  File.findAsync()
-    .then(responseWithResult(res))
-    .catch(handleError(res));
+  // File.findAsync()
+  //   .then(responseWithResult(res))
+  //   .catch(handleError(res));
+
+  // const http = require("http");
+
+  var request = require('request');
+  request.get('http://github.com/nicost71/blocks/commit/c66a0c52cf46dd1ff5f0bda5990b10214f010d81.diff', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var diff = body;
+      // console.log('body', body);
+      // var parse = require('parse-diff');
+      // var files = parse(diff);
+      // console.log(files.length); // number of patched files
+      // files.forEach(function(file) {
+      //   console.log(file.chunks.length); // number of hunks
+      //   console.log(file.chunks[0].changes.length); // hunk added/deleted/context lines
+      //   // each item in changes is a string
+      //   for(let i = 0; i < file.chunks[0].changes.length; i++){
+      //     console.log('change, ', file.chunks[0].changes[i]);
+      //   }
+      //   console.log(file.deletions); // number of deletions in the patch
+      //   console.log(file.additions); // number of additions in the patch
+      // });
+      res.status(200).json({data: diff});
+      // Continue with your processing here.
+    }
+    else{
+      res.status(404).end();
+    }
+  });
+
+
 }
 
 // Load new files in filesystem

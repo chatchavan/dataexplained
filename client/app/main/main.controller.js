@@ -48,6 +48,17 @@ class MainController {
     this.$interval(this.pollLogs.bind(this), 5000);
   }
 
+  testIndex(){
+    this.$http.get('/api/files/').then(response => {
+      let diff = response.data.data;
+      var diff2htmlUi = new Diff2HtmlUI({diff: diff});
+      diff2htmlUi.draw('#line-by-line', {inputFormat: 'diff', showFiles: true, matching: 'none'});
+      diff2htmlUi.highlightCode('#line-by-line');
+    }, (err) => {
+      console.log(err);
+    });
+
+  }
 
   //=========LOGS=========
 
