@@ -5,7 +5,7 @@
 /**
  * The Util service is for thin, globally reusable, utility functions
  */
-function UtilService($window, $sce) {
+function UtilService($window, $sce, ModalService) {
   var Util = {
 
     /**
@@ -13,6 +13,26 @@ function UtilService($window, $sce) {
      */
     getRStudioUri() {
       return $sce.trustAsResourceUrl('http://34.251.106.133:8787');
+    },
+
+    /**
+     * Display loading Modal with text
+     *
+     * @param  {String}           text       - text to display
+     *
+     */
+    showLoadingModal(text){
+      ModalService.showModal({
+        templateUrl: "app/loadermodal/loadermodal.html",
+        controller: "LoaderModalController",
+        inputs: {
+          text: text
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close;
+        // modal.close.then(result => {});
+      });
     },
 
     /**

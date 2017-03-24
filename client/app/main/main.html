@@ -1,6 +1,9 @@
 <!--<navbar ng-if="main.userDefined" user="main.user"></navbar>-->
 
+
+
 <div id="container" class="">
+
   <div class="row" ng-if="!main.userDefined">
     <h2>Please set active user</h2>
     <input type="text" ng-model="main.user"/>
@@ -8,6 +11,10 @@
 
   </div>
   <div class="row content height" ng-show="main.userDefined">
+
+    <!--<div class="loader-container row">-->
+      <!--<img class="loader" src="assets/images/loader.gif" alt="I'm Yeoman">-->
+    <!--</div>-->
 
 
     <div class="right row" ng-class="{'right-closed' : !main.displayPanel}" ng-mouseenter="main.displayPanel = true" ng-mouseleave="main.displayPanel = false">
@@ -77,7 +84,9 @@
     </div>
 
 
-  <div id="line-by-line"></div>
+
+
+    <div id="line-by-line"></div>
   <!--<js-plump ng-if="main.plumpList && main.plumpList.length>0" plumplist="main.plumpList"></js-plump>-->
 
   </div>

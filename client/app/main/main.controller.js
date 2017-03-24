@@ -4,12 +4,14 @@
 
 class MainController {
 
-  constructor($http, StorageUtil, Util, $interval,  ModalService, LogUtil, BlockUtil) {
+  constructor($http, StorageUtil, Util, $interval, $timeout, ModalService, LogUtil, BlockUtil) {
     this.user = undefined;
     this.selectFocus = false;
     this.userDefined = false;
     this.$http = $http;
+    this.$timeout = $timeout;
     this.$interval = $interval;
+    this.Util = Util;
     this.StorageUtil = StorageUtil;
     this.ModalService = ModalService;
     this.BlockUtil = BlockUtil;
@@ -18,7 +20,7 @@ class MainController {
     this.blockList = [];
     this.displayPanel = false;
 
-    this.rStudioEndpoint = Util.getRStudioUri();
+    this.rStudioEndpoint = this.Util.getRStudioUri();
 
     this.init();
 
@@ -149,7 +151,10 @@ class MainController {
 
   updateBlock(newBlock) {
     console.log('updating block', newBlock);
+    this.Util.showLoadingModal('Updating Block...');
+
     this.$http.put('/api/blocks', {block: newBlock, user: this.user }).then(response => {
+      this.hideModal('processing-modal');
       console.log('response', response);
       if(response.data.length > 0){
         this.blockList = response.data;
@@ -157,6 +162,7 @@ class MainController {
       }
 
     }, (err) => {
+      this.hideModal('processing-modal');
       console.log(err);
     });
 
@@ -181,8 +187,10 @@ class MainController {
       modal.element.modal();
       modal.close.then(result => {
         if(result === actionText1){
+          that.Util.showLoadingModal('Deleting Block...');
 
           that.$http.delete('/api/blocks/'+that.user+'/'+block._id).then(response => {
+            that.hideModal('processing-modal');
             if(response.data){
               console.log('response.data', response.data);
               that.blockList = response.data;
@@ -191,6 +199,7 @@ class MainController {
 
             }
           }, (err) => {
+            that.hideModal('processing-modal');
             console.log('error deleting block', err);
           });
 
@@ -204,15 +213,21 @@ class MainController {
 
   saveBlock(newBlock) {
     console.log('saving new block', newBlock);
-      this.$http.post('/api/blocks', {block: newBlock, user: this.user }).then(response => {
-        console.log('response', response);
+    this.Util.showLoadingModal('Saving new Block...');
+
+    this.$http.post('/api/blocks', {block: newBlock, user: this.user }).then(response => {
+      console.log('response', response);
         if(response.data){
           this.blockList = response.data;
           this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
           this.saveFiles(newBlock.timestamp);
         }
+        else{
+          this.hideModal('processing-modal');
+        }
       }, (err) => {
-        console.log(err);
+      this.hideModal('processing-modal');
+      console.log(err);
       });
 
   }
@@ -223,14 +238,15 @@ class MainController {
   loadFiles(block){
     console.log(block);
     if(block && block.timestamp){
+      this.Util.showLoadingModal('Restoring Workspace...');
       this.$http.get('/api/files/'+this.user+'/'+block.timestamp).then(response => {
-        if(response.data.length > 0){
-          console.log(response.data);
-          $window.location.reload();
-        }
+        console.log('files replaced');
+        this.hideModal('processing-modal');
+
       }, (err) => {
         //file does not exist yet
         console.log('error loading files', err);
+        this.hideModal('processing-modal');
       });
     }
 
@@ -242,6 +258,7 @@ class MainController {
     }
     console.log('saving files with timestamp: '+ timestamp);
     this.$http.post('/api/files', {user: this.user, timestamp: timestamp }).then(response => {
+      this.hideModal('processing-modal');
       console.log('response', response);
       if(response.data){
         console.log('files saved', response.data);
@@ -256,6 +273,22 @@ class MainController {
 
   //=========HELPER FUNCTIONS=========
 
+  hideModal(id){
+
+    this.$timeout(function(){
+      let modal = document.getElementById(id);
+      let modalBack = document.getElementsByClassName('modal-backdrop')[0];
+
+      if(modal && modalBack){
+        modal.remove();
+        modalBack.remove();
+      }
+      $('body').removeClass('modal-open');
+    },500);
+
+
+  }
+
   arraysEqual(arr1, arr2) {
     if(!arr1 || arr2){
       return false;
@@ -267,7 +300,7 @@ class MainController {
         return false;
     }
     return true;
-}
+  }
 
 }
 
