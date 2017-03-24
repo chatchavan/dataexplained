@@ -14,6 +14,7 @@ var File = require('./file.model');
 var fs = require('fs');
 var config = require('../../config/environment');
 var githubService = require('../../util/github.service');
+var request = require('request');
 var GitHubApi = require("github");
 var base64 = require('js-base64').Base64;
 var async = require('async');
@@ -69,39 +70,9 @@ function removeEntity(res) {
 
 // Gets a list of Files
 export function index(req, res) {
-  // File.findAsync()
-  //   .then(responseWithResult(res))
-  //   .catch(handleError(res));
-
-  // const http = require("http");
-
-  var request = require('request');
-  request.get('http://github.com/nicost71/blocks/commit/c66a0c52cf46dd1ff5f0bda5990b10214f010d81.diff', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var diff = body;
-      // console.log('body', body);
-      // var parse = require('parse-diff');
-      // var files = parse(diff);
-      // console.log(files.length); // number of patched files
-      // files.forEach(function(file) {
-      //   console.log(file.chunks.length); // number of hunks
-      //   console.log(file.chunks[0].changes.length); // hunk added/deleted/context lines
-      //   // each item in changes is a string
-      //   for(let i = 0; i < file.chunks[0].changes.length; i++){
-      //     console.log('change, ', file.chunks[0].changes[i]);
-      //   }
-      //   console.log(file.deletions); // number of deletions in the patch
-      //   console.log(file.additions); // number of additions in the patch
-      // });
-      res.status(200).json({data: diff});
-      // Continue with your processing here.
-    }
-    else{
-      res.status(404).end();
-    }
-  });
-
-
+  File.findAsync()
+    .then(responseWithResult(res))
+    .catch(handleError(res));
 }
 
 // Load new files in filesystem
@@ -117,18 +88,22 @@ export function show(req, res) {
     if(!commit){
       return res.status(404).send('no commit found for timestamp ' + timestamp);
     }
-    githubService.restoreFiles(user, commit)
+    githubService.restoreFiles(user, commit.commit)
       .then((files) => {
         if(files === undefined){
           return res.status(404).send('could not find files on github');
         }
 
         removeFiles(rScripts);
+        files = files.filter(function(item){
+          return item.fileName.indexOf('blocks.txt') < 0;
+        });
+
 
         for (let i = 0; i < files.length; i++) {
           let filename = files[i].fileName;
           console.log('writing file '+ filename);
-          if(filename !== 'blocks.txt'){
+          // if(filename !== 'blocks.txt'){
             fs.writeFile(rScripts + filename, files[i].content, {mode: '0o777'},  function (err) {
               if(!err){
                 console.log("The file was saved!", rScripts + filename);
@@ -138,15 +113,46 @@ export function show(req, res) {
                 console.log('error writing file: ', err);
               }
               if (i == files.length - 1) {
-                return res.status(200).end();
+                return res.status(200).json({'commit': commit});
               }
             });
-          }
+          // }
 
         }
       });
   });
 
+
+
+}
+
+export function showDiff(req, res){
+  let user = req.params.user;
+  let timestamp = req.params.timestamp;
+
+  console.log('showDiff');
+
+  getCommitByTimestamp(user, timestamp, function(commit) {
+    const http = require("http");
+
+    if(commit && commit.diffUrl){
+      console.log('getting dif: ', commit.diffUrl);
+      request.get(commit.diffUrl, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          var diff = body;
+          res.status(200).json({data: diff});
+        }
+        else {
+          res.status(404).end();
+        }
+
+      });
+    }
+    else{
+      res.status(404).end();
+    }
+
+  });
 
 
 }
@@ -225,7 +231,7 @@ function getCommitByTimestamp(user, timestamp, callback){
       for(let commit in files.commits){
         let time =  files.commits[commit].timestamp;
         if(time && time.getTime() === new Date(timestamp).getTime()){
-          callback(files.commits[commit].commit);
+          callback(files.commits[commit]);
           return;
         }
       }

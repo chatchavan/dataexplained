@@ -7,6 +7,7 @@
     var LogUtil = {
 
       formatLogs(logList, blocks){
+        logList.splice(logList.length-1,1); //remove empty last line
         for (let log in logList) {
           let l = logList[log];
           logList[log] = {

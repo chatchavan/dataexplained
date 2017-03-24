@@ -12,9 +12,6 @@
           <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
         </div>
 
-        <div class="attention-text col-sm-12">Attention: Please make sure that all your files (e.g. R-Scripts) are Saved in R-Studio (in rstudio-workspace directory)!
-          <br> Otherwise they might get lost when restoring previous block-states</div>
-
       </div>
       <div class="modal-body row">
 
@@ -85,27 +82,14 @@
               </div>
             </div>
 
-            <div ng-if="step==6 || edit" class="form-group question-group">
-              <label>
-                <input type="checkbox" name="saveFilesCb" ng-model="saveFilesCb" required>
-                <span>I have saved all my files</span>
-              </label>
-              <div ng-messages="bmodal.form.saveFilesCb.$error" ng-show="bmodal.form.$submitted || bmodal.form.saveFilesCb.$touched">
-                <div class="required" ng-message="required">Please confirm that you have saved your files.</div>
-              </div>
-            </div>
 
-
-            <!--<div class="form-group question-group">-->
-            <!--<label for="age" class="control-label">Question 2</label>-->
-            <!--<input type="text" class="form-control" id="age" placeholder="Title" ng-model="block.age">-->
-            <!--</div>-->
 
             <div ng-class="{'button-group' : edit}">
-              <button ng-if="step<6 && !edit"  type="button" ng-click="increaseStep(bmodal.form)" class="btn btn-primary pull-right">Next</button>
-              <button ng-if="step>1 && !edit"  type="button" ng-click="decreaseStep()" class="btn btn-primary">Back</button>
-              <button ng-if="step==6 || edit"  type="button" ng-click="close(bmodal.form)" class="btn btn-primary pull-right">OK</button>
+              <button ng-if="step<5 && !edit"  type="button" ng-click="increaseStep(bmodal.form)" class="btn btn-primary pull-right">Next</button>
+              <button ng-if="step>1 && !edit"  type="button" ng-click="decreaseStep()" class="btn btn-primary" id="back-btn">Back</button>
+              <button ng-if="step==5 || edit"  type="button" ng-click="close(bmodal.form)" class="btn btn-primary pull-right">Save</button>
               <button type="button" ng-click="cancel()" class="btn">Cancel</button>
+              <button ng-if="edit" type="button" ng-click="showDiff()" class="btn btn-primary">Show Diff</button>
               <button ng-if="edit" type="button" ng-click="deleteBlock()" class="btn btn-primary">Delete Block</button>
               <button ng-if="edit" type="button" ng-click="loadFiles()" class="btn btn-primary">Load Files</button>
             </div>

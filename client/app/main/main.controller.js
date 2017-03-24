@@ -51,17 +51,6 @@ class MainController {
     this.$interval(this.pollLogs.bind(this), 5000);
   }
 
-  testIndex(){
-    this.$http.get('/api/files/').then(response => {
-      let diff = response.data.data;
-      var diff2htmlUi = new Diff2HtmlUI({diff: diff});
-      diff2htmlUi.draw('#line-by-line', {inputFormat: 'diff', showFiles: true, matching: 'none'});
-      diff2htmlUi.highlightCode('#line-by-line');
-    }, (err) => {
-      console.log(err);
-    });
-
-  }
 
   //=========LOGS=========
 
@@ -125,8 +114,8 @@ class MainController {
     let select = this.selection;
 
     this.ModalService.showModal({
-      templateUrl: "app/blockmodal/blockmodal.html",
-      controller: "BlockModalController",
+      templateUrl: "app/blockmodal2/blockmodal2.html",
+      controller: "BlockModal2Controller",
       inputs: {
         title: "Edit block",
         edit: true,
@@ -141,6 +130,9 @@ class MainController {
         }
         else if(result === 'deleteBlock'){
           that.deleteBlock(block);
+        }
+        else if(result === 'showFilesDiff'){
+          that.showFilesDiff(block);
         }
         else if(result){
           that.updateBlock(that.BlockUtil.createBlock(result, select));
@@ -240,7 +232,7 @@ class MainController {
     if(block && block.timestamp){
       this.Util.showLoadingModal('Restoring Workspace...');
       this.$http.get('/api/files/'+this.user+'/'+block.timestamp).then(response => {
-        console.log('files replaced');
+        console.log('files replaced', response.data);
         this.hideModal('processing-modal');
 
       }, (err) => {
@@ -266,6 +258,28 @@ class MainController {
     }, (err) => {
       console.log(err);
     });
+  }
+
+  showFilesDiff(block){
+    this.$http.get('/api/files/'+this.user+'/'+block.timestamp+'/diff').then(response => {
+      console.log('diff', response.data);
+      this.ModalService.showModal({
+        templateUrl: "app/diffmodal/diffmodal.html",
+        controller: "DiffModalController",
+        inputs: {
+          text: response.data.data
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+        });
+      });
+
+    }, (err) => {
+      //file does not exist yet
+      console.log('error getting diff', err);
+    });
+
   }
 
 

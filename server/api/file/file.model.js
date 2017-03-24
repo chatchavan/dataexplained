@@ -4,7 +4,8 @@ var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
 var CommitSchema = new mongoose.Schema({
   timestamp: Date,
-  commit: String
+  commit: String,
+  diffUrl: String
 });
 
 var FileSchema = new mongoose.Schema({

@@ -15,7 +15,7 @@ var BlockContentSchema = new mongoose.Schema({
   criteria: String,
   preconditions: String,
   timestamp: Date,
-  content: String,
+  content: String
 });
 
 var BlockSchema = new mongoose.Schema({

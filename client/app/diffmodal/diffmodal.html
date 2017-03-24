@@ -1,0 +1,24 @@
+<div class="modal fade diffmodal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="text-right">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+
+      </div>
+      <div class="modal-body">
+        <div id="diff-container">
+          <div id="line-by-line"></div>
+        </div>
+        <div ng-if="noContent">No differences in contents of files compared to last block.</div>
+
+        <div class="button-container">
+          <button ng-click="close()" type="button" data-dismiss="modal" aria-hidden="true" class="btn">Close</button>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

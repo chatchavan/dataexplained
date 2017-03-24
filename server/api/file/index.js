@@ -7,6 +7,7 @@ var router = express.Router();
 
 router.get('/', controller.index);
 router.get('/:user/:timestamp', controller.show);
+router.get('/:user/:timestamp/diff', controller.showDiff);
 router.post('/', controller.createTemp);
 router.put('/:id', controller.update);
 router.patch('/:id', controller.update);

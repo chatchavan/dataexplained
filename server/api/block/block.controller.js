@@ -102,7 +102,23 @@ export function show(req, res) {
 export function create(req, res) {
   let block = req.body.block;
   let user = req.body.user;
-  console.log('creating block', block.content);
+
+  // githubService.getContent('nicost71', 'blocks', user,
+  //   function(re){
+  //
+  //   // console.log('content', re);
+  //   let files = [];
+  //   for (let i = 0; i < re.data.length; i++){
+  //     files.push(re.data[i].name);
+  //   }
+  //   console.log('filenames', files);
+  //     return res.status(200).end();
+  //
+  //   },
+  //   function(err){
+  //     console.log('error getting content');
+  //     return res.status(200).end();
+  //   });
 
 
   var file = {

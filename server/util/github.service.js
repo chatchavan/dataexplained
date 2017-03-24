@@ -112,7 +112,7 @@ function updateDirectory(message, dir, user, timestamp, res) {
               console.log('err in readfile', err);
               return res.status(500).send('error in readfile:' + err);
             }
-            datas.push({path: user + '/' + filenames[i], content: data});
+            datas.push({path: user + '/' + filenames[i], filename: filenames[i], content: data});
 
             if (i <= 0) {
               return pushFiles(message, datas, user, timestamp, res);
@@ -171,7 +171,7 @@ function updateDirectoryTemp(message, dir, user, timestamp, res) {
                     }
                     if(tempPath){
                       let filename = tempPath.replace(/^.*[\\\/]/, '');
-                      datas.push({path: user + '/' + filename, content: dataParsed.contents});
+                      datas.push({path: user + '/' + filename, filename: filename, content: dataParsed.contents});
                     }
 
 
@@ -190,11 +190,12 @@ function updateDirectoryTemp(message, dir, user, timestamp, res) {
   });
 
 }
-function createOrUpdateUserFiles(user, commit, timestamp, res) {
+function createOrUpdateUserFiles(user, diffUrl, commit, timestamp, res) {
 
   let newRef = {
     timestamp: timestamp,
-    commit: commit
+    commit: commit,
+    diffUrl: diffUrl
   };
 
   File.findOne({'user': user}).exec(function (err, file) {
@@ -303,14 +304,19 @@ function getFile(file){
 function pushFiles(message, files, user, timestamp, res) {
   m_newCommit = {};
   m_filesToCommit = [];
+  let diffUrl = 'https://github.com/nicost71/blocks/commit/';
   return fetchHead()
+    // .then(() => deleteFilesSilent(user, files))
     .then(() => getCurrentTreeSHA())
     .then(() => createFilesSilent(files))
     .then(() => createTree())
     .then(() => createCommit(message))
-    .then((commit) => updateHead(commit))
+    .then((commit) => {
+      diffUrl = diffUrl+commit.sha+'.diff';
+      updateHead(commit);
+    })
     .then((head) => {
-      return createOrUpdateUserFiles(user, m_newCommit.treeSHA, timestamp, res);
+      return createOrUpdateUserFiles(user, diffUrl, m_newCommit.treeSHA, timestamp, res);
       //head.object.sh
       // return res.status(200).end()
     })
@@ -358,6 +364,53 @@ function createFileSilent(file) {
       });
     });
 
+}
+
+function deleteFilesSilent(user, files) {
+
+  console.log('deleteFilesSilent');
+  getContent('nicost71', 'blocks', user,
+    function(re){
+
+      let newFiles = [];
+       for (let j = 0; j < files.length; j++) {
+        newFiles.push(files[j].filename);
+      }
+
+      console.log('newFiles', newFiles);
+
+
+      let promises = [];
+      for(let i =0; i < re.data.length; i++){
+        if(!newFiles.includes(re.data[i].name) && re.data[i].name != 'blocks.txt'){
+          console.log('file to delete: ', re.data[i].name);
+          promises.push(deleteFileSilent(re.data[i]))
+        }
+      }
+
+      return Promise.all(promises);
+
+
+    },
+    function(err){
+      console.log('error in getting folder content', err);
+      return;
+    });
+
+}
+
+function deleteFileSilent(file) {
+
+  var config = {
+    message: 'Removing file',
+    sha: file.sha,
+    // branch: 'gh-pages'
+  };
+
+  return m_repo.contents(file.path).remove(config)
+    .then(function() {
+      console.log('File Deleted: ', file.name);
+    });
 }
 
 function createTree() {

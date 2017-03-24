@@ -12,8 +12,6 @@
             <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
           </div>
 
-        <div class="attention-text col-sm-12">Attention: Please make sure that all your files (e.g. R-Scripts) are Saved in R-Studio (in rstudio-workspace directory)!
-          <br> Otherwise they might get lost when restoring previous block-states</div>
 
       </div>
       <div class="modal-body row">
@@ -85,21 +83,6 @@
               </div>
             </div>
 
-            <div class="form-group question-group">
-              <label>
-                <input type="checkbox" name="saveFilesCb" ng-model="saveFilesCb" required>
-                <span>I have saved all my files</span>
-              </label>
-              <div ng-messages="bmodal.form.saveFilesCb.$error" ng-show="bmodal.form.$submitted || bmodal.form.saveFilesCb.$touched">
-                <div class="required" ng-message="required">Please confirm that you have saved your files.</div>
-              </div>
-            </div>
-
-
-              <!--<div class="form-group question-group">-->
-                <!--<label for="age" class="control-label">Question 2</label>-->
-                <!--<input type="text" class="form-control" id="age" placeholder="Title" ng-model="block.age">-->
-              <!--</div>-->
 
             <div ng-class="{'button-group' : edit}">
               <button type="button" ng-click="close(bmodal.form)" class="btn btn-primary">OK</button>

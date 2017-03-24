@@ -57,6 +57,11 @@ angular.module('rationalecapApp')
       close('deleteBlock', 500);
     };
 
+    $scope.showDiff = function(){
+      $element.modal('hide');
+      close('showFilesDiff', 500);
+    };
+
     $scope.addAlternative = function(){
       $scope.block.alternatives.push({});
     };
@@ -79,6 +84,7 @@ angular.module('rationalecapApp')
     };
 
     $scope.decreaseStep = function(){
+      $("#back-btn").focus();
       $scope.step--;
     };
 
