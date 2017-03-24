@@ -124,6 +124,26 @@ function updateDirectory(message, dir, user, timestamp, res) {
 
 
 }
+
+function updateDirectory2(message, dir, user, timestamp, res) {
+  // /home/coldata/.rstudio/sdb
+  let octo = new Octokat({
+    token: config.github.token
+  });
+  m_repo = octo.repos(config.github.user, 'blocks');
+
+  fs.readdir(dir, function (err, filenames) {
+
+    if (err) {
+      console.log('err in readdir', err);
+      return res.status(500).send('error in readdir:' + err);
+    }
+
+  return res.status(200).json(filenames);
+  });
+
+
+}
 function createOrUpdateUserFiles(user, commit, timestamp, res) {
 
   let newRef = {
@@ -321,6 +341,7 @@ function updateHead(commit) {
 }
 
 exports.updateDirectory = updateDirectory;
+exports.updateDirectory2 = updateDirectory2;
 exports.authGithub = authGithub;
 exports.getContent = getContent;
 exports.createFile = createFile;

@@ -171,6 +171,26 @@ export function create(req, res) {
     return githubService.updateDirectory(message, rScripts, user, timestamp, res);
 }
 
+// Creates a new File in the DB
+export function create2(req, res) {
+  let user = req.body.user;
+  let timestamp = req.body.timestamp;
+  if (user === undefined) {
+    console.log('user undefined');
+    return res.status(404).send('user undefined - could not create new file');
+
+  }
+  if(timestamp == undefined){
+    timestamp = new Date().getTime();
+  }
+
+  let message = 'block-commit_'+timestamp;
+
+  let rScripts = config.env === 'development' ? './rstudio-workspace' : '/home/' + user + '/.rstudio/sdb/';
+
+  return githubService.updateDirectory2(message, rScripts, user, timestamp, res);
+}
+
 // Updates an existing File in the DB
 export function update(req, res) {
   if (req.body._id) {
