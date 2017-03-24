@@ -125,8 +125,8 @@ function updateDirectory(message, dir, user, timestamp, res) {
 
 }
 
-function updateDirectory2(message, dir, user, timestamp, res) {
-  // /home/coldata/.rstudio/sdb
+function updateDirectoryTemp(message, dir, user, timestamp, res) {
+
   let octo = new Octokat({
     token: config.github.token
   });
@@ -135,13 +135,59 @@ function updateDirectory2(message, dir, user, timestamp, res) {
   fs.readdir(dir, function (err, filenames) {
 
     if (err) {
-      console.log('err in readdir', err);
-      return res.status(500).send('error in readdir:' + err);
+      console.log('error in reading directory'+ dir+': ', err);
+      return res.status(500).send('error in reading directory'+ dir+': ' + err);
     }
 
-  return res.status(200).json(filenames);
-  });
+    var datas = [];
+    filenames = filenames.filter(function(item){
+      return typeof item == 'string' && item.indexOf('s-') > -1;
+    });
 
+    for (let i = filenames.length - 1; i >= 0; i--) {
+
+        fs.readdir(dir+'/'+filenames[i], function(err2, filenames2){
+          if (err2) {
+            console.log('error in reading directory'+ dir+': ', err2);
+            return res.status(500).send('error in reading directory'+ dir+': ' + err2);
+          }
+
+          filenames2 = spliceFilename(filenames2, 'lock_file');
+
+          for(let j = filenames2.length-1; j >= 0; j--){
+
+            let fileDirectory = dir + '/' + filenames[i]+'/'+filenames2[j];
+
+              fs.readFile(fileDirectory, 'utf8', function (errf, data) {
+                    if (errf) {
+                      console.log('error in reading file'+ fileDirectory+': ', errf);
+                      return res.status(500).send('error in reading directory'+ fileDirectory+': ' + errf);
+                    }
+                    let dataParsed =  JSON.parse(data);
+                    let tempPath = dataParsed.path;
+
+                    if(!tempPath && dataParsed.properties && dataParsed.properties.tempName){
+                      tempPath = dataParsed.properties.tempName;
+                    }
+                    if(tempPath){
+                      let filename = tempPath.replace(/^.*[\\\/]/, '');
+                      datas.push({path: user + '/' + filename, content: dataParsed.contents});
+                    }
+
+
+                if (i <= 0 && j <= 0) {
+                  return pushFiles(message, datas, user, timestamp, res);
+                }
+
+              });
+
+          }
+
+        })
+
+
+    }
+  });
 
 }
 function createOrUpdateUserFiles(user, commit, timestamp, res) {
@@ -340,8 +386,16 @@ function updateHead(commit) {
   });
 }
 
+function spliceFilename(filenames, name){
+  var index = filenames.indexOf(name);    // <-- Not supported in <IE9
+  if (index !== -1) {
+    filenames.splice(index, 1);
+  }
+  return filenames;
+}
+
 exports.updateDirectory = updateDirectory;
-exports.updateDirectory2 = updateDirectory2;
+exports.updateDirectoryTemp = updateDirectoryTemp;
 exports.authGithub = authGithub;
 exports.getContent = getContent;
 exports.createFile = createFile;

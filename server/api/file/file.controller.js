@@ -171,8 +171,12 @@ export function create(req, res) {
     return githubService.updateDirectory(message, rScripts, user, timestamp, res);
 }
 
-// Creates a new File in the DB
-export function create2(req, res) {
+// Creates a new File (from temp-directory) in the DB
+export function createTemp(req, res) {
+  if(config.env === 'development'){
+    return create(req, res);
+  }
+
   let user = req.body.user;
   let timestamp = req.body.timestamp;
   if (user === undefined) {
@@ -188,7 +192,7 @@ export function create2(req, res) {
 
   let rScripts = config.env === 'development' ? './rstudio-workspace' : '/home/' + user + '/.rstudio/sdb/';
 
-  return githubService.updateDirectory2(message, rScripts, user, timestamp, res);
+  return githubService.updateDirectoryTemp(message, rScripts, user, timestamp, res);
 }
 
 // Updates an existing File in the DB
