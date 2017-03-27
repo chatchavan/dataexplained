@@ -8,6 +8,7 @@ var router = express.Router();
 router.get('/', controller.index);
 router.get('/:user', controller.show);
 router.post('/', controller.create);
+// router.post('/delete/:user/:blockId', controller.destroy);
 router.put('/', controller.update);
 router.patch('/:id', controller.update);
 router.delete('/:user/:blockId', controller.destroy);

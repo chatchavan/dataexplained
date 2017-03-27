@@ -227,7 +227,7 @@ function createOrUpdateUserFiles(user, diffUrl, commit, timestamp, res) {
           return res.status(500).send('error in saving/updating file for user '+ user+':' + err);
         }
         else {
-          console.log('new file in added');
+          console.log('new file for user '+user+' in DB added');
           return res.status(200).end();
         }
       });

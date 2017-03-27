@@ -9,8 +9,8 @@
       </div>
       <div class="modal-body">
         <p>{{text}}</p>
-        <button type="button" ng-click="close()" class="btn btn-primary">{{actionText1}}</button>
-        <button type="button" ng-click="cancel()" class="btn">{{actionText2}}</button>
+        <button ng-if="actionText1" type="button" ng-click="close()" class="btn btn-primary">{{actionText1}}</button>
+        <button ng-if="actionText2" type="button" ng-click="cancel()" class="btn">{{actionText2}}</button>
       </div>
 
     </div>

@@ -1,0 +1,24 @@
+
+
+<div id="container">
+  <div style="height: 100%">
+      <h2>Reassign logs to blocks</h2>
+      <div class="form-group height100">
+        <label for="selection">Check whether all logs are assigned to the correct block and confirm by clicking 'Confirm Blocks'.</label>
+
+
+        <select ng-model="main.selection" multiple class="fullDimension selectContainer" id="selection">
+          <option ng-value="log" ng-class="{'not-eligible' : log.used}"
+                  ng-disabled="log.used"
+                  ng-repeat="log in vm.loglist">{{log.log}}</option>
+        </select>
+      </div>
+  </div>
+
+</div>
+
+<button ng-click="vm.finishAnalysis()">Confirm Blocks</button>
+
+
+</div>
+

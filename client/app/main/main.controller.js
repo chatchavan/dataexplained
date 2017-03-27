@@ -4,13 +4,14 @@
 
 class MainController {
 
-  constructor($http, StorageUtil, Util, $interval, $timeout, ModalService, LogUtil, BlockUtil) {
+  constructor($http, StorageUtil, Util, $interval, $timeout, $state, ModalService, LogUtil, BlockUtil) {
     this.user = undefined;
     this.selectFocus = false;
     this.userDefined = false;
     this.$http = $http;
     this.$timeout = $timeout;
     this.$interval = $interval;
+    this.$state = $state;
     this.Util = Util;
     this.StorageUtil = StorageUtil;
     this.ModalService = ModalService;
@@ -18,6 +19,8 @@ class MainController {
     this.LogUtil = LogUtil;
     this.selection = '';
     this.blockList = [];
+    this.loglist = [];
+    this.dbLogs = [];
     this.displayPanel = false;
 
     this.rStudioEndpoint = this.Util.getRStudioUri();
@@ -55,10 +58,11 @@ class MainController {
   //=========LOGS=========
 
   pollLogs(){
-    this.$http.get('/api/logs/'+this.user).then(response => {
-      let log = response.data.content;
+    this.$http.get('/api/logs/file/'+this.user).then(response => {
+      let fileLogs = response.data.fileLogs;
+      this.dbLogs = response.data.dbLogs;
       if(!this.selectFocus) {
-        this.loglist = this.LogUtil.formatLogs(log.split("\n"), this.blockList);
+        this.loglist = this.LogUtil.formatLogs(fileLogs.split('\n'), this.dbLogs);
       }
     }, (err) => {
       console.log(err);
@@ -73,7 +77,7 @@ class MainController {
       if(response.data.length > 0){
         console.log('got all blocks', response.data);
         this.blockList = response.data;
-        this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
+        this.loglist = this.LogUtil.markLogs(this.loglist, this.dbLogs);
       }
     }, (err) => {
       //file does not exist yet
@@ -150,7 +154,7 @@ class MainController {
       console.log('response', response);
       if(response.data.length > 0){
         this.blockList = response.data;
-        this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
+        this.loglist = this.LogUtil.markLogs(this.loglist, this.dbLogs);
       }
 
     }, (err) => {
@@ -185,9 +189,10 @@ class MainController {
             that.hideModal('processing-modal');
             if(response.data){
               console.log('response.data', response.data);
-              that.blockList = response.data;
+              that.blockList = response.data.blockList;
+              that.dbLogs = response.data.dbLogs;
               console.log('that.blockList', that.blockList);
-              that.loglist = that.LogUtil.markLogs(that.loglist, that.blockList);
+              that.loglist = that.LogUtil.markLogs(that.loglist, that.dbLogs);
 
             }
           }, (err) => {
@@ -207,11 +212,12 @@ class MainController {
     console.log('saving new block', newBlock);
     this.Util.showLoadingModal('Saving new Block...');
 
-    this.$http.post('/api/blocks', {block: newBlock, user: this.user }).then(response => {
+    this.$http.post('/api/blocks', {block: newBlock, user: this.user, selection: this.selection }).then(response => {
       console.log('response', response);
         if(response.data){
-          this.blockList = response.data;
-          this.loglist = this.LogUtil.markLogs(this.loglist, this.blockList);
+          this.blockList = response.data.blockList;
+          this.dbLogs = response.data.dbLogs;
+          this.loglist = this.LogUtil.markLogs(this.loglist, this.dbLogs);
           this.saveFiles(newBlock.timestamp);
         }
         else{
@@ -280,6 +286,50 @@ class MainController {
       console.log('error getting diff', err);
     });
 
+  }
+
+  //=========FINISH ANALYSIS=========
+  finishAnalysis(){
+
+    var that = this;
+
+    // if(this.LogUtil.checkAllLogs(this.loglist)){
+      let actionText1 = 'Yes';
+      let actionText2 = 'No';
+      let text = 'Please confirm that you have finished analysis';
+    // }
+
+
+    this.ModalService.showModal({
+      templateUrl: "app/custommodal/custommodal.html",
+      controller: "CustomModalController",
+      inputs: {
+        title: "Finish Analysis",
+        text: text,
+        actionText1: actionText1,
+        actionText2: actionText2
+      }
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(result => {
+        if(result === actionText1){
+
+          that.$http.post('/api/logs/finish', {logs: that.loglist, user: that.user }).then(response => {
+            console.log('response', response);
+            if(response.data){
+              that.$state.go('^.finish', {'loglist': that.loglist, 'dbLogs': response.data.logs, 'blockList': that.blockList});
+            }
+            else{
+            }
+          }, (err) => {
+            console.log(err);
+          });
+
+
+
+        }
+      });
+    });
   }
 
 

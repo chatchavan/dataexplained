@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 var Block = require('./block.model');
+var LogCtrl = require('./../log/log.controller');
 var fs = require('fs');
 var config = require('../../config/environment');
 var githubService = require('../../util/github.service');
@@ -103,6 +104,8 @@ export function create(req, res) {
   let block = req.body.block;
   let user = req.body.user;
 
+  let selection = req.body.selection;
+
   // githubService.getContent('nicost71', 'blocks', user,
   //   function(re){
   //
@@ -141,20 +144,27 @@ export function create(req, res) {
           oldContent+= blockPrefix+updatedBlock._id+'\\n'+blockSuffix;
           file.content = base64.encode(oldContent);
 
-          githubService.updateFile(sha, file, userBlocks, res);
+          LogCtrl.createOrUpdateLogs(user, updatedBlock._id, selection, function(logs){
+            let resContent = {'blockList': userBlocks, 'dbLogs': logs};
+            githubService.updateFile(sha, file, resContent, res);
+          });
+
         });
 
     },
     function(err){
-        console.log('file does not exist yet, creating new one');
+      console.log('file does not exist yet, creating new one');
       createOrUpdateBlocks(user, block, function (createdBlock, userBlocks){
         console.log('created new list with block', createdBlock);
         if(!createdBlock || !userBlocks){
           return res.status(500).end();
         }
         file.content = base64.encode(blockPrefix+createdBlock._id+'\\n/'+blockSuffix);
+        LogCtrl.createOrUpdateLogs(user, createdBlock._id, selection, function(logs){
+          let resContent = {'blockList': userBlocks, 'dbLogs': logs};
+          githubService.createFile(file, resContent, res);
+        });
 
-        githubService.createFile(file, userBlocks, res);
       });
 
     });
@@ -165,6 +175,8 @@ export function create(req, res) {
 export function update(req, res) {
   let block = req.body.block;
   let blockCopy = clone(block);
+  // let selection = req.body.selection; //selection (optional)
+
   console.log('updating block', block);
   let user = req.body.user;
 
@@ -175,8 +187,10 @@ export function update(req, res) {
       return res.status(404).end();
     }
     else {
+      let blockId;
       for(var i = 0; i < b.blocks.length; i++){
         if(b.blocks[i]._id.toHexString() === block._id){
+              blockId = b.blocks[i]._id;
               delete b.blocks[i]._id;
               b.blocks[i].title = block.title;
               b.blocks[i].goal = block.goal;
@@ -196,7 +210,11 @@ export function update(req, res) {
         }
         else {
           console.log('block updated');
+          // LogCtrl.createOrUpdateLogs(user, blockId, selection, function(logSuccess){
+          //   return res.status(200).json(block);
+          // });
           return res.status(200).json(block);
+
         }
       });
 
@@ -209,7 +227,7 @@ export function update(req, res) {
 
 // Deletes a Block from the DB (send new BlockString without oldBlock -> hardUpdate)
 export function destroy(req, res) {
-  let blockId = req.params.blockId;;
+  let blockId = req.params.blockId;
   console.log('deleting block', blockId);
   let user = req.params.user;
 
@@ -228,12 +246,18 @@ export function destroy(req, res) {
         if(userBlocks){
           let newContent = base64.encode(deleteBlockFromBlockString(blockId, oldContent));
           file.content = newContent;
-          if(newContent && newContent.length > 0){
-            githubService.updateFile(sha, file, userBlocks, res);
-          }
-          else{
-            githubService.deleteFile(sha, file, userBlocks, res);
-          }
+
+          LogCtrl.deleteLogs(user, blockId, function(logs){
+            let resContent = {'blockList': userBlocks, 'dbLogs': logs};
+
+            if(newContent && newContent.length > 0){
+              githubService.updateFile(sha, file, resContent, res);
+            }
+            else{
+              githubService.deleteFile(sha, file, resContent, res);
+            }
+          });
+
 
         }
         else{

@@ -11,8 +11,10 @@
 
 import _ from 'lodash';
 var Log = require('./log.model');
+var Block = require('./../block/block.model');
 var fs = require('fs');
 var config = require('../../config/environment');
+var logUtil = require('../../util/logutil.service');
 
 
 function handleError(res, statusCode) {
@@ -78,8 +80,25 @@ export function index(req, res) {
   });
 }
 
-// Gets a single Log from the DB
+// Get logs of user from DB
 export function show(req, res) {
+  let user = req.params.user;
+
+  Log.findOne({'user': user}).exec(function (err, logs) {
+
+    if (err || !logs) {
+      return res.status(404).end();
+    }
+    else {
+      return res.status(200).json(logs.logs);
+      //blocks for user already exist
+    }
+
+  });
+}
+
+// Get logs of user from history-file
+export function showFromFile(req, res) {
   let user = req.params.user;
 
   let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
@@ -89,7 +108,187 @@ export function show(req, res) {
       console.log('no user history found for user '+user,err);
       return res.status(404).send(err);
     }
-    var result = {'content': data.toString()};
-    return res.status(200).json(result);
+
+    Log.findOne({'user': user}).exec(function (err, logs) {
+
+      var result = {'fileLogs': data.toString()};
+
+      if (!err && logs) {
+        result.dbLogs = logs.logs;
+      }
+      return res.status(200).json(result);
+
+    });
+
+
   });
 }
+
+//Compare and update (sync) complete loglist with db
+export function finish(req, res){
+  let logs = req.body.logs;
+  let user = req.body.user;
+
+  if(!user || !logs){
+    return res.status(500).end();
+  }
+
+  Log.findOne({'user': user}).exec(function (err, l) {
+
+    if(err || !l){
+      return res.status(500).end();
+    }
+
+    return res.status(200).json(l);
+
+
+
+
+
+  });
+
+
+}
+
+
+
+//HELPER FUNCTIONS
+export function createOrUpdateLogs(user, blockId, selection, cb) {
+
+  if(!blockId || !user || !selection){
+    console.log('cb(false)', blockId, user, selection);
+    cb();
+  }
+
+  else{
+
+
+    for(let i = 0; i < selection.length; i++){
+      selection[i].block = blockId;
+    }
+
+    Log.findOne({'user': user}).exec(function (err, logs) {
+
+      //creating first entry for user
+      if (err || !logs) {
+
+        // for(var i = 0; i < newLogs.length; i++){
+        //   let date1 = new Date(Number(newLogs[i].timestamp));
+        //
+        //   for(var j = 0; j < selection.length; j++){
+        //     let date2 = new Date(Number(selection[j].timestamp));
+        //
+        //     if(newLogs[i].log === selection[j].log && date1.getTime() === date2.getTime()){
+        //       newLogs[i].block = blockId;
+        //     }
+        //
+        //   }
+        // }
+
+
+        let l = {
+          user: user,
+          logs: selection
+        };
+
+        Log.create(l, function (err, result) {
+          if (err) {
+            console.log('could not create log-entry for user '+user, err);
+            cb();
+          }
+          else {
+            console.log('new log entry created');
+            cb(result.logs);
+          }
+        });
+      }
+
+
+      //blocks for user already exist
+      else {
+
+        console.log('logs.logs', logs.logs);
+        console.log('SELECTION', selection);
+        logs.logs.push.apply(logs.logs, selection);
+        logs.save(function (err) {
+          if (err) {
+            console.log('could not save/update logs for user '+user, err);
+            cb(logs.logs);
+          }
+          else {
+            console.log('new logs entry in added');
+            cb(logs.logs);
+          }
+        });
+      }
+
+    });
+  }
+
+
+}
+
+export function deleteLogs(user, blockId, cb){
+
+  Log.findOne({'user': user}).exec(function (err, l) {
+
+    if(err || !l || !blockId){
+      cb();
+    }
+    if (!err && l) {
+      //blocks for user already exist
+      for (let i = l.logs.length - 1; i >= 0; i--) {
+        if(l.logs[i].block.toHexString() === blockId){
+          l.logs.splice(i, 1);
+          delete l._id;
+          // delete l.logs[i]._id;
+          // l.logs[i].block = undefined;
+          // break;
+        }
+      }
+
+      l.save(function (err) {
+        if (err) {
+          console.log('could not delete log-block assignment for blockId '+blockId, err);
+          cb(l.logs);
+        }
+        else {
+          console.log('log-block assignment deleted', l.logs);
+          cb(l.logs);
+        }
+      });
+    }
+
+  });
+}
+
+// function isSameLog(log1, log2){
+//   if(!log1 || !log2){
+//     return false;
+//   }
+//   let date2 = new Date(Number(log2.timestamp));
+//   // console.log('isSameLog:');
+//   // console.log('log1.log', log1.log, 'log2.log', log2.log, log1.log === log2.log);
+//   // console.log('log1.timestamp.getTime()', log1.timestamp.getTime(), 'date2.getTime()', date2.getTime(), log1.timestamp.getTime() === date2.getTime());
+//   // console.log('log1.used', log1.used, 'log2.used', log2.used, log1.used === log2.used);
+//
+//   return (log1.log === log2.log && log1.timestamp.getTime() === date2.getTime());
+// }
+//
+//
+
+// function tagLogs(dbLogs, selection, blockId){
+//
+//   if(dbLogs && selection){
+//     for(var i = 0; i < dbLogs.length; i++){
+//       for(var j = 0; j < selection.length; j++){
+//         if(isSameLog(dbLogs[i], selection[j])){
+//           dbLogs[i].block = blockId;
+//         }
+//       }
+//     }
+//   }
+//
+//   return dbLogs;
+//
+// }
