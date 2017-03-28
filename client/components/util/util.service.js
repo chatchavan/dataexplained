@@ -5,7 +5,7 @@
 /**
  * The Util service is for thin, globally reusable, utility functions
  */
-function UtilService($window, $sce, ModalService) {
+function UtilService($window, $sce, ModalService, $timeout, $http) {
   var Util = {
 
     /**
@@ -33,6 +33,49 @@ function UtilService($window, $sce, ModalService) {
         modal.close;
         // modal.close.then(result => {});
       });
+    },
+
+    /**
+     * Hide Modal with id
+     * */
+    hideModal(id){
+
+      $timeout(function(){
+        let modal = document.getElementById(id);
+        let modalBack = document.getElementsByClassName('modal-backdrop')[0];
+
+        if(modal && modalBack){
+          modal.remove();
+          modalBack.remove();
+        }
+        $('body').removeClass('modal-open');
+      },500);
+
+
+    },
+
+    /**
+     * Shows differences of files from user at block-timestamp in a modal
+     * */
+    showFilesDiff(block, user){
+      $http.get('/api/files/'+user+'/'+block.timestamp+'/diff').then(response => {
+        ModalService.showModal({
+          templateUrl: "app/diffmodal/diffmodal.html",
+          controller: "DiffModalController",
+          inputs: {
+            text: response.data.data
+          }
+        }).then(function(modal) {
+          modal.element.modal();
+          modal.close.then(result => {
+          });
+        });
+
+      }, (err) => {
+        //file does not exist yet
+        console.log('error getting diff', err);
+      });
+
     },
 
     /**

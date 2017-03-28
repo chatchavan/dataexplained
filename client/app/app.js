@@ -9,6 +9,8 @@ angular.module('rationalecapApp', [
   'ngSanitize',
   'ui.router',
   'ui.bootstrap',
+  'ui.sortable',
+  'dndLists',
   'angularModalService'
 ])
   .config(function($urlRouterProvider, $locationProvider) {

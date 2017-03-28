@@ -91,7 +91,7 @@
               <button type="button" ng-click="cancel()" class="btn">Cancel</button>
               <button ng-if="edit" type="button" ng-click="showDiff()" class="btn btn-primary">Show Diff</button>
               <button ng-if="edit" type="button" ng-click="deleteBlock()" class="btn btn-primary">Delete Block</button>
-              <button ng-if="edit" type="button" ng-click="loadFiles()" class="btn btn-primary">Load Files</button>
+              <button ng-if="edit && filesHistory" type="button" ng-click="loadFiles()" class="btn btn-primary">Load Files</button>
             </div>
 
           </form>

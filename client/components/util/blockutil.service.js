@@ -3,7 +3,7 @@
 (function () {
 
 
-  function UtilService() {
+  function UtilService(ModalService, Util, LogUtil, $http, $q) {
     var BlockUtil = {
 
       /**
@@ -86,34 +86,109 @@
       /**
        * Creates Block-String from an array of single log statements (selection)
        * */
-      createBlock(block, selection){
+      createBlockString(block, selection){
         let timestamp;
         let content = '';
-        for(let i = 0; i < selection.length; i++){
-          content += selection[i].log;
-          if(selection.length-1 > i){
-            content += '\\n';
-          }
+        if(selection){
+          for(let i = 0; i < selection.length; i++){
+            content += selection[i].log;
+            if(selection.length-1 > i){
+              content += '\\n';
+            }
 
-          timestamp = selection[i].timestamp;
+            timestamp = selection[i].timestamp;
+          }
+          block.timestamp = timestamp;
+          block.content = content;
         }
-        block.timestamp = timestamp;
-        block.content = content;
+
+
         return block;
       },
 
-      stripeBlockFromList(block, blockList){
-        console.log('blocklist',blockList);
-        for(var i = 0; i < blockList.length; i++){
-          if(blockList[i].content === block.content){
-            blockList.splice(i, 1);
-            break;
+      // stripeBlockFromList(block, blockList){
+      //   for(var i = 0; i < blockList.length; i++){
+      //     if(blockList[i].content === block.content){
+      //       blockList.splice(i, 1);
+      //       break;
+      //     }
+      //   }
+      //   return BlockUtil.encodeBlock(blockList);
+      // },
+
+      /**
+       * Delete a block
+       * */
+      deleteBlock(block, user, loglist){
+        var deferred = $q.defer();
+        let actionText1 = 'Yes';
+        let actionText2 = 'No';
+
+        ModalService.showModal({
+          templateUrl: "app/custommodal/custommodal.html",
+          controller: "CustomModalController",
+          inputs: {
+            title: "Delete block",
+            text: 'Do you really want to delete this block?',
+            actionText1: actionText1,
+            actionText2: actionText2
           }
-        }
-        return BlockUtil.encodeBlock(blockList);
+        }).then(function(modal) {
+          modal.element.modal();
+          modal.close.then(result => {
+            if(result === actionText1){
+              Util.showLoadingModal('Deleting Block...');
+
+              $http.delete('/api/blocks/'+user+'/'+block._id).then(response => {
+                Util.hideModal('processing-modal');
+                if(response.data){
+                  console.log('response.data', response.data);
+                  let dbLogs = response.data.dbLogs;
+                  let blockList = response.data.blockList;
+                  loglist = LogUtil.markLogs(loglist, dbLogs);
+                  deferred.resolve({blockList: blockList, dbLogs: dbLogs, loglist: loglist})
+
+                }
+              }, (err) => {
+                Util.hideModal('processing-modal');
+                console.log('error deleting block', err);
+                deferred.reject();
+              });
+
+            }
+          });
+        });
+        return deferred.promise;
       },
 
-      getBlockPrefix(){
+      /**
+       * Updates a Block
+       * */
+      updateBlock(newBlock, user, loglist, dbLogs) {
+        var deferred = $q.defer();
+        console.log('updating block', newBlock);
+        Util.showLoadingModal('Updating Block...');
+
+        $http.put('/api/blocks', {block: newBlock, user: user }).then(response => {
+          Util.hideModal('processing-modal');
+          console.log('response', response);
+          if(response.data.length > 0){
+            let blockList = response.data;
+            let loglist = LogUtil.markLogs(loglist, dbLogs);
+            deferred.resolve({blockList: blockList, loglist: loglist})
+          }
+
+        }, (err) => {
+          this.Util.hideModal('processing-modal');
+          console.log(err);
+          deferred.reject();
+        });
+
+        return deferred.promise;
+
+      },
+
+    getBlockPrefix(){
         return "//startBlock";
       },
 

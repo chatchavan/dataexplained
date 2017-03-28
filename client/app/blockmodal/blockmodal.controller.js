@@ -15,7 +15,7 @@ angular.module('rationalecapApp')
       $scope.renderedContent = $scope.block.content.split('\\n');
     }
     else if(content){
-      $scope.renderedContent = content.content.split('\\n');;
+      $scope.renderedContent = content.content.split('\\n');
     }
 
     console.log(' $scope.renderedContent',  $scope.renderedContent);

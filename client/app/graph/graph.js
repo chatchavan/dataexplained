@@ -6,6 +6,10 @@ angular.module('rationalecapApp')
       .state('graph', {
         url: '/graph',
         templateUrl: 'app/graph/graph.html',
-        controller: 'GraphCtrl'
+        controller: 'GraphCtrl',
+        controllerAs: 'vm',
+        params: {
+          blocks : null
+        }
       });
   });

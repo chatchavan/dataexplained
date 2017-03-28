@@ -90,7 +90,7 @@ class MainController {
     if(this.selection && this.selection.length > 0){
       var that = this;
       let select = this.selection;
-      let content = that.BlockUtil.createBlock({}, select);
+      let content = that.BlockUtil.createBlockString({}, select);
 
       this.ModalService.showModal({
         templateUrl: "app/blockmodal2/blockmodal2.html",
@@ -99,13 +99,14 @@ class MainController {
           title: "Add a new block",
           edit: false,
           block: undefined,
-          content: content
+          content: content,
+          filesHistory: false
         }
       }).then(function(modal) {
         modal.element.modal();
         modal.close.then(result => {
           if(result){
-            that.saveBlock(that.BlockUtil.createBlock(result, select));
+            that.saveBlock(that.BlockUtil.createBlockString(result, select), select);
           }
         });
       });
@@ -124,7 +125,8 @@ class MainController {
         title: "Edit block",
         edit: true,
         block: block,
-        content: undefined
+        content: undefined,
+        filesHistory: true
       }
     }).then(function(modal) {
       modal.element.modal();
@@ -136,83 +138,41 @@ class MainController {
           that.deleteBlock(block);
         }
         else if(result === 'showFilesDiff'){
-          that.showFilesDiff(block);
+          that.Util.showFilesDiff(block, that.user);
         }
         else if(result){
-          that.updateBlock(that.BlockUtil.createBlock(result, select));
+          that.updateBlock(that.BlockUtil.createBlockString(result, select));
         }
       });
     });
   }
 
   updateBlock(newBlock) {
-    console.log('updating block', newBlock);
-    this.Util.showLoadingModal('Updating Block...');
-
-    this.$http.put('/api/blocks', {block: newBlock, user: this.user }).then(response => {
-      this.hideModal('processing-modal');
-      console.log('response', response);
-      if(response.data.length > 0){
-        this.blockList = response.data;
-        this.loglist = this.LogUtil.markLogs(this.loglist, this.dbLogs);
-      }
-
-    }, (err) => {
-      this.hideModal('processing-modal');
-      console.log(err);
+    this.BlockUtil.updateBlock(newBlock, this.user, this.loglist, this.dbLogs).then(function(success){
+      that.blockList = success.blockList;
+      that.loglist = success.loglist;
     });
-
   }
 
 
   deleteBlock(block){
-    var that = this;
-    let actionText1 = 'Yes';
-    let actionText2 = 'No';
-
-    this.ModalService.showModal({
-      templateUrl: "app/custommodal/custommodal.html",
-      controller: "CustomModalController",
-      inputs: {
-        title: "Delete block",
-        text: 'Do you really want to delete this block?',
-        actionText1: actionText1,
-        actionText2: actionText2
-      }
-    }).then(function(modal) {
-      modal.element.modal();
-      modal.close.then(result => {
-        if(result === actionText1){
-          that.Util.showLoadingModal('Deleting Block...');
-
-          that.$http.delete('/api/blocks/'+that.user+'/'+block._id).then(response => {
-            that.hideModal('processing-modal');
-            if(response.data){
-              console.log('response.data', response.data);
-              that.blockList = response.data.blockList;
-              that.dbLogs = response.data.dbLogs;
-              console.log('that.blockList', that.blockList);
-              that.loglist = that.LogUtil.markLogs(that.loglist, that.dbLogs);
-
-            }
-          }, (err) => {
-            that.hideModal('processing-modal');
-            console.log('error deleting block', err);
-          });
-
-        }
-      });
+    let that = this;
+    this.BlockUtil.deleteBlock(block, this.user, this.loglist).then(function(success){
+      console.log('success', success);
+      that.blockList = success.blockList;
+      that.loglist = success.loglist;
+      that.dbLogs = success.dbLogs;
     });
   }
 
 
 
 
-  saveBlock(newBlock) {
-    console.log('saving new block', newBlock);
+  saveBlock(newBlock, selection) {
+    console.log('saving new block', newBlock, selection);
     this.Util.showLoadingModal('Saving new Block...');
 
-    this.$http.post('/api/blocks', {block: newBlock, user: this.user, selection: this.selection }).then(response => {
+    this.$http.post('/api/blocks', {block: newBlock, user: this.user, selection: selection }).then(response => {
       console.log('response', response);
         if(response.data){
           this.blockList = response.data.blockList;
@@ -221,10 +181,10 @@ class MainController {
           this.saveFiles(newBlock.timestamp);
         }
         else{
-          this.hideModal('processing-modal');
+          this.Util.hideModal('processing-modal');
         }
       }, (err) => {
-      this.hideModal('processing-modal');
+      this.Util.hideModal('processing-modal');
       console.log(err);
       });
 
@@ -239,12 +199,12 @@ class MainController {
       this.Util.showLoadingModal('Restoring Workspace...');
       this.$http.get('/api/files/'+this.user+'/'+block.timestamp).then(response => {
         console.log('files replaced', response.data);
-        this.hideModal('processing-modal');
+        this.Util.hideModal('processing-modal');
 
       }, (err) => {
         //file does not exist yet
         console.log('error loading files', err);
-        this.hideModal('processing-modal');
+        this.Util.hideModal('processing-modal');
       });
     }
 
@@ -256,7 +216,7 @@ class MainController {
     }
     console.log('saving files with timestamp: '+ timestamp);
     this.$http.post('/api/files', {user: this.user, timestamp: timestamp }).then(response => {
-      this.hideModal('processing-modal');
+      this.Util.hideModal('processing-modal');
       console.log('response', response);
       if(response.data){
         console.log('files saved', response.data);
@@ -266,27 +226,7 @@ class MainController {
     });
   }
 
-  showFilesDiff(block){
-    this.$http.get('/api/files/'+this.user+'/'+block.timestamp+'/diff').then(response => {
-      console.log('diff', response.data);
-      this.ModalService.showModal({
-        templateUrl: "app/diffmodal/diffmodal.html",
-        controller: "DiffModalController",
-        inputs: {
-          text: response.data.data
-        }
-      }).then(function(modal) {
-        modal.element.modal();
-        modal.close.then(result => {
-        });
-      });
 
-    }, (err) => {
-      //file does not exist yet
-      console.log('error getting diff', err);
-    });
-
-  }
 
   //=========FINISH ANALYSIS=========
   finishAnalysis(){
@@ -337,21 +277,6 @@ class MainController {
 
   //=========HELPER FUNCTIONS=========
 
-  hideModal(id){
-
-    this.$timeout(function(){
-      let modal = document.getElementById(id);
-      let modalBack = document.getElementsByClassName('modal-backdrop')[0];
-
-      if(modal && modalBack){
-        modal.remove();
-        modalBack.remove();
-      }
-      $('body').removeClass('modal-open');
-    },500);
-
-
-  }
 
   arraysEqual(arr1, arr2) {
     if(!arr1 || arr2){

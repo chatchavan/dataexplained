@@ -27,7 +27,6 @@
       },
 
       markLogs(logList, dbLogs){
-        console.log('marking logs', logList, dbLogs);
         if(!logList || !dbLogs){
           return logList;
         }

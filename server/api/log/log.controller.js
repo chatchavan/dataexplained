@@ -12,6 +12,7 @@
 import _ from 'lodash';
 var Log = require('./log.model');
 var Block = require('./../block/block.model');
+var BlockCtrl = require('./../block/block.controller');
 var fs = require('fs');
 var config = require('../../config/environment');
 var logUtil = require('../../util/logutil.service');
@@ -150,6 +151,63 @@ export function finish(req, res){
 
 }
 
+export function destroy(req, res){
+  let logId = req.body.logId;
+  console.log('deleting log', logId);
+  let user = req.body.user;
+  let blockId = req.body.blockId;
+
+  Log.findOne({'user': user}).exec(function (err, l) {
+
+    if(err || !l){
+      return res.status(404).end();
+    }
+
+    let logsCopy = clone(l.logs);
+    let log;
+
+    for (let i = l.logs.length - 1; i >= 0; i--) {
+      if(l.logs[i]._id.toHexString() === logId){
+        log = l.logs[i].log;
+        l.logs.splice(i, 1);
+        delete l._id;
+      }
+    }
+
+    l.save(function (err) {
+      if (err) {
+        console.log('could not delete log '+logId, err);
+        return res.status(201).json({dbLogs: logsCopy});
+      }
+      else {
+        BlockCtrl.stripLogFromBlockContent(user, blockId, log, function(blocks){
+          if(!blocks){
+            return res.status(200).json({dbLogs: l.logs});
+          }
+          else{
+            return res.status(200).json({dbLogs: l.logs, blockList: blocks});
+          }
+        });
+      }
+    });
+
+
+
+
+  });
+
+  // Thing.findByIdAsync(req.params.id)
+  //   .then(handleEntityNotFound(res))
+  //   .then(removeEntity(res))
+  //   .catch(handleError(res));
+
+  // return entity.removeAsync()
+  //   .then(() => {
+  //     res.status(204).end();
+  //   });
+
+
+}
 
 
 //HELPER FUNCTIONS
@@ -253,7 +311,7 @@ export function deleteLogs(user, blockId, cb){
           cb(l.logs);
         }
         else {
-          console.log('log-block assignment deleted', l.logs);
+          console.log('log-block assignment deleted');
           cb(l.logs);
         }
       });
@@ -292,3 +350,12 @@ export function deleteLogs(user, blockId, cb){
 //   return dbLogs;
 //
 // }
+
+function clone(obj) {
+  if (null == obj || "object" != typeof obj) return obj;
+  var copy = obj.constructor();
+  for (var attr in obj) {
+    if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+  }
+  return copy;
+}

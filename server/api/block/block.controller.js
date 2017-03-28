@@ -407,3 +407,41 @@ function deleteBlockFromBlockString(blockId, blockString){
   }
   return blockString;
 }
+
+export function stripLogFromBlockContent(user, blockId, log, cb){
+  Block.findOne({'user': user}).exec(function (err, b) {
+
+    if (err || !b) {
+      //creating first entry for user
+      return cb();
+    }
+    else {
+      for(var i = 0; i < b.blocks.length; i++){
+        if(b.blocks[i]._id.toHexString() === blockId){
+          let contents = b.blocks[i].content.split('\\n');
+          let index = contents.indexOf(log);
+          if(index > -1){
+            contents.splice(index, 1);
+          }
+          b.blocks[i].content = contents.join('\\n');
+          break;
+        }
+      }
+
+      b.save(function (err) {
+        if (err) {
+          console.log('could not save/update block '+blockId, err);
+          cb();
+
+        }
+        else {
+          console.log('block updated');
+          return cb(b.blocks);
+
+        }
+      });
+
+    }
+
+  });
+}

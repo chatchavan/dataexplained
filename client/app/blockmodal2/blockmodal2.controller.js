@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModal2Controller', function($scope, $element, title, close, block, content, edit) {
+  .controller('BlockModal2Controller', function($scope, $element, title, close, block, content, edit, filesHistory) {
 
     $scope.title = title;
     $scope.edit = edit;
     $scope.block = block;
-
+    $scope.filesHistory = filesHistory;
+    $scope.list = ["one", "two", "thre", "four", "five", "six"];
 
     if(!$scope.block){
       $scope.block = {};
@@ -99,6 +100,45 @@ angular.module('rationalecapApp')
       element.style.height = (element.scrollHeight > element.clientHeight) ? (element.scrollHeight)+"px" : "60px";
 
 
+    };
+
+    $(document).ready(function() {
+      //Helper function to keep table row from collapsing when being sorted
+      var fixHelperModified = function(e, tr) {
+        var $originals = tr.children();
+        var $helper = tr.clone();
+        $helper.children().each(function(index)
+        {
+          $(this).width($originals.eq(index).width())
+        });
+        return $helper;
+      };
+
+      //Make diagnosis table sortable
+      $("#diagnosis_list tbody").sortable({
+        helper: fixHelperModified,
+        stop: function(event,ui) {renumber_table('#diagnosis_list')}
+      }).disableSelection();
+
+
+      //Delete button in table rows
+      $('table').on('click','.btn-delete',function() {
+        let tableID = '#' + $(this).closest('table').attr('id');
+        r = confirm('Delete this item?');
+        if(r) {
+          $(this).closest('tr').remove();
+          renumber_table(tableID);
+        }
+      });
+
+    });
+
+//Renumber table rows
+    function renumber_table(tableID) {
+      $(tableID + " tr").each(function() {
+        let count = $(this).parent().children().index($(this)) + 1;
+        $(this).find('.priority').html(count);
+      });
     }
 
   });

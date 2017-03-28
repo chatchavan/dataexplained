@@ -9,5 +9,6 @@ router.get('/', controller.index);
 router.get('/:user', controller.show);
 router.get('/file/:user', controller.showFromFile);
 router.post('/finish', controller.finish);
+router.post('/delete', controller.destroy);
 
 module.exports = router;

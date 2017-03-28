@@ -1,24 +1,78 @@
+<div class="container finish">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 col-xs-12">
+      <h3>Check whether all logs are assigned to the correct block and confirm by clicking 'Confirm Blocks'.</h3>
+      <div class="panel-group" id="accordion">
 
 
-<div id="container">
-  <div style="height: 100%">
-      <h2>Reassign logs to blocks</h2>
-      <div class="form-group height100">
-        <label for="selection">Check whether all logs are assigned to the correct block and confirm by clicking 'Confirm Blocks'.</label>
+        <div ng-if="vm.itemlist" ng-repeat="item in vm.itemlist" class="panel panel-default" id="panel_{{$index}}">
+          <div class="panel-heading" data-toggle="collapse" data-target="#collapse_{{$index}}"
+                ng-class="{'log-entry' : !item.renderedContent}">
+            <span ng-if="item.renderedContent && item.content.length>0" class="pull-right fa fa-arrows-v"></span>
+            <!--<button class="pull-right editBlock-btn" ng-click="vm.editBlock(item)">Edit Block</button>-->
+            <span ng-if="item.renderedContent" ng-click="vm.editBlock(item)" class="pull-right fa fa-pencil-square-o"></span>
+            <h4 ng-if="item.renderedContent" class="panel-title"><a data-toggle="collapse" data-target="#collapse_{{$index}}" href="#collapse_{{$index}}">{{item.title}}</a></h4>
+            <h6 ng-if="!item.renderedContent">{{item.title}}</h6>
+          </div>
 
+          <div ng-if="item.renderedContent && item.content.length>0" id="collapse_{{$index}}" class="panel-collapse collapse out fade">
+            <div class="panel-body">
+              <!--<p class="log-line" ng-repeat="c in item.renderedContent" class="content-line">{{c}}</p>-->
+              <div class="log-line" ng-repeat="c in item.renderedContent">{{c}}<span ng-click="vm.removeLog(c, item)" class="pull-right  glyphicon glyphicon-remove"></span></div>
+              <div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <select ng-model="main.selection" multiple class="fullDimension selectContainer" id="selection">
-          <option ng-value="log" ng-class="{'not-eligible' : log.used}"
-                  ng-disabled="log.used"
-                  ng-repeat="log in vm.loglist">{{log.log}}</option>
-        </select>
+        <!--<table style="width:auto;" class="table table-bordered">-->
+          <!--<tbody ui-sortable ng-model="vm.itemlist">-->
+          <!--<tr ng-repeat="item in vm.itemlist" class="item panel panel-default" id="panel_{{$index}}"  style="cursor: move;">-->
+            <!--<td>-->
+              <!--<div class="panel-heading" data-toggle="collapse" data-target="#collapse_{{$index}}"-->
+                   <!--ng-class="{'log-entry' : !item.renderedContent}">-->
+                <!--<span ng-if="item.renderedContent && item.content.length>0" class="pull-right fa fa-arrows-v"></span>-->
+                <!--&lt;!&ndash;<button class="pull-right editBlock-btn" ng-click="vm.editBlock(item)">Edit Block</button>&ndash;&gt;-->
+                <!--<span ng-if="item.renderedContent" ng-click="vm.editBlock(item)" class="pull-right fa fa-pencil-square-o"></span>-->
+                <!--<h4 ng-if="item.renderedContent" class="panel-title"><a data-toggle="collapse" data-target="#collapse_{{$index}}" href="#collapse_{{$index}}">{{item.title}}</a></h4>-->
+                <!--<h6 ng-if="!item.renderedContent">{{item.title}}</h6>-->
+              <!--</div>-->
+
+              <!--<div ng-if="item.renderedContent && item.content.length>0" id="collapse_{{$index}}" class="panel-collapse collapse out fade">-->
+                <!--<div class="panel-body">-->
+                  <!--&lt;!&ndash;<p class="log-line" ng-repeat="c in item.renderedContent" class="content-line">{{c}}</p>&ndash;&gt;-->
+                  <!--<div class="log-line" ng-repeat="c in item.renderedContent">{{c}}<span ng-click="vm.removeLog(c, item)" class="pull-right  glyphicon glyphicon-remove"></span></div>-->
+                  <!--<div>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</td>-->
+          <!--</tr>-->
+          <!--</tbody>{{renderedContent}}-->
+          <!--<hr>-->
+        <!--</table>-->
+
+        <!--<div ng-if="vm.itemlist" ng-repeat="item in vm.itemlist" class="panel panel-default" id="panel_{{$index}}">-->
+        <!--<ul dnd-list="item.renderedContent">-->
+          <!--&lt;!&ndash; The dnd-draggable directive makes an element draggable and will-->
+               <!--transfer the object that was assigned to it. If an element was-->
+               <!--dragged away, you have to remove it from the original list-->
+               <!--yourself using the dnd-moved attribute &ndash;&gt;-->
+          <!--<li ng-repeat="c in item.renderedContent"-->
+              <!--dnd-draggable="c"-->
+              <!--dnd-moved="renderedContent.splice($index, 1)"-->
+              <!--dnd-effect-allowed="move"-->
+              <!--dnd-selected="models.selected = c"-->
+              <!--ng-class="{'selected': models.selected === item}">{{c}}-->
+          <!--</li>-->
+        <!--</ul>-->
+        <!--</div>-->
+
       </div>
+    </div>
   </div>
 
-</div>
-
-<button ng-click="vm.finishAnalysis()">Confirm Blocks</button>
-
+  <button ng-click="vm.confirmBlocks()">Confirm Blocks</button>
 
 </div>
 
