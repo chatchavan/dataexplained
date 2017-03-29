@@ -55,7 +55,7 @@ class MainController {
   }
 
 
-  //=========LOGS=========
+  //=========LOGS=========e
 
   pollLogs(){
     this.$http.get('/api/logs/file/'+this.user).then(response => {
@@ -149,7 +149,7 @@ class MainController {
 
   updateBlock(newBlock) {
     this.BlockUtil.updateBlock(newBlock, this.user, this.loglist, this.dbLogs).then(function(success){
-      that.blockList = success.blockList;
+      // that.blockList = success.blockList;
       that.loglist = success.loglist;
     });
   }

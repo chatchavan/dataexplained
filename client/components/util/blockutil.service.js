@@ -171,11 +171,14 @@
 
         $http.put('/api/blocks', {block: newBlock, user: user }).then(response => {
           Util.hideModal('processing-modal');
-          console.log('response', response);
-          if(response.data.length > 0){
-            let blockList = response.data;
+          console.log('response updating block', response);
+          if(response.data){
+            let block = response.data;
             let loglist = LogUtil.markLogs(loglist, dbLogs);
-            deferred.resolve({blockList: blockList, loglist: loglist})
+            deferred.resolve({block: block, loglist: loglist})
+          }
+          else{
+            deferred.reject();
           }
 
         }, (err) => {

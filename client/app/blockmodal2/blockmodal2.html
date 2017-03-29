@@ -67,7 +67,7 @@
             </div>
 
             <div ng-if="step==4 || edit" class="form-group question-group">
-              <label for="criteria" class="control-label">What are the <span style="font-style: italic">criteria</span> according to which this judgement is made?</label>
+              <label for="criteria" class="control-label">What are the <span style="font-style: italic">criteria</span> decisive for your chosen option?</label>
               <textarea type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required></textarea>
               <div ng-messages="bmodal.form.criteria.$error" ng-show="bmodal.form.$submitted || bmodal.form.criteria.$touched">
                 <div class="required" ng-message="required">Input required</div>
@@ -75,7 +75,7 @@
             </div>
 
             <div ng-if="step==5 || edit" class="form-group question-group">
-              <label for="preconditions" class="control-label">What criteria need to be fulfilled to run this block?</label>
+              <label for="preconditions" class="control-label">What requirements need to be fulfilled to run this block?</label>
               <textarea type="text" class="form-control" name="preconditions" id="preconditions" placeholder="" ng-model="block.preconditions" required></textarea>
               <div ng-messages="bmodal.form.preconditions.$error" ng-show="bmodal.form.$submitted || bmodal.form.preconditions.$touched">
                 <div class="required" ng-message="required">Input required</div>
