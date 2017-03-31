@@ -18,6 +18,8 @@ import config from './environment';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
 import mongoose from 'mongoose';
+import passport from 'passport';
+
 var mongoStore = connectMongo(session);
 
 export default function(app) {
@@ -31,6 +33,7 @@ export default function(app) {
   app.use(bodyParser.json());
   app.use(methodOverride());
   app.use(cookieParser());
+  app.use(passport.initialize());
 
   // Persist sessions with mongoStore / sequelizeStore
   // We need to enable sessions for passport-twitter because it's an

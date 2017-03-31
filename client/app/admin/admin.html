@@ -1,0 +1,42 @@
+<navbar></navbar>
+
+<div class="admin" id="admin-container">
+
+  <div class="margin-top-medium">
+    <h2>User information</h2>
+    <div class="title-container">
+      <label for="username" class="control-label">User-name</label>
+      <input type="text" class="" name="username" id="username" placeholder="" ng-model="admin.searchUser" required>
+      <input type="button" ng-click="admin.showWorkflow()" value="Show Workflow">
+      <input type="button" ng-click="admin.showBlocks()" value="Show Blocks">
+    </div>
+
+  </div>
+
+
+  <div ng-if="admin.itemlist" ng-repeat="item in admin.itemlist" class="panel panel-default margin-top-medium" id="panel_{{$index}}">
+    <div class="panel-heading" data-toggle="collapse" data-target="#collapse_{{$index}}">
+      <span ng-if="item.renderedContent && item.content.length>0" class="pull-right fa fa-arrows-v"></span>
+      <span ng-if="item.renderedContent" ng-click="admin.editBlock(item)"
+            class="pull-right fa fa-pencil-square-o"></span>
+      <h4 ng-if="item.renderedContent" class="panel-title">
+        <a data-toggle="collapse" data-target="#collapse_{{$index}}"href="#collapse_{{$index}}">{{item.title}}</a>
+      </h4>
+    </div>
+
+    <div ng-if="item.renderedContent" id="collapse_{{$index}}"
+         class="panel-collapse collapse out fade">
+      <div class="panel-body">
+        <p ng-repeat="c in item.renderedContent track by $index">{{c}}</p>
+      </div>
+     </div>
+
+  </div>
+
+</div>
+
+<div class="jsplumb-container">
+  <js-plump class="jsplumb" ng-if="admin.plumbJson" plumplist="admin.plumbList" json="admin.plumbJson" instance="admin.plumbInstance"></js-plump>
+</div>
+
+

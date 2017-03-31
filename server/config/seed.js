@@ -5,6 +5,7 @@
 
 'use strict';
 import Thing from '../api/thing/thing.model';
+import User from '../api/user/user.model';
 import File from '../api/file/file.model';
 
 Thing.find({}).removeAsync()
@@ -37,6 +38,24 @@ Thing.find({}).removeAsync()
       info: 'Easily deploy your app to Heroku or Openshift with the heroku ' +
              'and openshift subgenerators'
     });
+  });
+User.find({}).removeAsync()
+  .then(() => {
+    User.createAsync({
+      provider: 'local',
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'test'
+    }, {
+      provider: 'local',
+      role: 'admin',
+      name: 'Admin',
+      email: 'admin@example.com',
+      password: 'admin'
+    })
+      .then(() => {
+        console.log('finished populating users');
+      });
   });
 //
 // File.find({}).removeAsync()

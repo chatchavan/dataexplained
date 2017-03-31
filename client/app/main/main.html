@@ -51,7 +51,7 @@
 
             <!--</select>-->
             <div class="btn-container">
-              <button ng-click="main.createBlock()">Create Block</button>
+              <button ng-disabled="!main.selection || main.selection.length <1" ng-click="main.createBlock()">Create Block</button>
             </div>
 
             <select ng-model="main.selection" multiple ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection">

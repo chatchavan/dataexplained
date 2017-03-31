@@ -99,6 +99,22 @@ export function show(req, res) {
 
 }
 
+export function showAdmin(req, res) {
+  let user = req.params.user;
+
+  Block.findOne({'user': user}).exec(function (err, b) {
+
+    if (err || !b) {
+      return res.status(404).end();
+    }
+    LogCtrl.getLogsByUser(user, function(dbLogs){
+      return res.status(200).json({'blocks': b, 'dbLogs' : dbLogs});
+    });
+  });
+
+
+}
+
 // Creates a new Block in the DB
 export function create(req, res) {
   let block = req.body.block;
@@ -171,6 +187,43 @@ export function create(req, res) {
 
 }
 
+//sets js-plump workflow export
+export function createPlump(req, res){
+  let user = req.body.user;
+  let plumb = req.body.plumb;
+
+  console.log('getting plumb for user', user);
+
+
+  Block.findOne({'user': user}).exec(function (err, b) {
+
+    if (err || !b) {
+      return res.status(404).end();
+    }
+    else if(!plumb){
+      return res.status(200).json(b);
+    }
+    else {
+      b.plumb = plumb;
+      b.save(function (err) {
+        if (err) {
+          console.log('could not save/update block-plump for user '+user, err);
+        }
+        else {
+          console.log('block-plump updated');
+        }
+        return res.status(200).json(b);
+
+      });
+
+
+    }
+
+  });
+
+
+}
+
 // Updates an existing Block in the DB
 export function update(req, res) {
   let block = req.body.block;
@@ -197,6 +250,7 @@ export function update(req, res) {
               b.blocks[i].alternatives = block.alternatives;
               b.blocks[i].criteria = block.criteria;
               b.blocks[i].preconditions = block.preconditions;
+              b.blocks[i].timestamp = block.timestamp;
               b.blocks[i].content = block.content;
 
         }
@@ -204,7 +258,9 @@ export function update(req, res) {
       b.save(function (err) {
         if (err) {
           console.log('could not save/update block for user '+user, err);
-          return res.status(200).json(blockCopy);
+          // return res.status(200).json(blockCopy);
+          return res.status(200).json(b.blocks);
+
 
 
         }
@@ -213,7 +269,7 @@ export function update(req, res) {
           // LogCtrl.createOrUpdateLogs(user, blockId, selection, function(logSuccess){
           //   return res.status(200).json(block);
           // });
-          return res.status(200).json(block);
+          return res.status(200).json(b.blocks);
 
         }
       });
@@ -408,7 +464,7 @@ function deleteBlockFromBlockString(blockId, blockString){
   return blockString;
 }
 
-export function stripLogFromBlockContent(user, blockId, log, cb){
+export function stripLogFromBlockContent(user, blockId, logEntry, latestLog, cb){
   Block.findOne({'user': user}).exec(function (err, b) {
 
     if (err || !b) {
@@ -419,11 +475,14 @@ export function stripLogFromBlockContent(user, blockId, log, cb){
       for(var i = 0; i < b.blocks.length; i++){
         if(b.blocks[i]._id.toHexString() === blockId){
           let contents = b.blocks[i].content.split('\\n');
-          let index = contents.indexOf(log);
+          let index = contents.indexOf(logEntry.log);
           if(index > -1){
             contents.splice(index, 1);
           }
           b.blocks[i].content = contents.join('\\n');
+          if(latestLog){
+            b.blocks[i].timestamp = latestLog.timestamp;
+          }
           break;
         }
       }

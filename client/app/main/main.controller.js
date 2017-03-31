@@ -51,7 +51,7 @@ class MainController {
   startPolling(){
     this.pollLogs();
     this.getAllBlocks();
-    this.$interval(this.pollLogs.bind(this), 5000);
+    // this.$interval(this.pollLogs.bind(this), 5000);
   }
 
 
@@ -149,7 +149,7 @@ class MainController {
 
   updateBlock(newBlock) {
     this.BlockUtil.updateBlock(newBlock, this.user, this.loglist, this.dbLogs).then(function(success){
-      // that.blockList = success.blockList;
+      that.blockList = success.blockList;
       that.loglist = success.loglist;
     });
   }

@@ -12,7 +12,7 @@ function UtilService($window, $sce, ModalService, $timeout, $http) {
      * Returns URL of RStudio-Server
      */
     getRStudioUri() {
-      return $sce.trustAsResourceUrl('http://34.251.106.133:8787');
+      return $sce.trustAsResourceUrl('http://34.253.169.17:8787');
     },
 
     /**

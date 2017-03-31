@@ -9,7 +9,7 @@
       /**
        * Decodes a formatted string structured with //startblock\nBLOCKCONTENT//endblock into an array of blocks
        * */
-      decodeBlock(blockString){
+      // decodeBlock(blockString){
         // console.log('decodeBlock', blockString);
         //
         // var split = blockString.split('\\n');
@@ -53,27 +53,27 @@
         //   }
         //
         // }
-        return blockString;
-      },
+      //   return blockString;
+      // },
 
       /**
        * Encodes Array of Blocks into a string of structure //startblock\nBLOCKCONTENT//endblock
        * */
-      encodeBlock(blockList){
-
-        var blockString = '';
-        for(let i = 0; i < blockList.length; i++){
-          if(blockString.length > 0){
-            blockString += '\\n';
-          }
-          blockString += BlockUtil.getBlockPrefix()+':'+blockList[i].title;
-          for(let j = 0; j < blockList[i].contentRaw.length; j++){
-            blockString += '\\n'+blockList[i].contentRaw[j].timestamp+':'+blockList[i].contentRaw[j].content;
-          }
-          blockString += '\\n'+BlockUtil.getBlockSuffix();
-        }
-        return blockString;
-      },
+      // encodeBlock(blockList){
+      //
+      //   var blockString = '';
+      //   for(let i = 0; i < blockList.length; i++){
+      //     if(blockString.length > 0){
+      //       blockString += '\\n';
+      //     }
+      //     blockString += BlockUtil.getBlockPrefix()+':'+blockList[i].title;
+      //     for(let j = 0; j < blockList[i].contentRaw.length; j++){
+      //       blockString += '\\n'+blockList[i].contentRaw[j].timestamp+':'+blockList[i].contentRaw[j].content;
+      //     }
+      //     blockString += '\\n'+BlockUtil.getBlockSuffix();
+      //   }
+      //   return blockString;
+      // },
 
 
       /**
@@ -164,7 +164,7 @@
       /**
        * Updates a Block
        * */
-      updateBlock(newBlock, user, loglist, dbLogs) {
+      updateBlock(newBlock, user, logs, dbLogs) {
         var deferred = $q.defer();
         console.log('updating block', newBlock);
         Util.showLoadingModal('Updating Block...');
@@ -173,9 +173,9 @@
           Util.hideModal('processing-modal');
           console.log('response updating block', response);
           if(response.data){
-            let block = response.data;
-            let loglist = LogUtil.markLogs(loglist, dbLogs);
-            deferred.resolve({block: block, loglist: loglist})
+            let blockList = response.data;
+            let loglist_u = LogUtil.markLogs(logs, dbLogs);
+            deferred.resolve({blockList: blockList, loglist: loglist_u})
           }
           else{
             deferred.reject();

@@ -45,21 +45,7 @@
 
         }
         return logList;
-      },
-
-      /**
-       * check whether all logs are used in blocks (e.g. "used = true")
-       * */
-      checkAllLogs(logList){
-        for(var i = 0; i < logList.length; i++){
-          if(!logList[i].used || logList[i].used == false){
-            return false;
-          }
-        }
-
-        return true;
-      },
-
+      }
 
     };
 

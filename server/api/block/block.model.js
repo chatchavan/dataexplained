@@ -21,6 +21,7 @@ var BlockContentSchema = new mongoose.Schema({
 var BlockSchema = new mongoose.Schema({
   user: String,
   blocks: [BlockContentSchema],
+  plumb: String
 });
 
 export default mongoose.model('Block', BlockSchema);

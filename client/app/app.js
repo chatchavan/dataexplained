@@ -2,7 +2,9 @@
 
 angular.module('rationalecapApp', [
   'rationalecapApp.constants',
+  'rationalecapApp.auth',
   'rationalecapApp.util',
+  'rationalecapApp.admin',
   'ngCookies',
   'ngResource',
   'ngMessages',
@@ -11,7 +13,8 @@ angular.module('rationalecapApp', [
   'ui.bootstrap',
   'ui.sortable',
   'dndLists',
-  'angularModalService'
+  'angularModalService',
+  'validation.match'
 ])
   .config(function($urlRouterProvider, $locationProvider) {
     $urlRouterProvider

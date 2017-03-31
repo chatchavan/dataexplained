@@ -125,6 +125,23 @@ export function showFromFile(req, res) {
   });
 }
 
+//create new log for given blockId
+export function create(req, res){
+  let blockId = req.body.blockId;
+  let user = req.body.user;
+  let log = req.body.log;
+
+  createOrUpdateLogs(user, blockId, [log], function(dbLogs){
+    if(!dbLogs){
+      return res.status(500).end();
+    }
+    else{
+      return res.status(200).json(dbLogs);
+    }
+
+  });
+}
+
 //Compare and update (sync) complete loglist with db
 export function finish(req, res){
   let logs = req.body.logs;
@@ -165,12 +182,18 @@ export function destroy(req, res){
 
     let logsCopy = clone(l.logs);
     let log;
+    let latestLog;
 
     for (let i = l.logs.length - 1; i >= 0; i--) {
       if(l.logs[i]._id.toHexString() === logId){
-        log = l.logs[i].log;
+        log = l.logs[i];//.log;
         l.logs.splice(i, 1);
         delete l._id;
+      }
+      else if(l.logs[i].block.toHexString() === blockId){
+        if(!latestLog || new Date(latestLog.timestamp).getTime() < new Date(l.logs[i].timestamp).getTime()){
+          latestLog = l.logs[i];
+        }
       }
     }
 
@@ -180,7 +203,7 @@ export function destroy(req, res){
         return res.status(201).json({dbLogs: logsCopy});
       }
       else {
-        BlockCtrl.stripLogFromBlockContent(user, blockId, log, function(blocks){
+        BlockCtrl.stripLogFromBlockContent(user, blockId, log, latestLog, function(blocks){
           if(!blocks){
             return res.status(200).json({dbLogs: l.logs});
           }
@@ -211,6 +234,27 @@ export function destroy(req, res){
 
 
 //HELPER FUNCTIONS
+export function getLogsByUser(user, cb){
+  console.log('get Logs for user ' + user);
+
+  if(!user){
+    cb();
+  }
+  else{
+    Log.findOne({ 'user': user }).exec(function (err, logs) {
+
+      //creating first entry for user
+      if (err || !logs) {
+        cb();
+      }
+      else{
+        cb(logs);
+      }
+
+    });
+  }
+}
+
 export function createOrUpdateLogs(user, blockId, selection, cb) {
 
   if(!blockId || !user || !selection){

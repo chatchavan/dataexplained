@@ -25,12 +25,14 @@ angular.module('rationalecapApp')
     //  This close function doesn't need to use jQuery or bootstrap, because
     //  the button has the 'data-dismiss' attribute.
     $scope.close = function(form) {
-      console.log(form.$valid);
-      form.$setSubmitted();
-      console.log(form.$valid);
-      if(form.$valid){
-        $element.modal('hide');
-        close($scope.block, 500); // close, but give 500ms for bootstrap to animate
+      if(form){
+        console.log(form.$valid);
+        form.$setSubmitted();
+        console.log(form.$valid);
+        if(form.$valid){
+          $element.modal('hide');
+          close($scope.block, 500); // close, but give 500ms for bootstrap to animate
+        }
       }
     };
 

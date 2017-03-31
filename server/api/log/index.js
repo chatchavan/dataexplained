@@ -8,6 +8,7 @@ var router = express.Router();
 router.get('/', controller.index);
 router.get('/:user', controller.show);
 router.get('/file/:user', controller.showFromFile);
+router.post('/', controller.create);
 router.post('/finish', controller.finish);
 router.post('/delete', controller.destroy);
 

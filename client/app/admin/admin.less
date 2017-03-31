@@ -1,0 +1,79 @@
+.admin{
+  margin: 60px 60px 20px 60px;
+
+  .title-container>label, .title-container>input{
+    display: inline-block;
+    vertical-align: middle;
+    margin: 10px 0;
+  }
+
+  .title-container>input{
+    margin-left: 20px;
+  }
+  .trash { color:rgb(209, 91, 71); }
+
+  .user-list {
+    li {
+      display: flex;
+      border: none;
+      border-bottom: 1px lightgray solid;
+      margin-bottom: 0;
+      &:last-child { border-bottom: none; }
+
+      .user-info {
+        flex-grow: 1;
+      }
+      .trash {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+      }
+    }
+  }
+
+  /*LIST*/
+  .panel-heading {
+    cursor: pointer;
+    cursor: hand;
+  }
+
+  .content-line{
+    margin: 0;
+  }
+
+  .panel-group .panel + .panel {
+    margin-top: 15px;
+  }
+
+  .log-line {
+    //margin
+  }
+  .log-line > span{
+    color: grey;
+    cursor: pointer;
+  }
+
+
+  .editBlock-btn{
+    font-size: 12px;
+    height: 30px;
+    margin-top: 15px;
+    margin-left: -5px;
+    padding: 5px 8px 8px 8px;
+  }
+
+  .dnd-list{
+    min-height: 20px;
+  }
+
+
+
+}
+
+.jsplumb-container{
+  //position: absolute;
+}
+.jsplumb{
+  //position: inherit;
+}
+
