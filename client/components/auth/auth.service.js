@@ -21,8 +21,9 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User) {
      * @return {Promise}
      */
     login(user, callback) {
+      console.log('user', user);
       return $http.post('/auth/local', {
-        email: user.email,
+        username: user.username,
         password: user.password
       })
         .then(res => {
@@ -67,6 +68,27 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User) {
           Auth.logout();
           return safeCb(callback)(err);
         }).$promise;
+    },
+
+    createUserAdmin(user, callback) {
+      return $http.post('/api/users/admin', user)
+        .then(res => {
+          console.log('res in auth service', res);
+          return res.$promise;
+        })
+        .catch(err => {
+          console.log('err in auth service', err);
+          return $q.reject(err.data);
+        });
+
+      // return User.changePassword({ id: currentUser._id }, {
+      //   oldPassword: oldPassword,
+      //   newPassword: newPassword
+      // }, function() {
+      //   return safeCb(callback)(null);
+      // }, function(err) {
+      //   return safeCb(callback)(err);
+      // }).$promise;
     },
 
     /**

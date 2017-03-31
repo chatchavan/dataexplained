@@ -37,7 +37,7 @@ class AdminController {
   showWorkflow(){
     if(this.searchUser){
       let itemlistCopy = this.itemlist;
-      this.itemlist = undefined;
+      this.resetView();
       this.$http.get('/api/blocks/admin/'+this.searchUser).then(response => {
         if(response.data.blocks && response.data.blocks.plumb){
 
@@ -49,13 +49,18 @@ class AdminController {
 
           console.log("Current height: " + style.height, tempJson);
           tempJson.marginTop = style.height;
+          this.noWorkflow = false;
           this.plumbJson = tempJson;
 
             // console.log('got block-data for user '+this.searchUser, response.data);
         }
+        else{
+          this.noWorkflow = true;
+        }
       }, (err) => {
         //file does not exist yet
         this.itemlist = itemlistCopy;
+        this.userNotFound = true;
         console.log('error fetching blocks', err);
       });
     }
@@ -68,14 +73,44 @@ class AdminController {
       this.$http.get('/api/blocks/admin/'+this.searchUser).then(response => {
         console.log('response', response);
         if(response.data && response.data.blocks && response.data.dbLogs){
-          this.plumbJson = undefined;
+          this.resetView();
           this.createItemList(response.data.blocks.blocks, response.data.dbLogs);
         }
       }, (err) => {
         //file does not exist yet
+        this.userNotFound = true;
         console.log('error fetching blocks', err);
       });
     }
+  }
+
+  createUser(){
+    if(this.searchUser) {
+      this.Auth.createUserAdmin({
+        username: this.searchUser,
+        password: this.searchUser
+      })
+        .then(() => {
+          // Account created, redirect to home
+          console.log('user created!!!');
+        })
+        .catch(err => {
+          err = err.data;
+          this.errors = {};
+
+          // Update validity of form fields that match the mongoose errors
+          angular.forEach(err.errors, (error, field) => {
+            console.log('ERROR CREATING USER: ', error);
+          });
+        });
+    }
+  }
+
+  resetView(){
+    this.plumbJson = undefined;
+    this.itemlist = undefined;
+    this.noWorkflow = false;
+    this.userNotFound = false;
   }
 
 

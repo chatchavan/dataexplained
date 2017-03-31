@@ -1,4 +1,4 @@
-<navbar></navbar>
+<!--<navbar></navbar>-->
 
 <div class="admin" id="admin-container">
 
@@ -6,13 +6,22 @@
     <h2>User information</h2>
     <div class="title-container">
       <label for="username" class="control-label">User-name</label>
-      <input type="text" class="" name="username" id="username" placeholder="" ng-model="admin.searchUser" required>
+      <input type="text" class="" name="username" id="username" placeholder="" ng-model="admin.searchUser"
+             ng-change="admin.resetView()" required>
       <input type="button" ng-click="admin.showWorkflow()" value="Show Workflow">
       <input type="button" ng-click="admin.showBlocks()" value="Show Blocks">
+      <input type="button" ng-click="admin.createUser()" value="Create User">
+
     </div>
 
   </div>
 
+  <div ng-if="admin.noWorkflow">
+    <h4>No workflow for "{{admin.searchUser}}" found.</h4>
+  </div>
+  <div ng-if="admin.userNotFound">
+    <h4>User "{{admin.searchUser}}" not found.</h4>
+  </div>
 
   <div ng-if="admin.itemlist" ng-repeat="item in admin.itemlist" class="panel panel-default margin-top-medium" id="panel_{{$index}}">
     <div class="panel-heading" data-toggle="collapse" data-target="#collapse_{{$index}}">

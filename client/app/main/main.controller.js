@@ -4,10 +4,9 @@
 
 class MainController {
 
-  constructor($http, StorageUtil, Util, $interval, $timeout, $state, ModalService, LogUtil, BlockUtil) {
-    this.user = undefined;
-    this.selectFocus = false;
-    this.userDefined = false;
+  constructor(Auth, $http, StorageUtil, Util, $interval, $timeout, $state, ModalService, LogUtil, BlockUtil) {
+
+    this.Auth = Auth;
     this.$http = $http;
     this.$timeout = $timeout;
     this.$interval = $interval;
@@ -17,6 +16,10 @@ class MainController {
     this.ModalService = ModalService;
     this.BlockUtil = BlockUtil;
     this.LogUtil = LogUtil;
+
+    this.user = undefined;
+    this.selectFocus = false;
+    this.userDefined = false;
     this.selection = '';
     this.blockList = [];
     this.loglist = [];
@@ -33,11 +36,16 @@ class MainController {
 
 
   init(){
-    this.user = this.StorageUtil.retrieveSStorage('user');
-    console.log('retrieved user from sessionstorage', this.user);
-    if(this.user){
-      this.userDefined = true;
-      this.startPolling();
+    if(!this.Auth.isLoggedIn()){
+      this.$state.go('^.login');
+    }
+    else{
+      this.user = this.Auth.getCurrentUser().username;
+      if(this.user){
+        this.StorageUtil.saveSStorage('user',this.user);
+        this.userDefined = true;
+        this.startPolling();
+      }
     }
 
   }

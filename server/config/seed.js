@@ -43,15 +43,15 @@ User.find({}).removeAsync()
   .then(() => {
     User.createAsync({
       provider: 'local',
-      name: 'Test User',
-      email: 'test@example.com',
-      password: 'test'
+      username: 'coldata',
+      // email: 'test@example.com',
+      password: 'coldata'
     }, {
       provider: 'local',
       role: 'admin',
-      name: 'Admin',
-      email: 'admin@example.com',
-      password: 'admin'
+      username: 'admin',
+      // email: 'admin@example.com',
+      password: 'admin!123'
     })
       .then(() => {
         console.log('finished populating users');

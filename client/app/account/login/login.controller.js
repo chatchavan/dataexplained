@@ -17,12 +17,17 @@ class LoginController {
 
     if (form.$valid) {
       this.Auth.login({
-        email: this.user.email,
+        username: this.user.username,
         password: this.user.password
       })
       .then(() => {
         // Logged in, redirect to home
-        this.$state.go('admin');
+        if(this.Auth.isAdmin()){
+          this.$state.go('admin');
+        }
+        else{
+          this.$state.go('^.main');
+        }
       })
       .catch(err => {
         this.errors.other = err.message;

@@ -4,6 +4,7 @@ import User from './user.model';
 import passport from 'passport';
 import config from '../../config/environment';
 import jwt from 'jsonwebtoken';
+import shell from 'shelljs';
 
 function validationError(res, statusCode) {
   statusCode = statusCode || 422;
@@ -53,6 +54,22 @@ export function create(req, res, next) {
       res.json({ token });
     })
     .catch(validationError(res));
+}
+
+export function createAdmin(req, res){
+  let username = req.body.username;
+  console.log('creating user : '+ username);
+
+
+  shell.exec('sudo userdel '+username+' --force --remove');
+  shell.exec('sudo adduser '+username);
+  shell.exec('sudo adduser '+username+' sudo');
+  shell.exec('sudo mkdir /home/'+username+'/rstudio-workspace');
+  shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
+
+  // var newUser = new User(req.body);
+
+  return res.status(200).end();
 }
 
 /**
