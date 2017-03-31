@@ -398,6 +398,14 @@ module.exports = function (grunt) {
         cwd: '<%= yeoman.client %>',
         dest: '.tmp/',
         src: ['{app,components,directives}/**/*.css']
+      },
+      fonts: {
+        expand: true,
+        flatten: true,
+        cwd: '<%= yeoman.client %>',
+        src: ['bower_components/bootstrap/fonts/*', 'bower_components/font-awesome/fonts/*'],
+        dest: '.tmp/fonts/',
+        filter: 'isFile'
       }
     },
 
@@ -806,6 +814,7 @@ module.exports = function (grunt) {
     'concat',
     'ngAnnotate',
     'copy:dist',
+    'copy:fonts',
     'babel:server',
     'cdnify',
     'cssmin',

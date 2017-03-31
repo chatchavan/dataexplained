@@ -51,7 +51,7 @@ class MainController {
   startPolling(){
     this.pollLogs();
     this.getAllBlocks();
-    // this.$interval(this.pollLogs.bind(this), 5000);
+    this.$interval(this.pollLogs.bind(this), 5000);
   }
 
 
