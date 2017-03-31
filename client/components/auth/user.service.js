@@ -12,12 +12,6 @@ function UserResource($resource) {
         controller:'password'
       }
     },
-    createAdmin: {
-      method: 'POST',
-      params: {
-        controller:'admin'
-      }
-    },
     get: {
       method: 'GET',
       params: {

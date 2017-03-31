@@ -70,25 +70,38 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User) {
         }).$promise;
     },
 
+    /**
+     * Create a new user in DB + on server + adds workspace for R-Studio
+     *
+     * @param  {Object}   user     - user info
+     * @param  {Function} callback - optional, function(error, user)
+     * @return {Promise}
+     */
     createUserAdmin(user, callback) {
-      return $http.post('/api/users/admin', user)
+      return $http.post('/api/users/createAdmin', user)
         .then(res => {
-          console.log('res in auth service', res);
           return res.$promise;
         })
         .catch(err => {
-          console.log('err in auth service', err);
           return $q.reject(err.data);
         });
+    },
 
-      // return User.changePassword({ id: currentUser._id }, {
-      //   oldPassword: oldPassword,
-      //   newPassword: newPassword
-      // }, function() {
-      //   return safeCb(callback)(null);
-      // }, function(err) {
-      //   return safeCb(callback)(err);
-      // }).$promise;
+    /**
+     * Resets existing user and cleans workspace on server
+     *
+     * @param  {Object}   user     - user info
+     * @param  {Function} callback - optional, function(error, user)
+     * @return {Promise}
+     */
+    resetUserAdmin(user, callback) {
+      return $http.post('/api/users/resetAdmin', user)
+        .then(res => {
+          return res.$promise;
+        })
+        .catch(err => {
+          return $q.reject(err.data);
+        });
     },
 
     /**

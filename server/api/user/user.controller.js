@@ -5,6 +5,11 @@ import passport from 'passport';
 import config from '../../config/environment';
 import jwt from 'jsonwebtoken';
 import shell from 'shelljs';
+import githubService from '../../util/github.service';
+var FileCtrl = require('./../file/file.controller');
+var BlockCtrl = require('./../block/block.controller');
+var LogCtrl = require('./../log/log.controller');
+
 
 function validationError(res, statusCode) {
   statusCode = statusCode || 422;
@@ -60,16 +65,44 @@ export function createAdmin(req, res){
   let username = req.body.username;
   console.log('creating user : '+ username);
 
-
   shell.exec('sudo userdel '+username+' --force --remove');
-  shell.exec('sudo adduser '+username);
-  shell.exec('sudo adduser '+username+' sudo');
+  shell.exec('sudo useradd -p $(openssl passwd -1 '+username+') '+username+' -m');
+  shell.exec('sudo usermod -aG sudo '+username);
   shell.exec('sudo mkdir /home/'+username+'/rstudio-workspace');
   shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
 
-  // var newUser = new User(req.body);
+  var newUser = new User(req.body);
 
-  return res.status(200).end();
+  return res.status(200).json(newUser);
+}
+
+export function resetAdmin(req, res){
+  let user = req.body.username;
+  console.log('resetting user : '+ user);
+
+
+  //Delete Directory on GitHub
+  githubService.deleteDirectory(user, function(success){
+    if(!success){
+      return res.status(500).end();
+    }
+    console.log('Github directory of user ' + user+' deleted!');
+
+    FileCtrl.removeFilesByUser(user, function(fSuccess){
+      BlockCtrl.removeBlocksByUser(user, function(bSuccess){
+        LogCtrl.removeLogsByUser(user, function(lSuccess){
+          shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
+          shell.exec('sudo rm -rf /home/'+user+'/.rstudio');
+
+        });
+      });
+    });
+
+    //Delete Entries in DB
+
+
+  });
+
 }
 
 /**

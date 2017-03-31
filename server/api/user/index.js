@@ -12,6 +12,8 @@ router.get('/me', auth.isAuthenticated(), controller.me);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.get('/:id', auth.isAuthenticated(), controller.show);
 router.post('/', controller.create);
-router.post('/admin', auth.hasRole('admin'), controller.createAdmin);
+router.post('/createAdmin', auth.hasRole('admin'), controller.createAdmin);
+router.post('/resetAdmin', auth.hasRole('admin'), controller.resetAdmin);
+
 
 export default router;

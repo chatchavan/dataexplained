@@ -14,6 +14,7 @@ let m_repo;
 let m_filesToCommit = [];
 let m_filesToRestore = [];
 let m_currentBranch = {};
+let m_currentTempTree = {};
 let m_newCommit = {};
 
 
@@ -190,6 +191,42 @@ function updateDirectoryTemp(message, dir, user, timestamp, res) {
   });
 
 }
+
+function deleteDirectory(user, cb){
+
+  let octo = new Octokat({
+    token: config.github.token
+  });
+
+  m_repo = octo.repos(config.github.user, 'blocks');
+
+  m_newCommit = {};
+  m_filesToCommit = [];
+  return fetchHead()
+    .then(() => spliceCurrentSubTreeSha(user))
+    .then(() => {
+    if(m_filesToCommit.length > 0){
+      createTree()
+      .then(() => createCommit('delete directory of '+ user))
+      .then((commit) => updateHead(commit))
+      .then((head) => {
+        cb(true);
+      })
+    }
+    else{
+      //user files to delete were only ones left
+      console.log('user files to delete were only ones left - cannot proceed');
+      cb(true);
+    }
+    })
+    .catch((e) => {
+      console.error(e);
+      cb(false);
+
+    });
+}
+
+
 function createOrUpdateUserFiles(user, diffUrl, commit, timestamp, res) {
 
   let newRef = {
@@ -342,6 +379,20 @@ function getCurrentTreeSHA() {
     });
 }
 
+function spliceCurrentSubTreeSha(user){
+  return m_repo.git.trees(m_currentBranch.commitSHA).fetch()
+    .then((tree) => {
+    m_currentTempTree = tree;
+      if(tree.tree){
+        for(let i = tree.tree.length-1; i >= 0; i--){
+          if(tree.tree[i].path !== user){
+            m_filesToCommit.push(tree.tree[i]);
+          }
+        }
+      }
+    });
+}
+
 function createFilesSilent(files) {
   let promises = [];
   for (let i = 0; i < files.length; i++) {
@@ -366,52 +417,6 @@ function createFileSilent(file) {
 
 }
 
-function deleteFilesSilent(user, files) {
-
-  console.log('deleteFilesSilent');
-  getContent('nicost71', 'blocks', user,
-    function(re){
-
-      let newFiles = [];
-       for (let j = 0; j < files.length; j++) {
-        newFiles.push(files[j].filename);
-      }
-
-      console.log('newFiles', newFiles);
-
-
-      let promises = [];
-      for(let i =0; i < re.data.length; i++){
-        if(!newFiles.includes(re.data[i].name) && re.data[i].name != 'blocks.txt'){
-          console.log('file to delete: ', re.data[i].name);
-          promises.push(deleteFileSilent(re.data[i]))
-        }
-      }
-
-      return Promise.all(promises);
-
-
-    },
-    function(err){
-      console.log('error in getting folder content', err);
-      return;
-    });
-
-}
-
-function deleteFileSilent(file) {
-
-  var config = {
-    message: 'Removing file',
-    sha: file.sha,
-    // branch: 'gh-pages'
-  };
-
-  return m_repo.contents(file.path).remove(config)
-    .then(function() {
-      console.log('File Deleted: ', file.name);
-    });
-}
 
 function createTree() {
   return m_repo.git.trees.create({
@@ -454,4 +459,5 @@ exports.getContent = getContent;
 exports.createFile = createFile;
 exports.updateFile = updateFile;
 exports.deleteFile = deleteFile;
+exports.deleteDirectory = deleteDirectory;
 exports.restoreFiles = restoreFiles;

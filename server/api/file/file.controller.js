@@ -224,6 +224,19 @@ export function destroy(req, res) {
 
 //HELPER FUNCTIONS
 
+export function removeFilesByUser(user, cb){
+
+  File.remove({'user': user}).exec(function (errFind, files){
+    if(errFind) {
+      cb(false);
+    }
+    else{
+      console.log('User ' + user+ ' deleted from Files DB');
+      cb(true);
+    }
+  });
+}
+
 function getCommitByTimestamp(user, timestamp, callback){
   File.findOne({'user': user}).exec(function (errFind, files){
       if(errFind) {callback(undefined); return; }

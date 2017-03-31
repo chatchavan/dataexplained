@@ -106,6 +106,29 @@ class AdminController {
     }
   }
 
+  resetUser(){
+    if(this.searchUser) {
+      this.Auth.resetUserAdmin({
+        username: this.searchUser
+      })
+        .then(() => {
+          // Account created, redirect to home
+          console.log('user resetted!!!');
+        })
+        .catch(err => {
+          err = err.data;
+          this.errors = {};
+
+          // Update validity of form fields that match the mongoose errors
+          angular.forEach(err.errors, (error, field) => {
+            console.log('ERROR RESETING USER: ', error);
+          });
+        });
+    }
+  }
+
+
+
   resetView(){
     this.plumbJson = undefined;
     this.itemlist = undefined;

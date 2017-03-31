@@ -122,24 +122,6 @@ export function create(req, res) {
 
   let selection = req.body.selection;
 
-  // githubService.getContent('nicost71', 'blocks', user,
-  //   function(re){
-  //
-  //   // console.log('content', re);
-  //   let files = [];
-  //   for (let i = 0; i < re.data.length; i++){
-  //     files.push(re.data[i].name);
-  //   }
-  //   console.log('filenames', files);
-  //     return res.status(200).end();
-  //
-  //   },
-  //   function(err){
-  //     console.log('error getting content');
-  //     return res.status(200).end();
-  //   });
-
-
   var file = {
     owner: config.github.user,
     repo: 'blocks',
@@ -401,6 +383,19 @@ function deleteBlock(user, blockId, cb) {
       });
     }
 
+  });
+}
+
+export function removeBlocksByUser(user, cb){
+
+  Block.remove({'user': user}).exec(function (errFind, files){
+    if(errFind) {
+      cb(false);
+    }
+    else{
+      console.log('User ' + user+ ' deleted from Block DB');
+      cb(true);
+    }
   });
 }
 

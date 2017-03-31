@@ -255,6 +255,19 @@ export function getLogsByUser(user, cb){
   }
 }
 
+export function removeLogsByUser(user, cb){
+
+  Log.remove({'user': user}).exec(function (errFind, files){
+    if(errFind) {
+      cb(false);
+    }
+    else{
+      console.log('User ' + user+ ' deleted from Log DB');
+      cb(true);
+    }
+  });
+}
+
 export function createOrUpdateLogs(user, blockId, selection, cb) {
 
   if(!blockId || !user || !selection){
