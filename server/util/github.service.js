@@ -155,6 +155,11 @@ function updateDirectoryTemp(message, dir, user, timestamp, res) {
 
           filenames2 = spliceFilename(filenames2, 'lock_file');
 
+          if(filenames2.length < 1){
+            console.log('no files yet to save');
+            return res.status(200).end();
+          }
+
           for(let j = filenames2.length-1; j >= 0; j--){
 
             let fileDirectory = dir + '/' + filenames[i]+'/'+filenames2[j];

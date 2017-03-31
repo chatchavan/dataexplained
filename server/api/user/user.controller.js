@@ -72,8 +72,11 @@ export function createAdmin(req, res){
   shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
 
   var newUser = new User(req.body);
+  newUser.saveAsync()
+    .spread(function(user) {
+      return res.status(200).json(user);
+    });
 
-  return res.status(200).json(newUser);
 }
 
 export function resetAdmin(req, res){

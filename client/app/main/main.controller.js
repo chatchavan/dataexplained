@@ -230,6 +230,7 @@ class MainController {
         console.log('files saved', response.data);
       }
     }, (err) => {
+      this.Util.hideModal('processing-modal');
       console.log(err);
     });
   }
