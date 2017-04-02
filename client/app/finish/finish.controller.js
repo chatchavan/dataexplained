@@ -98,10 +98,9 @@
         controller: "BlockModal2Controller",
         inputs: {
           title: "Edit block",
-          edit: true,
+          edit: 'finish',
           block: block,
           content: undefined,
-          filesHistory: false,
         }
       }).then(function(modal) {
         modal.element.modal();
@@ -111,7 +110,7 @@
               vm.blockList = success.blockList;
               vm.loglist = success.loglist;
               vm.dbLogs = success.dbLogs;
-              // vm.init();
+              vm.init();
             });
           }
           else if(result === 'showFilesDiff'){
@@ -122,7 +121,7 @@
             BlockUtil.updateBlock(newBlock, vm.user, vm.loglist, vm.dbLogs).then(function(success){
               vm.block = success.block;
               vm.loglist = success.loglist;
-              // vm.init();
+              vm.init();
             });
           }
         });

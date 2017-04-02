@@ -29,7 +29,7 @@
 
       // console.log('vm.blocks', vm.blocks);
       for(var i = 0; i < vm.blocks.length; i++){
-        vm.plumpList.push({name: vm.blocks[i].title, id: vm.blocks[i]._id});
+        vm.plumpList.push({name: vm.blocks[i].title, id: vm.blocks[i]._id, block: vm.blocks[i]});
       }
       // vm.plumpList.push({name: "NODE 2 NODE 2 NODE 2 NODE 2", id: "id2"});
       // vm.plumpList.push({name: "NODE 3", id: "id3"});

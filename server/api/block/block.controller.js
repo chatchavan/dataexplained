@@ -73,7 +73,7 @@ export function index(req, res) {
   return res.status(200).json({'index': 'all'});
 }
 
-// Gets a single Block from the DB
+// Gets all Blocks on Github from the DB
 export function show(req, res) {
   let user = req.params.user;
 

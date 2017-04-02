@@ -174,8 +174,13 @@
           console.log('response updating block', response);
           if(response.data){
             let blockList = response.data;
-            let loglist_u = LogUtil.markLogs(logs, dbLogs);
-            deferred.resolve({blockList: blockList, loglist: loglist_u})
+            if(logs && dbLogs){
+              let loglist_u = LogUtil.markLogs(logs, dbLogs);
+              deferred.resolve({blockList: blockList, loglist: loglist_u})
+            }
+            else{
+              deferred.resolve({blockList: blockList});
+            }
           }
           else{
             deferred.reject();

@@ -1,12 +1,11 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModal2Controller', function($scope, $element, title, close, block, content, edit, filesHistory) {
+  .controller('BlockModal2Controller', function($scope, $element, title, close, block, content, edit) {
 
     $scope.title = title;
     $scope.edit = edit;
     $scope.block = block;
-    $scope.filesHistory = filesHistory;
     $scope.list = ["one", "two", "thre", "four", "five", "six"];
 
     if(!$scope.block){

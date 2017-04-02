@@ -180,10 +180,9 @@ class AdminController {
     controller: "BlockModal2Controller",
     inputs: {
       title: "Edit block",
-      edit: true,
+      edit: 'admin',
       block: block,
       content: undefined,
-      filesHistory: false,
     }
   }).then(function(modal) {
     modal.element.modal();

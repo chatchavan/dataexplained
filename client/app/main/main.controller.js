@@ -105,10 +105,10 @@ class MainController {
         controller: "BlockModal2Controller",
         inputs: {
           title: "Add a new block",
-          edit: false,
+          edit: undefined,
           block: undefined,
           content: content,
-          filesHistory: false
+          jsplumb: false
         }
       }).then(function(modal) {
         modal.element.modal();
@@ -123,18 +123,17 @@ class MainController {
   }
 
   editBlock(block){
-    var that = this;
-    let select = this.selection;
+    let that = this;
 
     this.ModalService.showModal({
       templateUrl: "app/blockmodal2/blockmodal2.html",
       controller: "BlockModal2Controller",
       inputs: {
         title: "Edit block",
-        edit: true,
+        edit: 'edit',
         block: block,
         content: undefined,
-        filesHistory: true
+        jsplumb: false
       }
     }).then(function(modal) {
       modal.element.modal();
@@ -149,13 +148,14 @@ class MainController {
           that.Util.showFilesDiff(block, that.user);
         }
         else if(result){
-          that.updateBlock(that.BlockUtil.createBlockString(result, select));
+          that.updateBlock(result);
         }
       });
     });
   }
 
   updateBlock(newBlock) {
+    let that = this;
     this.BlockUtil.updateBlock(newBlock, this.user, this.loglist, this.dbLogs).then(function(success){
       that.blockList = success.blockList;
       that.loglist = success.loglist;
@@ -262,6 +262,7 @@ class MainController {
       modal.element.modal();
       modal.close.then(result => {
         if(result === actionText1){
+          console.log('user', that.user, 'logs', that.loglist);
 
           that.$http.post('/api/logs/finish', {logs: that.loglist, user: that.user }).then(response => {
             console.log('response', response);
