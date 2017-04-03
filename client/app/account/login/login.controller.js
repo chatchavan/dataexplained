@@ -7,9 +7,10 @@ class LoginController {
   submitted = false;
   //end-non-standard
 
-  constructor(Auth, $state) {
+  constructor(Auth, $state, StorageUtil) {
     this.Auth = Auth;
     this.$state = $state;
+    this.StorageUtil = StorageUtil;
   }
 
   login(form) {
@@ -22,6 +23,7 @@ class LoginController {
       })
       .then(() => {
         // Logged in, redirect to home
+        this.StorageUtil.saveSStorage('user',this.user.username);
         if(this.Auth.isAdmin()){
           this.$state.go('admin');
         }
