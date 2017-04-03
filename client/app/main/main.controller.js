@@ -38,6 +38,7 @@ class MainController {
 
 
   init(){
+    console.log('is logged in', this.Auth.isLoggedIn());
     if(!this.Auth.isLoggedIn()){
       this.$state.go('^.login');
     }
