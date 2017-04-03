@@ -285,14 +285,20 @@ class MainController {
 
     var that = this;
 
+    // if(this.LogUtil.checkAllLogs(this.loglist)){
+      let actionText1 = 'Yes';
+      let actionText2 = 'No';
+    // }
+
+
     this.ModalService.showModal({
       templateUrl: "app/custommodal/custommodal.html",
       controller: "CustomModalController",
       inputs: {
         title: "Finish Analysis",
         text: ['Please confirm that you have finished analysis'],
-        actionText1: 'Yes',
-        actionText2: 'No'
+        actionText1: actionText1,
+        actionText2: actionText2
       }
     }).then(function(modal) {
       modal.element.modal();
