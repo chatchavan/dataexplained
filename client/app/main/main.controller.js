@@ -27,6 +27,8 @@ class MainController {
     this.displayPanel = false;
 
     this.rStudioEndpoint = this.Util.getRStudioUri();
+    this.logThreshold = 2;
+    this.logWarningShowed = false;
 
     this.init();
 
@@ -70,11 +72,52 @@ class MainController {
       let fileLogs = response.data.fileLogs;
       this.dbLogs = response.data.dbLogs;
       if(!this.selectFocus) {
-        this.loglist = this.LogUtil.formatLogs(fileLogs.split('\n'), this.dbLogs);
+        let tempLogList = this.LogUtil.formatLogs(fileLogs.split('\n'), this.dbLogs);
+        if(tempLogList.length > this.loglist.length){
+          this.logWarningShowed = false;
+        }
+        this.loglist = tempLogList;
+        this.checkLogs(this.loglist);
       }
     }, (err) => {
       console.log(err);
     });
+  }
+
+  checkLogs(logList){
+    if(logList){
+      let unusedLogs = logList.filter(function(item){
+        return !item.used;
+      });
+      if(unusedLogs.length > this.logThreshold && !this.logWarningShowed){
+        this.logWarningShowed = true;
+        let actionText1 = 'Ok';
+        let text = ['Please create a new block.'];
+
+        this.ModalService.showModal({
+          templateUrl: "app/custommodal/custommodal.html",
+          controller: "CustomModalController",
+          inputs: {
+            title: 'More than '+this.logThreshold +' logs are not assigned to a block.',
+            text: text,
+            actionText1: actionText1,
+            actionText2: undefined
+          }
+        }).then(function(modal) {
+          modal.element.modal();
+          modal.close.then(result => {
+          });
+        });
+      }
+      else if(unusedLogs.length <= this.logThreshold){
+        this.logWarningShowed = false;
+      }
+
+    }
+    else{
+      this.logWarningShowed = false;
+    }
+
   }
 
   //=========BLOCKS=========
@@ -242,21 +285,14 @@ class MainController {
 
     var that = this;
 
-    // if(this.LogUtil.checkAllLogs(this.loglist)){
-      let actionText1 = 'Yes';
-      let actionText2 = 'No';
-      let text = 'Please confirm that you have finished analysis';
-    // }
-
-
     this.ModalService.showModal({
       templateUrl: "app/custommodal/custommodal.html",
       controller: "CustomModalController",
       inputs: {
         title: "Finish Analysis",
-        text: text,
-        actionText1: actionText1,
-        actionText2: actionText2
+        text: ['Please confirm that you have finished analysis'],
+        actionText1: 'Yes',
+        actionText2: 'No'
       }
     }).then(function(modal) {
       modal.element.modal();
