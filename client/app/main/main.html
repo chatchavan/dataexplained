@@ -91,7 +91,7 @@
 
   </div>
 
-  <button ng-if="main.userDefined" ng-click="main.finishAnalysis()">Finish Analysis</button>
+  <button ng-disabled="!main.blockList || main.blockList.length < 1" ng-if="main.userDefined" ng-click="main.finishAnalysis()">Finish Analysis</button>
 
 
 </div>
