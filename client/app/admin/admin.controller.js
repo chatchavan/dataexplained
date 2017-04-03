@@ -3,7 +3,7 @@
 (function() {
 
 class AdminController {
-  constructor($scope, Auth, User, LogUtil, Util, BlockUtil, ModalService, $http, $timeout) {
+  constructor($scope, Auth, User, LogUtil, Util, BlockUtil, ModalService, $http, $timeout, $state) {
     // Use the User $resource to fetch all users
     this.users = User.query();
     this.$scope = $scope;
@@ -14,19 +14,19 @@ class AdminController {
     this.ModalService = ModalService;
     this.$http = $http;
     this.$timeout = $timeout;
+    this.$state = $state;
 
     this.plumbInstance = undefined;
     this.plumbJson = undefined;
     this.plumbList = [];
     this.searchUser = undefined;
 
-    // this.init('coldata2');
 
 
   }
-  isAdmin () {
-    console.log('isAdmin', this.Auth.getCurrentUser());
-    return this.Auth.getCurrentUser().role == 'admin';
+
+  goAnalysis(){
+    this.$state.go('^.main');
   }
 
   delete(user) {
