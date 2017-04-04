@@ -58,10 +58,9 @@ class AdminController {
           this.noWorkflow = true;
         }
       }, (err) => {
-        //file does not exist yet
+        this.resetView();
         this.itemlist = itemlistCopy;
         this.userNotFound = true;
-        console.log('error fetching blocks', err);
       });
     }
 
@@ -77,15 +76,15 @@ class AdminController {
           this.createItemList(response.data.blocks.blocks, response.data.dbLogs);
         }
       }, (err) => {
-        //file does not exist yet
+        this.resetView();
         this.userNotFound = true;
-        console.log('error fetching blocks', err);
       });
     }
   }
 
   createUser(){
     if(this.searchUser) {
+      this.resetView();
       this.Auth.createUserAdmin({
         username: this.searchUser,
         password: this.searchUser
@@ -93,14 +92,15 @@ class AdminController {
         .then(() => {
           // Account created, redirect to home
           console.log('user created!!!');
+          this.textCallback = 'User "'+this.searchUser+'" created.'
         })
         .catch(err => {
-          err = err.data;
-          this.errors = {};
+          console.log('err', err);
+          this.textCallback = 'Error creating User "'+this.searchUser+'": ';
 
           // Update validity of form fields that match the mongoose errors
           angular.forEach(err.errors, (error, field) => {
-            console.log('ERROR CREATING USER: ', error);
+            this.textCallback += error.message+' ';
           });
         });
     }
@@ -108,20 +108,21 @@ class AdminController {
 
   resetUser(){
     if(this.searchUser) {
+      this.resetView();
       this.Auth.resetUserAdmin({
         username: this.searchUser
       })
         .then(() => {
           // Account created, redirect to home
+          this.textCallback = 'User "'+this.searchUser+'" reset.';
           console.log('user resetted!!!');
         })
         .catch(err => {
-          err = err.data;
-          this.errors = {};
+          this.textCallback = 'Error resetting user "'+this.searchUser+'": ';
 
           // Update validity of form fields that match the mongoose errors
           angular.forEach(err.errors, (error, field) => {
-            console.log('ERROR RESETING USER: ', error);
+            this.textCallback += error.message+' ';
           });
         });
     }
@@ -134,6 +135,7 @@ class AdminController {
     this.itemlist = undefined;
     this.noWorkflow = false;
     this.userNotFound = false;
+    this.textCallback = false;
   }
 
 
@@ -141,7 +143,6 @@ class AdminController {
     this.blockList = blockList;
     this.dbLogs = dbLogs;
     this.loglist = this.LogUtil.markLogs(this.loglist, this.dbLogs);
-    // console.log('loglist', vm.loglist, 'blocklist', vm.blockList, 'dbLogs', vm.dbLogs);
 
     this.itemlist = [];
     this.loglist = this.loglist ? this.loglist : [];
@@ -157,7 +158,6 @@ class AdminController {
 
     for(let b in this.blockList){
       this.blockList[b].renderedContent = this.blockList[b].content.length > 0 ? this.blockList[b].content.split('\\n') : [];
-      // vm.blockList[b].renderedContent = vm.blockList[b].content.split('\\n');
     }
     this.itemlist = this.itemlist.concat(this.blockList);
     this.itemlist.sort(function(a,b){

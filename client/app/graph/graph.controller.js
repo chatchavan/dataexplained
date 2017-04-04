@@ -5,7 +5,7 @@
     .module('rationalecapApp')
     .controller('GraphCtrl', FinishCtrl);
 
-  function FinishCtrl($stateParams, $http, $state, StorageUtil) {
+  function FinishCtrl($stateParams, $http, $state, StorageUtil, ModalService) {
 
     var vm = this;
     vm.instance = undefined;
@@ -16,6 +16,7 @@
 
     vm.init = init;
     vm.finish = finish;
+    vm.showInfo = showInfo;
 
     //=========INIT=========
 
@@ -38,6 +39,26 @@
       // vm.plumpList.push({name: "NODE 6", id: "id6"});
     }
 
+    //=========CONTROLLER=========
+
+    function showInfo(){
+      let text = ['Connect Blocks by dragging arrows from the yellow marker to another block.', 'You can delete an arrow by clicking on it.', 'To edit a block, double-klick on the respective box.'];
+      ModalService.showModal({
+        templateUrl: "app/custommodal/custommodal.html",
+        controller: "CustomModalController",
+        inputs: {
+          title: 'Reconstruct Workflow',
+          text: text,
+          actionText1: 'Ok',
+          actionText2: undefined
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+        });
+      });
+    }
+
     function finish(){
       let plumb = saveFlowchart(vm.instance);
 
@@ -58,9 +79,7 @@
       $(".w").each(function (idx, elem) {
         var $elem = $(elem);
         var endpoints = jsPlumb.getEndpoints($elem.attr('id'));
-        console.log('endpoints of '+$elem.attr('id'));
         let nodeId = $elem.attr('id');
-        console.log();
 
         nodes.push({
           blockId: nodeId,
@@ -80,7 +99,6 @@
           pageSourceId: connection.sourceId,
           pageTargetId: connection.targetId,
           anchors: $.map(connection.endpoints, function(endpoint) {
-            console.log('connection.endpoint', endpoint.anchor);
 
             return [[endpoint.anchor.x,
               endpoint.anchor.y,

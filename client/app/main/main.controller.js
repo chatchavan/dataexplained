@@ -285,10 +285,8 @@ class MainController {
 
     var that = this;
 
-    // if(this.LogUtil.checkAllLogs(this.loglist)){
       let actionText1 = 'Yes';
       let actionText2 = 'No';
-    // }
 
 
     this.ModalService.showModal({
@@ -304,7 +302,6 @@ class MainController {
       modal.element.modal();
       modal.close.then(result => {
         if(result === actionText1){
-          console.log('user', that.user, 'logs', that.loglist);
 
           that.$http.post('/api/logs/finish', {logs: that.loglist, user: that.user }).then(response => {
             console.log('response', response);

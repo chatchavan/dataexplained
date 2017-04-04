@@ -255,7 +255,8 @@
 
           }
 
-          $scope.instance.batch();
+          $scope.instance.setSuspendDrawing(false, true);
+          // $scope.instance.batch();
 
         }
 

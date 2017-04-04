@@ -24,6 +24,9 @@
   <div ng-if="admin.userNotFound">
     <h4>User "{{admin.searchUser}}" not found.</h4>
   </div>
+  <div ng-if="admin.textCallback">
+    <h4>{{admin.textCallback}}</h4>
+  </div>
 
   <div ng-if="admin.itemlist" ng-repeat="item in admin.itemlist" class="panel panel-default margin-top-medium" id="panel_{{$index}}">
     <div class="panel-heading" data-toggle="collapse" data-target="#collapse_{{$index}}">

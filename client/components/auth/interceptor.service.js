@@ -17,7 +17,6 @@ function authInterceptor($rootScope, $q, $cookies, $injector) {
     // Intercept 401s and redirect you to login
     responseError(response) {
       if (response.status === 401) {
-        console.log('interceptor redirect to login');
         (state || (state = $injector.get('$state'))).go('login');
         // remove any stale tokens
         $cookies.remove('token');

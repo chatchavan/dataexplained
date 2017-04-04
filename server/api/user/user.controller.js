@@ -75,6 +75,9 @@ export function createAdmin(req, res){
   newUser.saveAsync()
     .spread(function(user) {
       return res.status(200).json(user);
+    })
+    .catch(err => {
+      return res.status(500).send(err);
     });
 
 }
@@ -96,6 +99,7 @@ export function resetAdmin(req, res){
         LogCtrl.removeLogsByUser(user, function(lSuccess){
           shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
           shell.exec('sudo rm -rf /home/'+user+'/.rstudio');
+          res.status(200).end();
 
         });
       });
