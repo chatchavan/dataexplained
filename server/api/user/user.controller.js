@@ -99,7 +99,11 @@ export function resetAdmin(req, res){
         LogCtrl.removeLogsByUser(user, function(lSuccess){
 
           User.findOne({'username': user}).exec(function (errFind, u){
-            if(!errFind){
+            console.log('u', u);
+            if(!u){
+              res.status(404).end();
+            }
+            else if(!errFind){
               u.finished = false;
               u.surveyDone = false;
               u.save(function (err) {
@@ -149,10 +153,14 @@ export function deleteAdmin(req, res){
         LogCtrl.removeLogsByUser(user, function(lSuccess){
 
           User.remove({'username': user}).exec(function (errRemove, u){
-            if(!errRemove){
+            if(!u){
+              return res.status(404).end();
+            }
+            else if(!errRemove){
               shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
               shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
               shell.exec('sudo userdel '+user+' --force --remove');
+              return res.status(200).end();
             }
             else{
               return res.status(500).end();
