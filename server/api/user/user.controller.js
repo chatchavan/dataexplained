@@ -111,8 +111,11 @@ export function resetAdmin(req, res){
                 }
                 shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
                 shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
-                res.status(200).end();
+                return res.status(200).end();
               });
+            }
+            else{
+             return res.status(200).end(); //NO 500
             }
 
 
