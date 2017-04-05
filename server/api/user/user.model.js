@@ -17,6 +17,10 @@ var UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  surveyDone: {
+    type: Boolean,
+    default: false
+  },
   password: String,
   provider: String,
   salt: String

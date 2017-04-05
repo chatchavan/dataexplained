@@ -62,7 +62,7 @@ User.find({}).removeAsync()
 Configuration.find({}).removeAsync()
   .then(() => {
     Configuration.createAsync({
-      survey: false
+      survey: true
     })
       .then(() => {
         console.log('finished creating configuration');

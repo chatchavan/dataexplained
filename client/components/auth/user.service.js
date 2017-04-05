@@ -12,6 +12,13 @@ function UserResource($resource) {
         controller:'password'
       }
     },
+    setSurveyDone: {
+      method: 'PUT',
+      params: {
+        id:'me',
+        controller:'survey'
+      }
+    },
     get: {
       method: 'GET',
       params: {

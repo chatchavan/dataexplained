@@ -1,4 +1,4 @@
-<div class="graph">
+<div class="graph" ng-if="!vm.exported">
 
   <div class="title-container">
     <label class="title-label"><h3 class="margin-none">Reconstruct workflow</h3></label>
@@ -12,4 +12,8 @@
 
   </div>
 
+</div>
+
+<div class="graph" ng-if="vm.exported">
+  <h2>Thank you for your participation!</h2>
 </div>

@@ -21,7 +21,6 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User) {
      * @return {Promise}
      */
     login(user, callback) {
-      console.log('user', user);
       return $http.post('/auth/local', {
         username: user.username,
         password: user.password

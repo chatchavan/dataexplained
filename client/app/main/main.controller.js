@@ -39,13 +39,13 @@ class MainController {
 
   init(){
     if(!this.Auth.isLoggedIn()){
-      this.$state.go('^.login');
+        this.$state.go('^.login');
     }
     else{
       let u = this.Auth.getCurrentUser();
       this.user = u.username;
       if(u.finished){
-        this.$state.go('^.survey');
+        this.$state.go('^.graph', {'finished': true});
       }
       else if(this.user){
         this.StorageUtil.saveSStorage('user',this.user);

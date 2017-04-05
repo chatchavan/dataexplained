@@ -9,7 +9,8 @@ angular.module('rationalecapApp')
         controller: 'GraphCtrl',
         controllerAs: 'vm',
         params: {
-          blocks : null
+          blocks : null,
+          finished: null
         }
       });
   });

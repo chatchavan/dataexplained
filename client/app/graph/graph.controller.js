@@ -11,7 +11,8 @@
     vm.instance = undefined;
     vm.plumpList = [];
     vm.blocks = $stateParams.blocks;
-    vm.exported = false;
+    vm.exported = $stateParams.finished;
+    console.log('vm.exported', vm.exported);
 
 
     vm.init = init;
@@ -20,18 +21,23 @@
 
     //=========INIT=========
 
-    vm.init();
+    if(!vm.exported){
+      // vm.init();
+    }
 
     function init() {
       if(!vm.blocks){
-        $state.go('^.main');
+        // $state.go('^.main');
       }
       vm.user = StorageUtil.retrieveSStorage('user');
 
       // console.log('vm.blocks', vm.blocks);
-      for(var i = 0; i < vm.blocks.length; i++){
-        vm.plumpList.push({name: vm.blocks[i].title, id: vm.blocks[i]._id, block: vm.blocks[i]});
+      if(vm.blocks){
+        for(var i = 0; i < vm.blocks.length; i++){
+          vm.plumpList.push({name: vm.blocks[i].title, id: vm.blocks[i]._id, block: vm.blocks[i]});
+        }
       }
+
       // vm.plumpList.push({name: "NODE 2 NODE 2 NODE 2 NODE 2", id: "id2"});
       // vm.plumpList.push({name: "NODE 3", id: "id3"});
       // vm.plumpList.push({name: "NODE 4", id: "id4"});
@@ -65,7 +71,7 @@
       $http.post('/api/blocks/plumb', {user: vm.user, plumb: plumb}).then(response => {
         if(response.data){
           console.log('export success', response.data);
-          $state.go('^.survey');
+          vm.exported = true;
         }
       }, (err) => {
         console.log('error exporting plumb', err);

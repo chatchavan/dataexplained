@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 var Configuration = require('./configuration.model');
+var config = require('../../config/environment');
 
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
@@ -74,6 +75,11 @@ export function show(req, res) {
     .catch(handleError(res));
 }
 
+// Gets a single Configuration from the DB
+export function showEnv(req, res) {
+  return res.status(200).json(config.env);
+}
+
 // Creates a new Configuration in the DB
 export function create(req, res) {
   let survey = req.body.survey;
@@ -89,7 +95,6 @@ export function create(req, res) {
         .catch(handleError(res));
     }
     else{
-      console.log(configuration);
       configuration[0].survey = survey;
       configuration[0].save(function (err) {
         if (err) { return handleError(res, err); }

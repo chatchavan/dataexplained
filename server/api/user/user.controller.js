@@ -179,6 +179,24 @@ export function me(req, res, next) {
     .catch(err => next(err));
 }
 
+export function updateSurvey(req, res, next){
+  var userId = req.user._id;
+  console.log('userId', userId);
+
+  User.findOneAsync({ _id: userId }, '-salt -password')
+    .then(user => {
+      if (!user) {
+        return res.status(401).end();
+      }
+      user.surveyDone = true;
+      user.save(function (err) {
+        if (err) { return handleError(res, err); }
+        return res.send(user);
+      });
+    })
+    .catch(err => next(err));
+}
+
 export function setFinish(user, cb){
   User.findOne({'username': user}).exec(function (err, u) {
     if (err || !u) {

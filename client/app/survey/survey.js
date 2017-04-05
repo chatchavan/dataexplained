@@ -7,6 +7,6 @@ angular.module('rationalecapApp')
         url: '/survey',
         templateUrl: 'app/survey/survey.html',
         controller: 'SurveyCtrl',
-        controllerAs: 'survey'
+        controllerAs: 'vm'
       });
   });
