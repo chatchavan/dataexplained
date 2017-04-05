@@ -65,7 +65,7 @@
       $http.post('/api/blocks/plumb', {user: vm.user, plumb: plumb}).then(response => {
         if(response.data){
           console.log('export success', response.data);
-          vm.exported = true;
+          $state.go('^.survey');
         }
       }, (err) => {
         console.log('error exporting plumb', err);

@@ -6,6 +6,8 @@
 'use strict';
 import Thing from '../api/thing/thing.model';
 import User from '../api/user/user.model';
+import Configuration from '../api/configuration/configuration.model';
+
 
 // Thing.find({}).removeAsync()
 //   .then(() => {
@@ -56,3 +58,14 @@ User.find({}).removeAsync()
         console.log('finished populating users');
       });
   });
+
+Configuration.find({}).removeAsync()
+  .then(() => {
+    Configuration.createAsync({
+      survey: false
+    })
+      .then(() => {
+        console.log('finished creating configuration');
+      });
+  });
+

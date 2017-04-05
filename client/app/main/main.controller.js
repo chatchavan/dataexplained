@@ -42,8 +42,12 @@ class MainController {
       this.$state.go('^.login');
     }
     else{
-      this.user = this.Auth.getCurrentUser().username;
-      if(this.user){
+      let u = this.Auth.getCurrentUser();
+      this.user = u.username;
+      if(u.finished){
+        this.$state.go('^.survey');
+      }
+      else if(this.user){
         this.StorageUtil.saveSStorage('user',this.user);
         this.userDefined = true;
         this.startPolling();

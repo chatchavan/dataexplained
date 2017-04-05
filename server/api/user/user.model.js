@@ -13,6 +13,10 @@ var UserSchema = new Schema({
     type: String,
     default: 'user'
   },
+  finished: {
+    type: Boolean,
+    default: false
+  },
   password: String,
   provider: String,
   salt: String

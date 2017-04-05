@@ -20,9 +20,44 @@ class AdminController {
     this.plumbJson = undefined;
     this.plumbList = [];
     this.searchUser = undefined;
+    this.configSurvey = false;
 
 
+    this.init();
 
+  }
+
+
+  init(){
+    this.$http.get('/api/configurations/').then(response => {
+      if(response.data && response.data.length>0){
+        this.configSurvey = response.data[0].survey;
+      }
+      else if(response.data && response.data.survey !== undefined){
+        this.configSurvey = response.data.survey;
+      }
+      else{
+        this.configSurvey = true;
+      }
+    }, (err) => {
+      console.log('error getting configuration: ', err);
+    });
+  }
+
+  setSurvey(){
+    this.$http.post('/api/configurations/', {survey: this.configSurvey}).then(response => {
+      if(response.data && response.data.length>0){
+        this.configSurvey = response.data[0].survey;
+      }
+      else if(response.data && response.data.survey !== undefined){
+        this.configSurvey = response.data.survey;
+      }
+      else{
+        this.configSurvey = !this.configSurvey;
+      }
+    }, (err) => {
+      console.log('error getting configuration: ', err);
+    });
   }
 
   goAnalysis(){

@@ -179,6 +179,27 @@ export function me(req, res, next) {
     .catch(err => next(err));
 }
 
+export function setFinish(user, cb){
+  User.findOne({'username': user}).exec(function (err, u) {
+    if (err || !u) {
+      cb(false);
+    }
+    else{
+      u.finished = true;
+      u.save(function (err) {
+        if (err) {
+          console.log('could not update "finish" for user '+user, err);
+        }
+        else {
+          console.log('user '+user+' finished');
+        }
+        cb(true);
+
+      });
+    }
+  });
+}
+
 /**
  * Authentication callback
  */

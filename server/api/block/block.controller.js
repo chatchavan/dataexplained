@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 var Block = require('./block.model');
+var UserCtrl = require('./../user/user.controller');
 var LogCtrl = require('./../log/log.controller');
 var fs = require('fs');
 var config = require('../../config/environment');
@@ -194,7 +195,9 @@ export function createPlump(req, res){
         else {
           console.log('block-plump updated');
         }
-        return res.status(200).json(b);
+        UserCtrl.setFinish(user, function(success){
+          return res.status(200).json(b);
+        });
 
       });
 
