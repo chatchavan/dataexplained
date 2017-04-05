@@ -60,6 +60,11 @@ class AdminController {
     });
   }
 
+  logout(){
+    this.Auth.logout();
+    this.$state.go('^.login');
+  }
+
   goAnalysis(){
     this.$state.go('^.main');
   }

@@ -2,7 +2,7 @@
 
 (function() {
 
-function AuthService($location, $http, $cookies, $q, appConfig, Util, User) {
+function AuthService($location, $http, $cookies, $q, appConfig, Util, User, StorageUtil) {
   var safeCb = Util.safeCb;
   var currentUser = {};
   var userRoles = appConfig.userRoles || [];
@@ -47,6 +47,7 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User) {
     logout() {
       $cookies.remove('token');
       currentUser = {};
+      StorageUtil.removeSStorage('user');
     },
 
     /**
