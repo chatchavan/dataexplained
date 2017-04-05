@@ -105,6 +105,23 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User, Stor
     },
 
     /**
+     * Delets an existing user and cleans workspace on server
+     *
+     * @param  {Object}   user     - user info
+     * @param  {Function} callback - optional, function(error, user)
+     * @return {Promise}
+     */
+    deleteUserAdmin(user, callback) {
+      return $http.post('/api/users/deleteAdmin', user)
+        .then(res => {
+          return res.$promise;
+        })
+        .catch(err => {
+          return $q.reject(err.data);
+        });
+    },
+
+    /**
      * Change password
      *
      * @param  {String}   oldPassword

@@ -98,11 +98,11 @@ export function resetAdmin(req, res){
       BlockCtrl.removeBlocksByUser(user, function(bSuccess){
         LogCtrl.removeLogsByUser(user, function(lSuccess){
 
-          User.findOne({'username': user}).exec(function (errFind, user){
+          User.findOne({'username': user}).exec(function (errFind, u){
             if(!errFind){
-              user.finished = false;
-              user.surveyDone = false;
-              user.save(function (err) {
+              u.finished = false;
+              u.surveyDone = false;
+              u.save(function (err) {
                 if (err) {
                   console.log('could not reset user in db');
                 }
@@ -127,11 +127,48 @@ export function resetAdmin(req, res){
       });
     });
 
-    //Delete Entries in DB
-
 
   });
 
+}
+
+export function deleteAdmin(req, res){
+  let user = req.body.username;
+  console.log('deleting user : '+ user);
+
+
+  //Delete Directory on GitHub
+  githubService.deleteDirectory(user, function(success){
+    if(!success){
+      return res.status(500).end();
+    }
+    console.log('Github directory of user ' + user+' deleted!');
+
+    FileCtrl.removeFilesByUser(user, function(fSuccess){
+      BlockCtrl.removeBlocksByUser(user, function(bSuccess){
+        LogCtrl.removeLogsByUser(user, function(lSuccess){
+
+          User.remove({'username': user}).exec(function (errRemove, u){
+            if(!errRemove){
+              shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
+              shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
+              shell.exec('sudo userdel '+user+' --force --remove');
+            }
+            else{
+              return res.status(500).end();
+            }
+
+
+          });
+
+
+
+        });
+      });
+    });
+
+
+  });
 }
 
 /**

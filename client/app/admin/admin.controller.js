@@ -69,9 +69,26 @@ class AdminController {
     this.$state.go('^.main');
   }
 
-  delete(user) {
-    user.$remove();
-    this.users.splice(this.users.indexOf(user), 1);
+  deleteUser() {
+    if(this.searchUser) {
+      this.resetView();
+      this.Auth.deleteUserAdmin({
+        username: this.searchUser
+      })
+        .then(() => {
+          // Account created, redirect to home
+          this.textCallback = 'User "'+this.searchUser+'" deleted.';
+          console.log('user deleted!!!');
+        })
+        .catch(err => {
+          this.textCallback = 'Error deleting user "'+this.searchUser+'": ';
+
+          // Update validity of form fields that match the mongoose errors
+          angular.forEach(err.errors, (error, field) => {
+            this.textCallback += error.message+' ';
+          });
+        });
+    }
   }
 
   showWorkflow(){
