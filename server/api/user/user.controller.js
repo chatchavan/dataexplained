@@ -97,9 +97,28 @@ export function resetAdmin(req, res){
     FileCtrl.removeFilesByUser(user, function(fSuccess){
       BlockCtrl.removeBlocksByUser(user, function(bSuccess){
         LogCtrl.removeLogsByUser(user, function(lSuccess){
-          shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
-          shell.exec('sudo rm -rf /home/'+user+'/.rstudio');
-          res.status(200).end();
+
+          User.findOne({'username': user}).exec(function (errFind, user){
+            if(!errFind){
+              user.finished = false;
+              user.surveyDone = false;
+              user.save(function (err) {
+                if (err) {
+                  console.log('could not reset user in db');
+                }
+                else{
+                  console.log('user reset in db');
+                }
+                shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
+                shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
+                res.status(200).end();
+              });
+            }
+
+
+          });
+
+
 
         });
       });

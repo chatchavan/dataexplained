@@ -46,11 +46,13 @@ User.find({}).removeAsync()
       provider: 'local',
       username: 'coldata',
       // email: 'test@example.com',
-      password: 'coldata'
+      password: 'coldata',
+      surveyDone: true
     }, {
       provider: 'local',
       role: 'admin',
       username: 'admin',
+      surveyDone: true,
       // email: 'admin@example.com',
       password: 'admin!123'
     })
