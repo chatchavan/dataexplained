@@ -22,12 +22,12 @@
     //=========INIT=========
 
     if(!vm.exported){
-      // vm.init();
+      vm.init();
     }
 
     function init() {
       if(!vm.blocks){
-        // $state.go('^.main');
+        $state.go('^.main');
       }
       vm.user = StorageUtil.retrieveSStorage('user');
 

@@ -82,17 +82,14 @@ class AdminController {
         if(response.data.blocks && response.data.blocks.plumb){
 
           let tempJson = JSON.parse(response.data.blocks.plumb);
-          // console.log(this.plumbJson);
           let element = document.getElementById('admin-container');
           var style = element.currentStyle || window.getComputedStyle(element);
-          // var style = window.getComputedStyle(element);
 
-          console.log("Current height: " + style.height, tempJson);
+          // console.log("Current height: " + style.height, tempJson);
           tempJson.marginTop = style.height;
           this.noWorkflow = false;
           this.plumbJson = tempJson;
 
-            // console.log('got block-data for user '+this.searchUser, response.data);
         }
         else{
           this.noWorkflow = true;
