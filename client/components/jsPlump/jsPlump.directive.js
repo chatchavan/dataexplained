@@ -15,14 +15,14 @@
         user : '<',
         json : '<'
       },
-      controller: controller,
+      controller: ['$scope', 'ModalService', 'Util', 'BlockUtil', controller],
       controllerAs: 'vm'
     };
 
     return directive;
   }
 
-  function controller($scope, ModalService, Util, BlockUtil, $element) {
+  function controller($scope, ModalService, Util, BlockUtil) {
 
 
     $scope.leftMargin = 60; //in px

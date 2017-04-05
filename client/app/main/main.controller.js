@@ -27,7 +27,7 @@ class MainController {
     this.displayPanel = false;
 
     this.rStudioEndpoint = this.Util.getRStudioUri();
-    this.logThreshold = 2;
+    this.logThreshold = 20;
     this.logWarningShowed = false;
 
     this.init();
@@ -77,7 +77,9 @@ class MainController {
           this.logWarningShowed = false;
         }
         this.loglist = tempLogList;
-        this.checkLogs(this.loglist);
+        if(this.$state.current.name === 'main'){
+          this.checkLogs(this.loglist);
+        }
       }
     }, (err) => {
       console.log(err);
