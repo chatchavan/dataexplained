@@ -46,14 +46,14 @@
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="control-label">Pros</div>
+                  <div class="sublabel" class="control-label">Arguments for this option</div>
                   <textarea type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro" required></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativePro'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativePro'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="control-label">Contra</div>
+                  <div class="sublabel" class="control-label">Arguments against this option</div>
                   <textarea type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra" required></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativeContra'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeContra'+$index].$touched">
@@ -67,7 +67,7 @@
             </div>
 
             <div ng-if="step==4 || edit" class="form-group question-group">
-              <label for="criteria" class="control-label">What are the <span style="font-style: italic">criteria</span> decisive for your chosen option?</label>
+              <label for="criteria" class="control-label">What were the <span style="font-style: italic">factors</span> that convinced you to execute your idea this way?</label>
               <textarea type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required></textarea>
               <div ng-messages="bmodal.form.criteria.$error" ng-show="bmodal.form.$submitted || bmodal.form.criteria.$touched">
                 <div class="required" ng-message="required">Input required</div>

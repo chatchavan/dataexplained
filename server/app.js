@@ -9,6 +9,9 @@ import mongoose from 'mongoose';
 mongoose.Promise = require('bluebird');
 import config from './config/environment';
 import http from 'http';
+import https from 'https';
+import fs from 'fs';
+
 
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
@@ -20,9 +23,16 @@ mongoose.connection.on('error', function(err) {
 // Populate databases with sample data
 if (config.seedDB) { require('./config/seed'); }
 
+// var options = {
+//   key: fs.readFileSync('/home/ubuntu/privkey.pem'),
+//   cert: fs.readFileSync('/home/ubuntu/fullchain.pem')
+// };
+
 // Setup server
 var app = express();
 var server = http.createServer(app);
+// Create an HTTPS service identical to the HTTP service.
+// var serverHttps = https.createServer(options, app);
 require('./config/express')(app);
 require('./routes')(app);
 
@@ -31,6 +41,9 @@ function startServer() {
   server.listen(config.port, config.ip, function() {
     console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
   });
+  // serverHttps.listen(443, config.ip, function() {
+  //   console.log('Express server listening on %d, in %s mode', 443, app.get('env'));
+  // });
 }
 
 setImmediate(startServer);
