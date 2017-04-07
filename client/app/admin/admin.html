@@ -9,20 +9,39 @@
     <input class="pull-right" type="button" ng-click="admin.logout()" value="Logout">
 
     <div class="title-container">
+      <input style="margin-left: 0px; margin-right: 20px;" type="button" ng-click="admin.displayAllUsers()" value="Show all users">
       <label for="username" class="control-label">User-name</label>
       <input type="text" class="" name="username" id="username" placeholder="" ng-model="admin.searchUser"
-             ng-change="admin.resetView()" required>
+              required>
       <input type="button" ng-click="admin.showWorkflow()" value="Show Workflow">
       <input type="button" ng-click="admin.showBlocks()" value="Show Blocks">
       <input type="button" ng-click="admin.createUser()" value="Create User">
-      <input type="button" ng-click="admin.resetUser()" value="Reset User">
-      <input type="button" ng-click="admin.deleteUser()" value="Delete User">
 
 
 
     </div>
 
   </div>
+
+  <table class="table table-striped table-condensed admin-table" ng-if="admin.displayUsers">
+    <thead>
+    <tr>
+      <th>Username</th>
+      <th>Survey Done?</th>
+      <th>Finished?</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="user in admin.users | orderBy: 'username'">
+      <td>{{user.username}}</td>
+      <td><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}">{{user.surveyDone}}</span></td>
+      <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}">{{user.finished}}</span></td>
+      <td><i class="fa fa-undo" aria-hidden="true" ng-click="admin.resetUser(user)"></i><i class="fa fa-trash" aria-hidden="true" ng-click="admin.deleteUser(user)"></i></td>
+    </tr>
+    </tbody>
+  </table>
+
 
   <div ng-if="admin.noWorkflow">
     <h4>No workflow for "{{admin.searchUser}}" found.</h4>

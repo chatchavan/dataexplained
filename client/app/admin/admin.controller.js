@@ -8,6 +8,7 @@ class AdminController {
     this.users = User.query();
     this.$scope = $scope;
     this.Auth = Auth;
+    this.User = User;
     this.LogUtil = LogUtil;
     this.Util = Util;
     this.BlockUtil = BlockUtil;
@@ -21,6 +22,7 @@ class AdminController {
     this.plumbList = [];
     this.searchUser = undefined;
     this.configSurvey = false;
+    this.displayUsers = true;
 
 
     this.init();
@@ -69,19 +71,26 @@ class AdminController {
     this.$state.go('^.main');
   }
 
-  deleteUser() {
-    if(this.searchUser) {
-      this.resetView();
+  displayAllUsers(){
+    this.resetView();
+    this.users = this.User.query()
+    this.displayUsers = true;
+  }
+
+
+  deleteUser(user) {
+    if(user.username) {
+      this.resetView(true);
       this.Auth.deleteUserAdmin({
-        username: this.searchUser
+        username: user.username
       })
         .then(() => {
           // Account created, redirect to home
-          this.textCallback = 'User "'+this.searchUser+'" deleted.';
-          console.log('user deleted!!!');
+          this.textCallback = 'User "'+user.username+'" deleted.';
+          this.users = this.User.query();
         })
         .catch(err => {
-          this.textCallback = 'Error deleting user "'+this.searchUser+'": ';
+          this.textCallback = 'Error deleting user "'+user.username+'": ';
 
           // Update validity of form fields that match the mongoose errors
           angular.forEach(err.errors, (error, field) => {
@@ -138,15 +147,15 @@ class AdminController {
 
   createUser(){
     if(this.searchUser) {
-      this.resetView();
+      this.resetView(true);
       this.Auth.createUserAdmin({
         username: this.searchUser,
         password: this.searchUser
       })
         .then(() => {
           // Account created, redirect to home
-          console.log('user created!!!');
           this.textCallback = 'User "'+this.searchUser+'" created.'
+          this.users = this.User.query();
         })
         .catch(err => {
           console.log('err', err);
@@ -160,19 +169,19 @@ class AdminController {
     }
   }
 
-  resetUser(){
-    if(this.searchUser) {
-      this.resetView();
+  resetUser(user){
+    if(user.username) {
+      this.resetView(true);
       this.Auth.resetUserAdmin({
-        username: this.searchUser
+        username: user.username
       })
         .then(() => {
           // Account created, redirect to home
-          this.textCallback = 'User "'+this.searchUser+'" reset.';
-          console.log('user resetted!!!');
+          this.textCallback = 'User "'+user.username+'" reset.';
+          this.users = this.User.query();
         })
         .catch(err => {
-          this.textCallback = 'Error resetting user "'+this.searchUser+'": ';
+          this.textCallback = 'Error resetting user "'+user.username+'": ';
 
           // Update validity of form fields that match the mongoose errors
           angular.forEach(err.errors, (error, field) => {
@@ -184,12 +193,15 @@ class AdminController {
 
 
 
-  resetView(){
+  resetView(table){
     this.plumbJson = undefined;
     this.itemlist = undefined;
     this.noWorkflow = false;
     this.userNotFound = false;
     this.textCallback = false;
+    if(!table){
+      this.displayUsers = false;
+    }
   }
 
 
