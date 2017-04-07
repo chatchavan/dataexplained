@@ -145,8 +145,8 @@
           for (var i = 0; i < windows.length; i++) {
             initNode(windows[i], true);
             if(i > 0){
-              windows[i].style.left = 2*$scope.leftMargin+windows[i-1].offsetWidth+ getPxValue(windows[i-1].style.left) + "px";
               if(!$scope.json){
+                windows[i].style.left = 2*$scope.leftMargin+windows[i-1].offsetWidth+ getPxValue(windows[i-1].style.left) + "px";
                 $scope.instance.connect({ source: windows[i-1].id, target: windows[i].id, type:"basic" });
               }
             }

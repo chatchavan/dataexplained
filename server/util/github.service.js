@@ -173,7 +173,7 @@ function updateDirectoryTemp(message, dir, user, timestamp, res) {
                     let tempPath = dataParsed.path;
 
                     if(!tempPath && dataParsed.properties && dataParsed.properties.tempName){
-                      tempPath = dataParsed.properties.tempName;
+                      tempPath = dataParsed.properties.tempName+'.R';
                     }
                     if(tempPath){
                       let filename = tempPath.replace(/^.*[\\\/]/, '');

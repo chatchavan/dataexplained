@@ -81,7 +81,7 @@ class AdminController {
     user.surveyDone = !user.surveyDone;
     this.updateUser(user);
   }
-  toggleFinishded(user){
+  toggleFinished(user){
     user.finished = !user.finished;
     this.updateUser(user);
   }
