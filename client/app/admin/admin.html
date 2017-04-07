@@ -35,8 +35,10 @@
     <tbody>
     <tr ng-repeat="user in admin.users | orderBy: 'username'">
       <td>{{user.username}}</td>
-      <td><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}">{{user.surveyDone}}</span></td>
-      <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}">{{user.finished}}</span></td>
+      <td><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}"
+                ng-click="admin.toggleSurvey(user)">{{user.surveyDone}}</span></td>
+      <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"
+                ng-click="admin.toggleFinished(user)">{{user.finished}}</span></td>
       <td><i class="fa fa-undo" aria-hidden="true" ng-click="admin.resetUser(user)"></i><i class="fa fa-trash" aria-hidden="true" ng-click="admin.deleteUser(user)"></i></td>
     </tr>
     </tbody>

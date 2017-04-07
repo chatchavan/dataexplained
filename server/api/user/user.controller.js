@@ -5,11 +5,22 @@ import passport from 'passport';
 import config from '../../config/environment';
 import jwt from 'jsonwebtoken';
 import shell from 'shelljs';
+import _ from 'lodash';
 import githubService from '../../util/github.service';
 var FileCtrl = require('./../file/file.controller');
 var BlockCtrl = require('./../block/block.controller');
 var LogCtrl = require('./../log/log.controller');
 
+
+function saveUpdates(updates) {
+  return function(entity) {
+    var updated = _.merge(entity, updates);
+    return updated.saveAsync()
+      .spread(updated => {
+        return updated;
+      });
+  };
+}
 
 function validationError(res, statusCode) {
   statusCode = statusCode || 422;
@@ -25,10 +36,23 @@ function handleError(res, statusCode) {
   };
 }
 
-function respondWith(res, statusCode) {
+
+function handleEntityNotFound(res) {
+  return function(entity) {
+    if (!entity) {
+      res.status(404).end();
+      return null;
+    }
+    return entity;
+  };
+}
+
+function responseWithResult(res, statusCode) {
   statusCode = statusCode || 200;
-  return function() {
-    res.status(statusCode).end();
+  return function(entity) {
+    if (entity) {
+      res.status(statusCode).json(entity);
+    }
   };
 }
 
@@ -42,6 +66,25 @@ export function index(req, res) {
       res.status(200).json(users);
     })
     .catch(handleError(res));
+}
+
+/**
+ * Updates a user
+ * */
+export function update(req, res){
+  let id = req.body._id;
+  if (req.body._id) {
+    delete req.body._id;
+    User.findByIdAsync(id)
+      .then(handleEntityNotFound(res))
+      .then(saveUpdates(req.body))
+      .then(responseWithResult(res))
+      .catch(handleError(res));
+  }
+  else{
+    return res.status(500).end();
+  }
+
 }
 
 /**

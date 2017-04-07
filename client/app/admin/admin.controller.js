@@ -77,6 +77,23 @@ class AdminController {
     this.displayUsers = true;
   }
 
+  toggleSurvey(user){
+    user.surveyDone = !user.surveyDone;
+    this.updateUser(user);
+  }
+  toggleFinishded(user){
+    user.finished = !user.finished;
+    this.updateUser(user);
+  }
+
+  updateUser(user){
+    this.$http.put('/api/users/', user).then(response => {
+      console.log('response', response);
+    }, (err) => {
+      console.log('error updating user: ', err);
+    });
+  }
+
 
   deleteUser(user) {
     if(user.username) {
