@@ -37,7 +37,7 @@
 
             <div ng-if="step==3 || edit" class="form-group question-group">
               <div class="multilabel-title">What different options/alternatives did you consider for achieving what you did in this block?</div>
-              <div ng-repeat="alternative in block.alternatives">
+              <div ng-repeat="alternative in block.alternatives" ng-class="{'alternative-not-last' : !$last, 'alternative-not-first' : $last}">
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="control-label">Alternative</div>
                   <textarea type="text" class="sublabel-input form-control" name="alternativeTitle{{$index}}" placeholder="" ng-model="block.alternatives[$index].title" required></textarea>
@@ -61,8 +61,8 @@
                 </div>
               </div>
               <!--<button ng-click="addAlternative()">Add another alternative</button>-->
-              <button type="button" ng-click="addAlternative()" class="margin-top-medium btn btn-primary">Add another alternative</button>
-              <button ng-if="block.alternatives.length > 1" type="button" ng-click="spliceAlternative()" class="margin-top-medium btn">Remove last alternative</button>
+              <button type="button" ng-click="addAlternative()" class="margin-top-large btn btn-primary">Add another alternative</button>
+              <button ng-if="block.alternatives.length > 1" type="button" ng-click="spliceAlternative()" class="margin-top-large btn">Remove last alternative</button>
 
             </div>
 
