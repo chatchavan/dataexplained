@@ -36,7 +36,7 @@
             </div>
 
             <div ng-if="step==3 || edit" class="form-group question-group">
-              <div class="multilabel-title">What different options/alternatives did you consider for achieving what you did in this block?</div>
+              <div class="multilabel-title">What <span style="font-style: italic">different</span> options/alternatives did you consider for achieving what you did in this block?</div>
               <div ng-repeat="alternative in block.alternatives" ng-class="{'alternative-not-last' : !$last, 'alternative-not-first' : $last}">
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="control-label">Alternative</div>
@@ -46,15 +46,15 @@
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="control-label">Arguments for this option</div>
-                  <textarea type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro" required></textarea>
+                  <div class="sublabel" class="control-label">Pro</div>
+                  <textarea type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativePro'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativePro'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="control-label">Arguments against this option</div>
-                  <textarea type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra" required></textarea>
+                  <div class="sublabel" class="control-label">Contra</div>
+                  <textarea type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativeContra'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeContra'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
@@ -67,7 +67,7 @@
             </div>
 
             <div ng-if="step==4 || edit" class="form-group question-group">
-              <label for="criteria" class="control-label">What were the <span style="font-style: italic">factors</span> that convinced you to execute your idea this way?</label>
+              <label for="criteria" class="control-label"><span style="font-style: italic">Why</span> did you choose your option?</label>
               <textarea type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required></textarea>
               <div ng-messages="bmodal.form.criteria.$error" ng-show="bmodal.form.$submitted || bmodal.form.criteria.$touched">
                 <div class="required" ng-message="required">Input required</div>
