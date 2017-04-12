@@ -47,7 +47,7 @@
 
             <!--</select>-->
             <div class="btn-container">
-              <button ng-disabled="!main.selection || main.selection.length <1" ng-click="main.createBlock()">Create Block</button>
+              <md-button class="md-raised" ng-disabled="!main.selection || main.selection.length <1" ng-click="main.createBlock()">Create Block</md-button>
             </div>
 
             <select ng-model="main.selection" multiple ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection">
@@ -83,7 +83,7 @@
 
   </div>
 
-  <button ng-disabled="!main.blockList || main.blockList.length < 1" ng-if="main.userDefined" ng-click="main.finishAnalysis()">Finish Analysis</button>
+  <md-button class="md-raised" ng-disabled="!main.blockList || main.blockList.length < 1" ng-if="main.userDefined" ng-click="main.finishAnalysis()">Finish Analysis</md-button>
 
 
 </div>

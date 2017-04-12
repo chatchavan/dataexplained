@@ -9,6 +9,7 @@ angular.module('rationalecapApp', [
   'ngResource',
   'ngMessages',
   'ngSanitize',
+  'ngMaterial',
   'ui.router',
   'ui.bootstrap',
   'ui.sortable',

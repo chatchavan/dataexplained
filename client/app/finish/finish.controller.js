@@ -14,6 +14,7 @@
 
 
     vm.init = init;
+    vm.showInfo = showInfo;
     vm.removeLog = removeLog;
     vm.editBlock = editBlock;
     vm.confirmBlocks = confirmBlocks;
@@ -59,6 +60,26 @@
         });
         console.log('itemlist', vm.itemlist);
       }
+    }
+
+    //=========CONTROLLER=========
+
+    function showInfo(){
+      let text = ['See the corresponding log-statements of each block by clicking on the block title.', 'If you think an associated log-statement does not fit to the respective block, you can remove it from that block by clicking on the \'X\' symbol next to it.', 'Unassigned log-statements are marked in red. To assign them to a block, expand the desired block and drag&drop the log-statement to the desired position in the expanded area.', 'To edit a block, klick on the edit symbol next to the block title.', 'In order to proceed to the next step, each log-statement needs to be assigned to a block, and no block must be empty.'];
+      ModalService.showModal({
+        templateUrl: "app/custommodal/custommodal.html",
+        controller: "CustomModalController",
+        inputs: {
+          title: 'Rearrange Log-statements',
+          text: text,
+          actionText1: 'Ok',
+          actionText2: undefined
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+        });
+      });
     }
 
     function removeLog(line, block){

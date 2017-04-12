@@ -3,19 +3,19 @@
 <div class="admin" id="admin-container">
 
   <div class="margin-top-medium top-title">
-    <h2>User information</h2>  <input type="button" ng-click="admin.goAnalysis()" value="Analysis as Admin">
+    <h2>User information</h2>  <md-button class="md-raised" ng-click="admin.goAnalysis()">Analysis as Admin</md-button>
     <label for="survey" class="control-label">Enable survey</label>
     <input class="" type="checkbox" ng-click="admin.setSurvey()" ng-model="admin.configSurvey" id="survey">
-    <input class="pull-right" type="button" ng-click="admin.logout()" value="Logout">
+    <md-button class="mg-raised pull-right" ng-click="admin.logout()">Logout</md-button>
 
     <div class="title-container">
-      <input style="margin-left: 0px; margin-right: 20px;" type="button" ng-click="admin.displayAllUsers()" value="Show all users">
+      <md-button class="md-raised first-button" ng-click="admin.displayAllUsers()">Show all users</md-button>
       <label for="username" class="control-label">User-name</label>
       <input type="text" class="" name="username" id="username" placeholder="" ng-model="admin.searchUser"
               required>
-      <input type="button" ng-click="admin.showWorkflow()" value="Show Workflow">
-      <input type="button" ng-click="admin.showBlocks()" value="Show Blocks">
-      <input type="button" ng-click="admin.createUser()" value="Create User">
+      <md-button class="md-raised" ng-click="admin.showWorkflow()">Show Workflow</md-button>
+      <md-button class="md-raised" ng-click="admin.showBlocks()">Show Blocks</md-button>
+      <md-button class="md-raised" ng-click="admin.createUser()">Create User</md-button>
 
 
 

@@ -1,5 +1,6 @@
 <div class="container finish">
   <div class="row">
+    <img ng-click="vm.showInfo()"  src="assets/images/info.png" id="myId" class="icon info-icon" />
     <div class="col-md-6 col-md-offset-3 col-xs-12">
       <h3>Check whether all logs are assigned to the correct block and confirm by clicking 'Confirm Blocks'.</h3>
       <div class="panel-group" id="accordion">
@@ -48,7 +49,7 @@
 
 
       </div>
-      <button ng-disabled="!vm.checkAllItems()" ng-click="vm.confirmBlocks()">Confirm Blocks</button>
+      <md-button class="md-raised" ng-disabled="!vm.checkAllItems()" ng-click="vm.confirmBlocks()">Confirm Blocks</md-button>
     </div>
   </div>
 

@@ -61,8 +61,8 @@
                 </div>
               </div>
               <!--<button ng-click="addAlternative()">Add another alternative</button>-->
-              <button type="button" ng-click="addAlternative()" class="margin-top-large btn btn-primary">Add another alternative</button>
-              <button ng-if="block.alternatives.length > 1" type="button" ng-click="spliceAlternative()" class="margin-top-large btn">Remove last alternative</button>
+              <md-button type="button" ng-click="addAlternative()" class="margin-top-large md-raised">Add another alternative</md-button>
+              <md-button ng-if="block.alternatives.length > 1" type="button" ng-click="spliceAlternative()" class="margin-top-large md-raised">Remove last alternative</md-button>
 
             </div>
 
@@ -85,13 +85,13 @@
 
 
             <div ng-class="{'button-group' : edit}">
-              <button ng-if="step<5 && !edit"  type="button" ng-click="increaseStep(bmodal.form)" class="btn btn-primary pull-right">Next</button>
-              <button ng-if="step>1 && !edit"  type="button" ng-click="decreaseStep()" class="btn btn-primary" id="back-btn">Back</button>
-              <button ng-if="step==5 || edit"  type="button" ng-click="close(bmodal.form)" class="btn btn-primary pull-right">Save</button>
-              <button type="button" ng-click="cancel()" class="btn">Cancel</button>
-              <button ng-if="edit" type="button" ng-click="showDiff()" class="btn btn-primary">Show Diff</button>
-              <button ng-if="edit && edit !== 'jsplumb' " type="button" ng-click="deleteBlock()" class="btn btn-primary">Delete Block</button>
-              <button ng-if="edit && edit !== 'jsplumb' && edit!== 'finish' && edit !== 'admin'" type="button" ng-click="loadFiles()" class="btn btn-primary">Load Files</button>
+              <md-button ng-if="step<5 && !edit"  type="button" ng-click="increaseStep(bmodal.form)" class="md-raised pull-right">Next</md-button>
+              <md-button ng-if="step>1 && !edit"  type="button" ng-click="decreaseStep()" class="md-raised" id="back-btn">Back</md-button>
+              <md-button ng-if="step==5 || edit"  type="button" ng-click="close(bmodal.form)" class="md-raised pull-right">Save</md-button>
+              <md-button ng-if="edit" type="button" ng-click="showDiff()" class="md-raised">Show Diff</md-button>
+              <md-button ng-if="edit && edit !== 'jsplumb' " type="button" ng-click="deleteBlock()" class="md-raised">Delete Block</md-button>
+              <md-button ng-if="edit && edit !== 'jsplumb' && edit!== 'finish' && edit !== 'admin'" type="button" ng-click="loadFiles()" class="md-raised">Load Files</md-button>
+              <md-button type="button" ng-click="cancel()" class="md-raised">Cancel</md-button>
             </div>
 
           </form>
