@@ -7,7 +7,6 @@
           <h4 ng-if="step==1 || edit" class="modal-title">{{title}}</h4>
         </div>
 
-
         <div class="text-right">
           <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
         </div>
@@ -16,7 +15,6 @@
       <div class="modal-body row">
 
         <div class="questions-edit col-sm-7">
-          <span ng-if="!edit">Please answer the following questions</span>
 
           <form name="bmodal.form" class="form-horizontal" role="form">
             <div ng-if="step==1 || edit" class="form-group question-group">
@@ -28,7 +26,7 @@
             </div>
 
             <div ng-if="step==2 || edit" class="form-group question-group">
-              <label for="goal" class="control-label">Shorty summarize <span style="font-style: italic">what</span> you did in this block?</label>
+              <label for="goal" class="control-label">Please shortly explain what you did in this block</label>
               <textarea type="text" class="form-control" name="goal" id="goal" placeholder="" ng-model="block.goal" required></textarea>
               <div ng-messages="bmodal.form.goal.$error" ng-show="bmodal.form.$submitted || bmodal.form.goal.$touched">
                 <div class="required" ng-message="required">Input required</div>
@@ -36,7 +34,8 @@
             </div>
 
             <div ng-if="step==3 || edit" class="form-group question-group">
-              <div class="multilabel-title">What <span style="font-style: italic">different</span> options/alternatives did you consider for achieving what you did in this block?</div>
+              <div class="multilabel-title">What where the other (if any) alternatives you considered in order to achieve the results of this block?</div>
+              <span>Please describe each alternative and explain its advantages and disadvantages. By clicking on "Add another alternative", you can add additional alternatives.</span>
               <div ng-repeat="alternative in block.alternatives" ng-class="{'alternative-not-last' : !$last, 'alternative-not-first' : $last}">
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="control-label">Alternative</div>
@@ -75,7 +74,7 @@
             </div>
 
             <div ng-if="step==5 || edit" class="form-group question-group">
-              <label for="preconditions" class="control-label">What requirements need to be fulfilled to run this block?</label>
+              <label for="preconditions" class="control-label">What preconditions should be fulfilled to successfully execute this block?</label>
               <textarea type="text" class="form-control" name="preconditions" id="preconditions" placeholder="" ng-model="block.preconditions" required></textarea>
               <div ng-messages="bmodal.form.preconditions.$error" ng-show="bmodal.form.$submitted || bmodal.form.preconditions.$touched">
                 <div class="required" ng-message="required">Input required</div>
