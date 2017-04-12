@@ -12,7 +12,8 @@ function UtilService($window, $sce, ModalService, $timeout, $http) {
      * Returns URL of RStudio-Server
      */
     getRStudioUri() {
-      return $sce.trustAsResourceUrl('http://34.253.169.17:8787');
+      // return $sce.trustAsResourceUrl('http://34.253.169.17:8787');
+      return $sce.trustAsResourceUrl('https://ec2-34-253-169-17.eu-west-1.compute.amazonaws.com:8787');
     },
 
     /**
