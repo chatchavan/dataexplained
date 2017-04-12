@@ -39,7 +39,7 @@
               <div ng-repeat="alternative in block.alternatives" ng-class="{'alternative-not-last' : !$last, 'alternative-not-first' : $last}">
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="control-label">Alternative</div>
-                  <textarea type="text" class="sublabel-input form-control" name="alternativeTitle{{$index}}" placeholder="" ng-model="block.alternatives[$index].title" required></textarea>
+                  <textarea type="text" class="sublabel-input form-control" name="alternativeTitle{{$index}}" placeholder="" ng-model="block.alternatives[$index].title"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativeTitle'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeTitle'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
