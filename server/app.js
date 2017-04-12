@@ -35,27 +35,27 @@ require('./routes')(app);
 // Start server
 function startServer() {
 
-  if(config.env === 'development'){
+  // if(config.env === 'development'){
     http.createServer(app).listen(config.port, config.ip, function() {
       console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
     });
-  }
-  else{
-    var options = {
-      key: fs.readFileSync('/home/ubuntu/privkey.pem'),
-      cert: fs.readFileSync('/home/ubuntu/fullchain.pem'),
-      ca: fs.readFileSync('/home/ubuntu/chain.pem')
-    };
-
-    http.createServer(function(req, res){
-      res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
-      res.end();
-    });
-
-    https.createServer(options, app).listen(443, config.ip, function() {
-      console.log('Express server listening on %d, in %s mode', 443, app.get('env'));
-    });
-  }
+  // }
+  // else{
+  //   var options = {
+  //     key: fs.readFileSync('/home/ubuntu/privkey.pem'),
+  //     cert: fs.readFileSync('/home/ubuntu/fullchain.pem'),
+  //     ca: fs.readFileSync('/home/ubuntu/chain.pem')
+  //   };
+  //
+  //   http.createServer(function(req, res){
+  //     res.writeHead(301, {"Location": "https://" + req.headers['host'] + req.url});
+  //     res.end();
+  //   });
+  //
+  //   https.createServer(options, app).listen(443, config.ip, function() {
+  //     console.log('Express server listening on %d, in %s mode', 443, app.get('env'));
+  //   });
+  // }
 }
 
 setImmediate(startServer);
