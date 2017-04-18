@@ -14,10 +14,15 @@ angular.module('rationalecapApp')
       // $scope.block.alternativesContra = [{}];
     }
     if($scope.block.content){
-      $scope.renderedContent = $scope.block.content.split('\\n');
+      $scope.renderedContent_temp = $scope.block.content.split('\\n');
     }
     else if(content){
-      $scope.renderedContent = content.content.split('\\n');
+      $scope.renderedContent_temp = content.content.split('\\n');
+    }
+
+    $scope.renderedContent = [];
+    for(var i = 0; i < $scope.renderedContent_temp.length; i++){
+      $scope.renderedContent.push({id: i, content: $scope.renderedContent_temp[i]});
     }
 
     $scope.step = 1;

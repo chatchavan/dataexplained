@@ -97,7 +97,7 @@
         </div>
 
         <div class="col-sm-5">
-          <p ng-repeat="c in renderedContent" class="content-line">{{c}}</p>
+          <p ng-repeat="c in renderedContent track by id" class="content-line">{{c.content}}</p>
         </div>
 
 
