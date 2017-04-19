@@ -45,14 +45,14 @@
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="">Pro</div>
+                  <div class="sublabel" class="">Advantages of this alternative</div>
                   <textarea type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativePro'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativePro'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="">Contra</div>
+                  <div class="sublabel" class="">Disadvantages of this alternative</div>
                   <textarea type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativeContra'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeContra'+$index].$touched">
