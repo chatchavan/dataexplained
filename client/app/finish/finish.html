@@ -10,12 +10,14 @@
                ng-class="{'log-entry' : !item.renderedContent, 'log-entry-empty' : item.renderedContent && item.content.length<1}">
             <span ng-if="item.renderedContent && item.content.length>0" class="pull-right fa fa-arrows-v"></span>
             <span id="attention" ng-if="item.renderedContent && item.content.length<1" class="pull-left fa  fa-exclamation-triangle"></span>
-            <span ng-if="item.renderedContent" ng-click="vm.editBlock(item)"
+            <span ng-click="vm.editBlock(item)"
                   class="pull-right fa fa-pencil-square-o"></span>
             <h4 ng-if="item.renderedContent" class="panel-title">
               <a data-toggle="collapse" data-target="#collapse_{{$index}}"href="#collapse_{{$index}}">{{item.title}}</a>
             </h4>
 
+            <div dnd-list="[item]"
+            dnd-inserted="vm.dragDrop(index, item, {{item}}, true)">
             <p ng-if="!item.renderedContent" dnd-draggable="item"
                dnd-moved="vm.dragEndLog($index, item)"
                dnd-effect-allowed="move"
@@ -24,6 +26,7 @@
                style="margin: 0">
               {{item.title}}
             </p>
+            </div>
           </div>
 
           <div ng-if="item.renderedContent" id="collapse_{{$index}}"

@@ -143,32 +143,13 @@ class MainController {
   }
 
   createBlock(){
-
-    if(this.selection && this.selection.length > 0){
-      var that = this;
-      let select = this.selection;
-      let content = that.BlockUtil.createBlockString({}, select);
-
-      this.ModalService.showModal({
-        templateUrl: "app/blockmodal2/blockmodal2.html",
-        controller: "BlockModal2Controller",
-        inputs: {
-          title: "Add a new block",
-          edit: undefined,
-          block: undefined,
-          content: content,
-          jsplumb: false
-        }
-      }).then(function(modal) {
-        modal.element.modal();
-        modal.close.then(result => {
-          if(result){
-            that.saveBlock(that.BlockUtil.createBlockString(result, select), select);
-          }
-        });
-      });
-    }
-
+    let that = this;
+    this.BlockUtil.createBlock(this.selection, this.loglist, this.dbLogs, this.user).then(function(success){
+      console.log('success', success);
+      that.blockList = success.blockList;
+      that.loglist = success.loglist;
+      that.dbLogs = success.dbLogs;
+    });
   }
 
   editBlock(block){
@@ -224,30 +205,6 @@ class MainController {
 
 
 
-
-  saveBlock(newBlock, selection) {
-    console.log('saving new block', newBlock, selection);
-    this.Util.showLoadingModal('Saving new Block...');
-
-    this.$http.post('/api/blocks', {block: newBlock, user: this.user, selection: selection }).then(response => {
-      console.log('response', response);
-        if(response.data){
-          this.blockList = response.data.blockList;
-          this.dbLogs = response.data.dbLogs;
-          this.loglist = this.LogUtil.markLogs(this.loglist, this.dbLogs);
-          this.saveFiles(newBlock.timestamp);
-        }
-        else{
-          this.Util.hideModal('processing-modal');
-        }
-      }, (err) => {
-      this.Util.hideModal('processing-modal');
-      console.log(err);
-      });
-
-  }
-
-
   //=========FILES=========
 
   loadFiles(block){
@@ -267,22 +224,6 @@ class MainController {
 
   }
 
-  saveFiles(timestamp){
-    if(!timestamp){
-      timestamp = '';
-    }
-    console.log('saving files with timestamp: '+ timestamp);
-    this.$http.post('/api/files', {user: this.user, timestamp: timestamp }).then(response => {
-      this.Util.hideModal('processing-modal');
-      console.log('response', response);
-      if(response.data){
-        console.log('files saved', response.data);
-      }
-    }, (err) => {
-      this.Util.hideModal('processing-modal');
-      console.log(err);
-    });
-  }
 
 
 

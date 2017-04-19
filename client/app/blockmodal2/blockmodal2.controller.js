@@ -13,6 +13,7 @@ angular.module('rationalecapApp')
       $scope.block.alternatives = [{}];
       // $scope.block.alternativesContra = [{}];
     }
+    $scope.renderedContent_temp = [];
     if($scope.block.content){
       $scope.renderedContent_temp = $scope.block.content.split('\\n');
     }

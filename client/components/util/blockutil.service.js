@@ -117,6 +117,63 @@
       // },
 
       /**
+       * Create a block
+       * **/
+      createBlock(selection, loglist, dbLogs, user){
+        var deferred = $q.defer();
+        if(selection && selection.length > 0){
+          let content = BlockUtil.createBlockString({}, selection);
+
+          ModalService.showModal({
+            templateUrl: "app/blockmodal2/blockmodal2.html",
+            controller: "BlockModal2Controller",
+            inputs: {
+              title: "Add a new block",
+              edit: undefined,
+              block: undefined,
+              content: content,
+              jsplumb: false
+            }
+          }).then(function(modal) {
+            modal.element.modal();
+            modal.close.then(result => {
+              if(result){
+                BlockUtil.saveBlock(BlockUtil.createBlockString(result, selection), selection, loglist, dbLogs, user, deferred);
+              }
+            });
+          });
+        }
+        return deferred.promise;
+      },
+
+      /**
+       * Saves a block
+       * **/
+
+      saveBlock(newBlock, selection, loglist, dbLogs, user, deferred){
+        console.log('saving new block', newBlock, selection);
+        Util.showLoadingModal('Saving new Block...');
+
+        $http.post('/api/blocks', {block: newBlock, user: user, selection: selection }).then(response => {
+          console.log('response', response);
+          if(response.data){
+            let newLoglist = LogUtil.markLogs(loglist, dbLogs);
+            this.saveFiles(newBlock.timestamp, user);
+            deferred.resolve({blockList: response.data.blockList, dbLogs: response.data.dbLogs, loglist: newLoglist});
+          }
+          else{
+            this.Util.hideModal('processing-modal');
+            deferred.reject();
+          }
+        }, (err) => {
+          this.Util.hideModal('processing-modal');
+          console.log(err);
+          deferred.reject();
+        });
+
+      },
+
+      /**
        * Delete a block
        * */
       deleteBlock(block, user, loglist){
@@ -194,6 +251,26 @@
 
         return deferred.promise;
 
+      },
+
+      /**
+       * Saves Files
+       * **/
+      saveFiles(timestamp, user){
+        if(!timestamp){
+          timestamp = '';
+        }
+        console.log('saving files with timestamp: '+ timestamp);
+        $http.post('/api/files', {user: user, timestamp: timestamp }).then(response => {
+          Util.hideModal('processing-modal');
+          console.log('response', response);
+          if(response.data){
+            console.log('files saved', response.data);
+          }
+        }, (err) => {
+          this.Util.hideModal('processing-modal');
+          console.log(err);
+        });
       },
 
     getBlockPrefix(){

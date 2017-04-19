@@ -112,6 +112,26 @@
 
     }
 
+    function createBlock(drop){
+
+      if(drop && drop.item && drop.destItem && drop.index !== undefined){
+        let selection = [drop.destItem];
+        if(drop.index === 0){
+          selection.unshift(drop.item); //add item at beginning
+        }
+        else{
+          selection.push(drop.item); //add item at end
+        }
+          BlockUtil.createBlock(selection, vm.loglist, vm.dbLogs, vm.user).then(function(success){
+            vm.blockList = success.blockList;
+            vm.loglist = success.loglist;
+            vm.dbLogs = success.dbLogs;
+            vm.init();
+          });
+      }
+
+    }
+
     function editBlock(block){
 
       ModalService.showModal({
@@ -170,7 +190,13 @@
     }
 
     function dragEndLog(originIndex, list){
+      console.log(vm.drop);
       if(vm.drop && vm.drop.destItem && vm.drop.index !== undefined && vm.drop.item){
+
+        if(!vm.drop.loglog){
+          console.log('no loglog');
+
+
         let newBlock = vm.drop.destItem;
         // console.log('originIndex '+ originIndex, 'list', list);
         console.log(vm.drop.item, newBlock);
@@ -218,14 +244,20 @@
         });
 
 
-
+        }
+        else{
+          //loglog
+          if(!areSameLogs(vm.drop.destItem, vm.drop.item)){
+            createBlock(vm.drop);
+          }
+        }
       }
 
     }
 
-    function dragDrop(index, item, destItem){
+    function dragDrop(index, item, destItem, loglog){
       // console.log('drag drop', index, destItem);
-      vm.drop = {item: item, destItem: destItem, index: index};
+      vm.drop = {item: item, destItem: destItem, index: index, loglog: loglog};
     }
 
 
@@ -241,6 +273,10 @@
       }
 
       return true;
+    }
+
+    function areSameLogs(logItem1, logItem2){
+      return logItem1.log === logItem2.log && new Date(logItem1.timestamp).getTime() === new Date(logItem2.timestamp).getTime();
     }
 
 
