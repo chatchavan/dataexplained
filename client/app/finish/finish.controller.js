@@ -190,12 +190,9 @@
     }
 
     function dragEndLog(originIndex, list){
-      console.log(vm.drop);
       if(vm.drop && vm.drop.destItem && vm.drop.index !== undefined && vm.drop.item){
 
         if(!vm.drop.loglog){
-          console.log('no loglog');
-
 
         let newBlock = vm.drop.destItem;
         // console.log('originIndex '+ originIndex, 'list', list);
