@@ -4,8 +4,9 @@
 
 class MainController {
 
-  constructor(Auth, $http, StorageUtil, Util, $interval, $timeout, $state, ModalService, LogUtil, BlockUtil) {
+  constructor($scope, Auth, $http, StorageUtil, Util, $interval, $timeout, $state, ModalService, LogUtil, BlockUtil) {
 
+    this.$scope = $scope;
     this.Auth = Auth;
     this.$http = $http;
     this.$timeout = $timeout;
@@ -65,7 +66,11 @@ class MainController {
   startPolling(){
     this.pollLogs();
     this.getAllBlocks();
-    this.$interval(this.pollLogs.bind(this), 5000);
+    let logPollInterval = this.$interval(this.pollLogs.bind(this), 5000);
+    let that = this;
+    this.$scope.$on('$destroy', function() {
+      that.$interval.cancel(logPollInterval);
+    });
   }
 
 
@@ -143,6 +148,8 @@ class MainController {
   }
 
   createBlock(){
+    this.$interval.cancel(this.logPollInterval);
+
     let that = this;
     this.BlockUtil.createBlock(this.selection, this.loglist, this.dbLogs, this.user).then(function(success){
       console.log('success', success);

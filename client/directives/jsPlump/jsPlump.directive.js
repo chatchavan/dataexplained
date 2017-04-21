@@ -177,7 +177,12 @@
             console.log($scope.json.connections);
             for(let i = 0; i < $scope.json.connections.length; i++){
               let connection = $scope.instance.connect({ source: $scope.json.connections[i].pageSourceId, target: $scope.json.connections[i].pageTargetId, type:"basic" });
-              connection.getOverlay("label").setLabel($scope.json.connections[i].label);
+              if(!!$scope.json.connections[i].label){
+                connection.getOverlay("label").setLabel($scope.json.connections[i].label);
+              }
+              else{
+                connection.getOverlay("label").hide();
+              }
 
             }
           }
