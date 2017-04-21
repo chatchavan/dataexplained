@@ -8,7 +8,7 @@
 
       </div>
       <div class="modal-body">
-        <p ng-repeat="t in text">{{t}}</p>
+        <p ng-repeat="t in text" data-ng-bind-html="trustAsHtml(t)"></p>
         <md-button ng-if="actionText1" type="button" ng-click="close()" class="md-raised">{{actionText1}}</md-button>
         <md-button ng-if="actionText2" type="button" ng-click="cancel()" class="md-raised">{{actionText2}}</md-button>
       </div>

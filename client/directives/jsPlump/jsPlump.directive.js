@@ -26,6 +26,8 @@
 
 
     $scope.leftMargin = 60; //in px
+    $scope.hoverPaintStyle = {stroke: "#009900", strokeWidth: 2 };
+    $scope.defaultPaintStyle = {stroke: "rgb(92, 150, 188)", strokeWidth: 2};
 
 
     // --- INIT ---
@@ -48,7 +50,8 @@
         $scope.instance = jsPlumb.getInstance({
           Endpoint: ["Dot", {radius: 2}],
           Connector:"StateMachine",
-          HoverPaintStyle: {stroke: "#009900", strokeWidth: 2 },
+          PaintStyle: $scope.defaultPaintStyle,
+          HoverPaintStyle: $scope.hoverPaintStyle,
           ConnectionOverlays: [
             [ "Arrow", {
               location: 1,
@@ -59,9 +62,9 @@
             [ "Label", {
                 label: "", id: "label", cssClass: "aLabel",
                 events:{
-                  click:function(labelOverlay, originalEvent) {
-                    console.log("click on label overlay for :" + labelOverlay.component);
-                    editLabel(labelOverlay.component, false);
+                  dblclick:function(labelOverlay, originalEvent) {
+                    labelOverlay.component.locked = true;
+                    editLabel(labelOverlay.component, true);
 
                   }
                 }
@@ -102,7 +105,18 @@
         // just do this: jsPlumb.bind("click", jsPlumb.detach), but I wanted to make it clear what was
         // happening.
         $scope.instance.bind("dblclick", function (c) {
-          $scope.instance.detach(c);
+          if(!c.locked){
+            delete $scope.instance.selectedConnection;
+            $scope.instance.detach(c);
+          }
+        });
+        $scope.instance.bind("click", function (c) {
+
+          if($scope.instance.selectedConnection){
+            $scope.instance.selectedConnection.setPaintStyle($scope.defaultPaintStyle);
+          }
+          c.setPaintStyle($scope.hoverPaintStyle);
+          $scope.instance.selectedConnection = c;
         });
 
 
@@ -180,11 +194,20 @@
         // this listener sets the connection's internal
         // id as the label overlay's text.
         $scope.instance.bind("connection", function (info) {
-          editLabel(info.connection, true);
+          editLabel(info.connection, false);
         });
 
 
         // that.saveFlowchart(instance);
+
+        $('html').keyup(function(e){
+          if(e.keyCode === 46 || e.keyCode === 8) { //46 = DELETE, 8 = Backspace
+            deleteConnection($scope.instance.selectedConnection);
+            delete $scope.instance.selectedConnection;
+          }
+        });
+
+
       });
     }
 
@@ -219,34 +242,41 @@
       return Number(element.substr(0, element.length-2));
     }
 
-    function editLabel(connection, deleteOnCancel){
+    function editLabel(connection, edit){
 
       ModalService.showModal({
         templateUrl: "app/labelmodal/labelmodal.html",
         controller: "LabelModalController",
         inputs: {
-          label: connection.getOverlay("label").label
+          label: connection.getOverlay("label").label,
+          edit: edit
         }
       }).then(function(modal) {
         modal.element.modal();
         modal.close.then(result => {
-          console.log('result', result);
-          if(result){
+          connection.locked = false;
+          if(result === 'delete'){
+            connection.getOverlay("label").hide();
+          }
+          else if(result){
             connection.getOverlay("label").setLabel(result);
             // connection.hideOverlays();
           }
-          else if(deleteOnCancel){
-            jsPlumb.detach(connection, {
-              fireEvent: false, //fire a connection detached event?
-              forceDetach: false //override any beforeDetach listeners
-            })
+          else if(!edit){
+            deleteConnection(connection);
           }
         });
       });
     }
 
+    function deleteConnection(connection){
+      jsPlumb.detach(connection, {
+        fireEvent: false, //fire a connection detached event?
+        forceDetach: false //override any beforeDetach listeners
+      })
+    }
+
     function editBlock (block){
-      console.log('block clicked', block.id);
 
       let b = undefined;
 

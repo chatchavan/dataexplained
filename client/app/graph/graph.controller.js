@@ -27,7 +27,7 @@
 
     function init() {
       if(!vm.blocks){
-        $state.go('^.main');
+        // $state.go('^.main');
       }
       vm.user = StorageUtil.retrieveSStorage('user');
 
@@ -38,17 +38,21 @@
         }
       }
 
-      // vm.plumpList.push({name: "NODE 2 NODE 2 NODE 2 NODE 2", id: "id2"});
-      // vm.plumpList.push({name: "NODE 3", id: "id3"});
-      // vm.plumpList.push({name: "NODE 4", id: "id4"});
-      // vm.plumpList.push({name: "NODE 5 NODE 2 NODE 2", id: "id5"});
-      // vm.plumpList.push({name: "NODE 6", id: "id6"});
+      vm.plumpList.push({name: "NODE 2 NODE 2 NODE 2 NODE 2", id: "id2"});
+      vm.plumpList.push({name: "NODE 3", id: "id3"});
+      vm.plumpList.push({name: "NODE 4", id: "id4"});
+      vm.plumpList.push({name: "NODE 5 NODE 2 NODE 2", id: "id5"});
+      vm.plumpList.push({name: "NODE 6", id: "id6"});
     }
 
     //=========CONTROLLER=========
 
     function showInfo(){
-      let text = ['Connect Blocks by dragging arrows from the yellow marker to another block.', 'You can delete an arrow by clicking on it.', 'To edit a block, double-klick on the respective box.'];
+      let text = ['Connect Blocks by dragging arrows from the yellow marker to another block.',
+        'Please indicate a label/description for your newly created arrow.',
+        'You can <span style="font-weight: bold">delete an arrow</span style="font-weight: bold"> by double-clicking on it or select the arrow with a single click and press delete/backspace.',
+        'To <span style="font-weight: bold">edit or delete the label</span>, double-click on it.',
+        'To <span style="font-weight: bold">edit a block</span>, double-click on the respective box.'];
       ModalService.showModal({
         templateUrl: "app/custommodal/custommodal.html",
         controller: "CustomModalController",

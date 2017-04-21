@@ -1,13 +1,16 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('CustomModalController', function($scope, $element, title, close, text, actionText1, actionText2) {
+  .controller('CustomModalController', function($scope, $element, $sce, title, close, text, actionText1, actionText2) {
 
     $scope.title = title;
     $scope.text = text;
     $scope.actionText1 = actionText1;
     $scope.actionText2 = actionText2;
 
+    $scope.trustAsHtml = function(string) {
+      return $sce.trustAsHtml(string);
+    };
 
     $scope.close = function(form) {
         $element.modal('hide');
