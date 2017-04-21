@@ -27,7 +27,7 @@
 
     function init() {
       if(!vm.blocks){
-        // $state.go('^.main');
+        $state.go('^.main');
       }
       vm.user = StorageUtil.retrieveSStorage('user');
 
@@ -38,11 +38,11 @@
         }
       }
 
-      vm.plumpList.push({name: "NODE 2 NODE 2 NODE 2 NODE 2", id: "id2"});
-      vm.plumpList.push({name: "NODE 3", id: "id3"});
-      vm.plumpList.push({name: "NODE 4", id: "id4"});
-      vm.plumpList.push({name: "NODE 5 NODE 2 NODE 2", id: "id5"});
-      vm.plumpList.push({name: "NODE 6", id: "id6"});
+      // vm.plumpList.push({name: "NODE 2 NODE 2 NODE 2 NODE 2", id: "id2"});
+      // vm.plumpList.push({name: "NODE 3", id: "id3"});
+      // vm.plumpList.push({name: "NODE 4", id: "id4"});
+      // vm.plumpList.push({name: "NODE 5 NODE 2 NODE 2", id: "id5"});
+      // vm.plumpList.push({name: "NODE 6", id: "id6"});
     }
 
     //=========CONTROLLER=========
