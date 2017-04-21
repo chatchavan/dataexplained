@@ -53,7 +53,8 @@
             <select ng-model="main.selection" multiple ng-focus="main.selectFocus = true;" ng-blur="main.selectFocus = false;" class="fullDimension selectContainer" id="selection">
               <option ng-value="log" ng-class="{'not-eligible' : log.used}"
                       ng-disabled="log.used"
-                      ng-repeat="log in main.loglist">{{log.log}}</option>
+                      ng-repeat="log in main.loglist"
+                      ng-attr-title="{{log.log}}">{{log.log}}</option>
             </select>
           </div>
         </div>
