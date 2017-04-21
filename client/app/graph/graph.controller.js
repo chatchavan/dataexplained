@@ -104,6 +104,7 @@
           connectionId: connection.id,
           pageSourceId: connection.sourceId,
           pageTargetId: connection.targetId,
+          label: connection.getOverlay("label").labelText,
           anchors: $.map(connection.endpoints, function(endpoint) {
 
             return [[endpoint.anchor.x,

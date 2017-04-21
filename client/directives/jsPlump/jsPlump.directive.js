@@ -48,7 +48,7 @@
         $scope.instance = jsPlumb.getInstance({
           Endpoint: ["Dot", {radius: 2}],
           Connector:"StateMachine",
-          HoverPaintStyle: {stroke: "#FF0000", strokeWidth: 2 },
+          HoverPaintStyle: {stroke: "#009900", strokeWidth: 2 },
           ConnectionOverlays: [
             [ "Arrow", {
               location: 1,
@@ -56,7 +56,17 @@
               length: 14,
               foldback: 0.8
             } ],
-            // [ "Label", { label: "FOO", id: "label", cssClass: "aLabel" }]
+            [ "Label", {
+                label: "", id: "label", cssClass: "aLabel",
+                events:{
+                  click:function(labelOverlay, originalEvent) {
+                    console.log("click on label overlay for :" + labelOverlay.component);
+                    editLabel(labelOverlay.component, false);
+
+                  }
+                }
+              }
+            ]
           ],
           Container: "canvas"
         });
@@ -91,19 +101,11 @@
         // bind a click listener to each connection; the connection is deleted. you could of course
         // just do this: jsPlumb.bind("click", jsPlumb.detach), but I wanted to make it clear what was
         // happening.
-        $scope.instance.bind("click", function (c) {
+        $scope.instance.bind("dblclick", function (c) {
           $scope.instance.detach(c);
         });
 
-        // bind a connection listener. note that the parameter passed to this function contains more than
-        // just the new connection - see the documentation for a full list of what is included in 'info'.
-        // this listener sets the connection's internal
-        // id as the label overlay's text.
-        $scope.instance.bind("connection", function (info) {
-          // info.connection.getOverlay("label").setLabel('');
-          // info.connection.hideOverlays();
 
-        });
 
         // bind a double click listener to "canvas"; add new node when this occurs.
         jsPlumb.on(canvas, "dblclick", function(e) {
@@ -147,7 +149,8 @@
             if(i > 0){
               if(!$scope.json){
                 windows[i].style.left = 2*$scope.leftMargin+windows[i-1].offsetWidth+ getPxValue(windows[i-1].style.left) + "px";
-                $scope.instance.connect({ source: windows[i-1].id, target: windows[i].id, type:"basic" });
+                let connection = $scope.instance.connect({ source: windows[i-1].id, target: windows[i].id, type:"basic" });
+                connection.getOverlay("label").hide();
               }
             }
             else{
@@ -159,7 +162,9 @@
           if($scope.json && $scope.json.connections){
             console.log($scope.json.connections);
             for(let i = 0; i < $scope.json.connections.length; i++){
-              $scope.instance.connect({ source: $scope.json.connections[i].pageSourceId, target: $scope.json.connections[i].pageTargetId, type:"basic" });
+              let connection = $scope.instance.connect({ source: $scope.json.connections[i].pageSourceId, target: $scope.json.connections[i].pageTargetId, type:"basic" });
+              connection.getOverlay("label").setLabel($scope.json.connections[i].label);
+
             }
           }
         });
@@ -169,6 +174,16 @@
 
 
         jsPlumb.fire("jsPlumbDemoLoaded", $scope.instance);
+
+        // bind a connection listener. note that the parameter passed to this function contains more than
+        // just the new connection - see the documentation for a full list of what is included in 'info'.
+        // this listener sets the connection's internal
+        // id as the label overlay's text.
+        $scope.instance.bind("connection", function (info) {
+          editLabel(info.connection, true);
+        });
+
+
         // that.saveFlowchart(instance);
       });
     }
@@ -202,6 +217,32 @@
       }
 
       return Number(element.substr(0, element.length-2));
+    }
+
+    function editLabel(connection, deleteOnCancel){
+
+      ModalService.showModal({
+        templateUrl: "app/labelmodal/labelmodal.html",
+        controller: "LabelModalController",
+        inputs: {
+          label: connection.getOverlay("label").label
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          console.log('result', result);
+          if(result){
+            connection.getOverlay("label").setLabel(result);
+            // connection.hideOverlays();
+          }
+          else if(deleteOnCancel){
+            jsPlumb.detach(connection, {
+              fireEvent: false, //fire a connection detached event?
+              forceDetach: false //override any beforeDetach listeners
+            })
+          }
+        });
+      });
     }
 
     function editBlock (block){
