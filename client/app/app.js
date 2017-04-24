@@ -19,11 +19,19 @@ angular.module('rationalecapApp', [
 ])
   .config(function($urlRouterProvider, $locationProvider) {
     $urlRouterProvider
-      .otherwise('/');
+      .otherwise(function ($injector, $location) {
+
+        if ($location.url() === '/readme') {
+          window.open('https://s3-eu-west-1.amazonaws.com/dataexplained/README.rtf', '_self');
+        }
+        else {
+          return '/';
+        }
+      });
 
     $locationProvider.html5Mode(true);
   })
-  .run(function($rootScope, User, Auth){
+  .run(function($rootScope, $window, User, Auth){
     $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
       if(to && to.name === 'main' && toParams.survey){
         //update user surveyDone = true
@@ -32,7 +40,7 @@ angular.module('rationalecapApp', [
         , function() {
           console.log('user surveyDone updated');
         }, function(err) {
-            console.log('user surveyDone update FAILD', err);
+            console.log('user surveyDone update FAILED', err);
         })
       }
     });
