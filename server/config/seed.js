@@ -51,7 +51,7 @@ User.find({}).removeAsync()
     }, {
       provider: 'local',
       role: 'admin',
-      username: 'admin',
+      username: 'superadmin',
       surveyDone: true,
       // email: 'admin@example.com',
       password: 'admin!123'
