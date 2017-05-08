@@ -111,11 +111,8 @@ export function createAdmin(req, res){
   shell.exec('sudo userdel '+username+' --force --remove');
   shell.exec('sudo useradd -p $(openssl passwd -1 '+username+') '+username+' -m');
   shell.exec('sudo usermod -aG sudo '+username);
-  shell.exec('sudo usermod -aG jupyterhub '+username);
   shell.exec('sudo mkdir /home/'+username+'/rstudio-workspace');
   shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
-  shell.exec('sudo mkdir /home/'+username+'/notebooks');
-  shell.exec('sudo chown '+username+' /home/'+username+'/notebooks');
 
   var newUser = new User(req.body);
   newUser.saveAsync()
@@ -161,7 +158,6 @@ export function resetAdmin(req, res){
                 }
                 shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
                 shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
-                shell.exec('sudo rm -rf /home/'+user+'/notebooks/{*,.*}');
                 return res.status(200).end();
               });
             }
@@ -206,7 +202,6 @@ export function deleteAdmin(req, res){
             else if(!errRemove){
               shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
               shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
-              shell.exec('sudo rm -rf /home/'+user+'/notebooks/{*,.*}');
               shell.exec('sudo userdel '+user+' --force --remove');
               return res.status(200).end();
             }
