@@ -9,9 +9,10 @@
 
 'use strict';
 
-import _ from 'lodash';
+import _ from "lodash";
 var Log = require('./log.model');
 var Block = require('./../block/block.model');
+var UserCtrl = require('./../user/user.controller');
 var BlockCtrl = require('./../block/block.controller');
 var fs = require('fs');
 var config = require('../../config/environment');
@@ -102,27 +103,70 @@ export function show(req, res) {
 export function showFromFile(req, res) {
   let user = req.params.user;
 
-  let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
-
-  fs.readFile(rHistory, 'utf8', function (err,data) {
-    if (err) {
-      console.log('no user history found for user '+user,err);
-      return res.status(404).send(err);
+  // User.getPlatformByUsername(user, function(platform){
+  //   if(!platform){
+  //     return res.status(404).send();
+  //   }
+  //   else{
+  //
+  //   }
+  // });
+  UserCtrl.getPlatformByUsername(user, function(platform){
+    if(!platform){
+      return res.status(404).send();
     }
 
-    Log.findOne({'user': user}).exec(function (err, logs) {
-
-      var result = {'fileLogs': data.toString()};
-
-      if (!err && logs) {
-        result.dbLogs = logs.logs;
+    let historyFile = '';
+    logUtil.getLogHistoryPath(platform, user, config.env, fs, function (history) {
+      historyFile = history;
+      if (!historyFile) {
+        return res.status(404).send();
       }
-      return res.status(200).json(result);
+
+      fs.readFile(historyFile, 'utf8', function (err, data) {
+        if (err) {
+          console.log('no user history found for user ' + user, err);
+          return res.status(404).send(err);
+        }
+
+        if(platform === 'jupyter'){
+          let d = JSON.parse(data);
+          let data2 = [];
+          for(let i = 0; i < d.cells.length; i++){
+            let cell = d.cells[i].source;
+            // console.log('platform', platform, typeof cell);
+
+            for(let j = 0; j < cell.length; j++){
+              data2.push(cell[j]);
+            }
+
+          }
+          data = data2;
+        }
+
+        Log.findOne({'user': user}).exec(function (err, logs) {
+
+          var result = {'fileLogs': data.toString()};
+
+          if (!err && logs) {
+            result.dbLogs = logs.logs;
+          }
+          return res.status(200).json(result);
+
+        });
+
+
+      });
+
 
     });
 
 
   });
+
+
+
+
 }
 
 //create new log for given blockId

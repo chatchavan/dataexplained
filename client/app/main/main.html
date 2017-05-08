@@ -10,7 +10,23 @@
     <button ng-click="main.user && main.setUser(main.user)">Set User</button>
 
   </div>
-  <div class="row content height" ng-show="main.userDefined">
+
+  <div class="row text-center" ng-if="main.userDefined && !main.platform">
+    <h2>Please choose your preferred analyis platform</h2>
+    <!--<div class="row">-->
+      <div class="col-sm-offset-3 col-sm-3 logo-container margin-top-large" ng-click="main.setPlatform('rstudio')">
+        <img src="assets/images/rstudio.png" class="platform-logo" />
+      </div>
+    <div class="col-sm-3 logo-container margin-top-large" ng-click="main.setPlatform('jupyter')">
+        <img src="assets/images/jupyter2.png" class="platform-logo" />
+      <!--</div>-->
+    </div>
+
+
+  </div>
+
+
+  <div class="row content height" ng-show="main.userDefined && main.platform">
 
 
     <div class="right row" ng-class="{'right-closed' : !main.displayPanel}" ng-mouseenter="main.displayPanel = true" ng-mouseleave="main.displayPanel = false">
@@ -75,16 +91,16 @@
 
     </div>
     <div class="left iframe-container col-md-12">
-      <iframe class="fullDimension" src="{{main.rStudioEndpoint}}" name="rstudio" id="ide-iframe">
+      <iframe ng-if="main.platformEndpoint" class="fullDimension" src="{{main.platformEndpoint}}" name="rstudio" id="ide-iframe">
         <p>iframes are not supported by your browser.</p>
       </iframe>
     </div>
 
 
+    <md-button class="md-raised" ng-disabled="!main.blockList || main.blockList.length < 1" ng-if="main.userDefined" ng-click="main.finishAnalysis()">Finish Analysis</md-button>
 
   </div>
 
-  <md-button class="md-raised" ng-disabled="!main.blockList || main.blockList.length < 1" ng-if="main.userDefined" ng-click="main.finishAnalysis()">Finish Analysis</md-button>
 
 
 </div>

@@ -13,6 +13,14 @@ function UtilService($window, $sce, ModalService, $timeout, $http) {
      */
     getRStudioUri() {
       return $sce.trustAsResourceUrl('http://34.253.169.17:8787');
+      // return $sce.trustAsResourceUrl('http://34.253.169.17:8888');
+    },
+
+    /**
+     * Returns URL of JupyterHub-Server
+     */
+    getJupyterHubUri() {
+      return $sce.trustAsResourceUrl('http://34.253.169.17:8888');
     },
 
     /**

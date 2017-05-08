@@ -9,21 +9,37 @@
       /**
        * process Logs from RStudio (143789794:My log action) and save it in logList-Array
        * */
-      formatLogs(fileLogs, dbLogs){
-        if(!fileLogs){
+      formatLogs(platform, fileLogs, dbLogs){
+        if(!platform || !fileLogs){
           return fileLogs;
         }
+        if(platform === 'rstudio'){
+          fileLogs = fileLogs.split('\n');
+          fileLogs.splice(fileLogs.length-1,1); //remove empty last line
+          for (let log in fileLogs) {
+            let l = fileLogs[log];
+            fileLogs[log] = {
+              'timestamp': l.substr(0, l.indexOf(':')),
+              'log': l.substr(l.indexOf(':') + 1, l.length)
+            };
+          }
 
-        fileLogs.splice(fileLogs.length-1,1); //remove empty last line
-        for (let log in fileLogs) {
-          let l = fileLogs[log];
-          fileLogs[log] = {
-            'timestamp': l.substr(0, l.indexOf(':')),
-            'log': l.substr(l.indexOf(':') + 1, l.length)
-          };
+          return LogUtil.markLogs(fileLogs, dbLogs);
+        }
+        else{
+          fileLogs = fileLogs.split(',');
+          let fakeTS = 1488455660663;
+          for (let log in fileLogs) {
+            let l = fileLogs[log];
+            fileLogs[log] = {
+              'timestamp': ''+fakeTS++,
+              'log': l
+            };
+          }
+          return LogUtil.markLogs(fileLogs, dbLogs);
         }
 
-        return LogUtil.markLogs(fileLogs, dbLogs);
+
       },
 
       markLogs(logList, dbLogs){

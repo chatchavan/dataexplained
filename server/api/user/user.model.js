@@ -21,6 +21,7 @@ var UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  platform: String,
   password: String,
   provider: String,
   salt: String

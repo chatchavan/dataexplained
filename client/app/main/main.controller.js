@@ -27,7 +27,6 @@ class MainController {
     this.dbLogs = [];
     this.displayPanel = false;
 
-    this.rStudioEndpoint = this.Util.getRStudioUri();
     this.logThreshold = 20;
     this.logWarningShowed = false;
 
@@ -43,16 +42,26 @@ class MainController {
         this.$state.go('^.login');
     }
     else{
-      let u = this.Auth.getCurrentUser();
-      this.user = u.username;
-      if(u.finished){
-        this.$state.go('^.graph', {'finished': true});
-      }
-      else if(this.user){
-        this.StorageUtil.saveSStorage('user',this.user);
-        this.userDefined = true;
-        this.startPolling();
-      }
+      let that = this;
+      this.Auth.getCurrentUser(function(u){
+        console.log('uuuuser', u);
+        that.user = u.username;
+        that.platform = u.platform;
+        if(u.finished){
+          that.$state.go('^.graph', {'finished': true});
+        }
+        else if(!that.platform){
+          that.StorageUtil.saveSStorage('user',that.user);
+          that.userDefined = true;
+        }
+        else if(that.user){
+          that.StorageUtil.saveSStorage('user',that.user);
+          that.userDefined = true;
+          that.setPlatform(that.platform);
+          that.startPolling();
+        }
+      });
+
     }
 
   }
@@ -61,6 +70,25 @@ class MainController {
     this.StorageUtil.saveSStorage('user',this.user);
     this.userDefined = true;
     this.startPolling();
+  }
+
+  setPlatform(platform){
+    if(platform === 'jupyter'){
+      this.platformEndpoint = this.Util.getJupyterHubUri();
+    }
+    else{
+      this.platformEndpoint = this.Util.getRStudioUri();
+    }
+    return this.$http.put('/api/users/platform', {user: this.user, platform: platform})
+      .then(res => {
+        this.platform = platform;
+        this.startPolling();
+      })
+      .catch(err => {
+        console.log('could not set platform');
+      });
+
+
   }
 
   startPolling(){
@@ -79,9 +107,10 @@ class MainController {
   pollLogs(){
     this.$http.get('/api/logs/file/'+this.user).then(response => {
       let fileLogs = response.data.fileLogs;
+      console.log('fileLogs', fileLogs);
       this.dbLogs = response.data.dbLogs;
       if(!this.selectFocus) {
-        let tempLogList = this.LogUtil.formatLogs(fileLogs.split('\n'), this.dbLogs);
+        let tempLogList = this.LogUtil.formatLogs(this.platform, fileLogs, this.dbLogs);
         if(tempLogList.length > this.loglist.length){
           this.logWarningShowed = false;
         }

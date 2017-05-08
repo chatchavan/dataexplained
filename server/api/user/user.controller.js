@@ -69,6 +69,39 @@ export function index(req, res) {
 }
 
 /**
+ * Set Platform for User
+ */
+export function setPlatform(req, res){
+  let user = req.body.user;
+  let platform = req.body.platform;
+  console.log('setting platform \"'+platform+'\" for user ' + user);
+
+  User.findOne({'username': user}, '-salt -password', function (err, u) {
+
+    if (err || !u) {
+      //creating first entry for user
+      return res.status(404).end();
+    }
+    else {
+
+      u.platform = platform;
+      delete u._id;
+      u.save(function (err) {
+        if (err) {
+          console.log('could not set platform for user '+user, err);
+          return res.status(500);
+        }
+        else {
+          return res.status(200).end();
+        }
+      });
+
+    }
+
+  });
+}
+
+/**
  * Updates a user
  * */
 export function update(req, res){
@@ -116,6 +149,9 @@ export function createAdmin(req, res){
   shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
   shell.exec('sudo mkdir /home/'+username+'/notebooks');
   shell.exec('sudo chown '+username+' /home/'+username+'/notebooks');
+  shell.exec('sudo mkdir /home/'+username+'/.jupyter');
+  shell.exec('sudo mkdir /home/'+username+'/.jupyter/custom');
+  shell.exec('sudo cp /home/ubuntu/jupyter/custom.js /home/'+username+'/.jupyter/custom/');
 
   var newUser = new User(req.body);
   newUser.saveAsync()
@@ -207,6 +243,7 @@ export function deleteAdmin(req, res){
               shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
               shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
               shell.exec('sudo rm -rf /home/'+user+'/notebooks/{*,.*}');
+              shell.exec('sudo rm -rf /home/'+user+'/.jupyter/');
               shell.exec('sudo userdel '+user+' --force --remove');
               return res.status(200).end();
             }
@@ -333,7 +370,27 @@ export function setFinish(user, cb){
   });
 }
 
-/**
+//HELPER FUNCTIONS
+export function getPlatformByUsername(user, cb) {
+
+  if (!user) {
+    cb();
+  }
+  else {
+    User.findOne({'username': user}).exec(function (err, u) {
+      if (err || !u) {
+        cb();
+      }
+      else {
+        cb(u.platform);
+      }
+
+    });
+  }
+}
+
+
+    /**
  * Authentication callback
  */
 export function authCallback(req, res, next) {

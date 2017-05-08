@@ -27,6 +27,7 @@
     <thead>
     <tr>
       <th>Username</th>
+      <th>Platform</th>
       <th>Survey Done?</th>
       <th>Finished?</th>
       <th></th>
@@ -35,6 +36,7 @@
     <tbody>
     <tr ng-repeat="user in admin.users | orderBy: 'username'">
       <td>{{user.username}}</td>
+      <td  ng-click="admin.togglePlatform(user)" style="cursor: pointer">{{user.platform}}</td>
       <td><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}"
                 ng-click="admin.toggleSurvey(user)">{{user.surveyDone}}</span></td>
       <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"

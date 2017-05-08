@@ -68,7 +68,8 @@ class AdminController {
   }
 
   goAnalysis(){
-    this.$state.go('^.main');
+    let that = this;
+    that.$state.go('^.main');
   }
 
   displayAllUsers(){
@@ -77,6 +78,15 @@ class AdminController {
     this.displayUsers = true;
   }
 
+  togglePlatform(user){
+    if(user.platform === 'rstudio'){
+      user.platform = 'jupyter';
+    }
+    else{
+      user.platform = 'rstudio'
+    }
+    this.updateUser(user);
+  }
   toggleSurvey(user){
     user.surveyDone = !user.surveyDone;
     this.updateUser(user);
