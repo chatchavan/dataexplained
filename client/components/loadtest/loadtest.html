@@ -1,0 +1,38 @@
+<div class="loadtest">
+  <div layout="row">
+
+    <md-input-container>
+      <label>MType</label>
+      <md-select ng-init="vm.methodType = 'GET'" ng-model="vm.methodType">
+        <md-option value="GET">GET</md-option>
+        <md-option value="POST">POST</md-option>
+        <md-option value="PUT">PUT</md-option>
+      </md-select>
+    </md-input-container>
+
+
+    <md-input-container>
+      <label>Method-Path</label>
+      <input type="text" ng-init="vm.method = '/api/blocks/'" ng-model="vm.method">
+    </md-input-container>
+
+    <md-input-container>
+      <label>Nr. of requests</label>
+      <input type="number" ng-init="vm.nrRequests = 0" ng-model="vm.nrRequests">
+    </md-input-container>
+    <md-input-container>
+      <label>Body</label>
+      <input type="text" ng-model="vm.body">
+    </md-input-container>
+
+  </div>
+  <md-button class="md-raised" ng-click="vm.test()">Test</md-button>
+
+  <div class="output">
+    {{vm.output}}
+  </div>
+  <div class="error-output" style="color: red">
+    {{vm.error}}
+  </div>
+
+</div>

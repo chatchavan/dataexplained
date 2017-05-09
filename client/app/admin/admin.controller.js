@@ -23,6 +23,7 @@ class AdminController {
     this.searchUser = undefined;
     this.configSurvey = false;
     this.displayUsers = true;
+    this.loadTest = false;
 
 
     this.init();
@@ -171,7 +172,7 @@ class AdminController {
       })
         .then(() => {
           // Account created, redirect to home
-          this.textCallback = 'User "'+this.searchUser+'" created.'
+          this.textCallback = 'User "'+this.searchUser+'" created.';
           this.users = this.User.query();
         })
         .catch(err => {

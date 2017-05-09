@@ -1,6 +1,19 @@
-<!--<navbar></navbar>-->
+<div class="navbar navbar-default navbar-static-top">
+  <div class="admin-navbar">
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <ul class="nav navbar-nav">
+        <li>
+          <a ng-click="admin.loadTest = false;">Admin Dashboard</a>
+        </li>
+        <li>
+          <a ng-click="admin.loadTest = true;">Load-Test</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-<div class="admin" id="admin-container">
+<div class="admin" id="admin-container" ng-if="!admin.loadTest">
 
   <div class="margin-top-medium top-title">
     <h2>User information</h2>  <md-button class="md-raised" ng-click="admin.goAnalysis()">Analysis as Admin</md-button>
@@ -77,7 +90,9 @@
 </div>
 
 <div class="jsplumb-container">
-  <js-plump class="jsplumb" ng-if="admin.plumbJson" plumplist="admin.plumbList" json="admin.plumbJson" instance="admin.plumbInstance" user="admin.searchUser"></js-plump>
+  <js-plump class="jsplumb" ng-if="admin.plumbJson && !admin.loadTest" plumplist="admin.plumbList" json="admin.plumbJson" instance="admin.plumbInstance" user="admin.searchUser"></js-plump>
 </div>
+
+<loadtest ng-if="admin.loadTest"></loadtest>
 
 
