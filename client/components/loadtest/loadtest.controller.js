@@ -5,9 +5,14 @@ class LoadTestController {
   constructor($scope, $state, $http) {
     this.$state = $state;
     this.$http = $http;
+
+    this.body = {"block":{"title":"first block","goal":"sf","criteria":"df","preconditions":"df3","timestamp":"1970-01-01T00:00:00.000Z","content":"socool <- 42","_id":"58e79f2d5d1cac15b27bbacd","alternatives":[{"title":"sdf","pro":"df","contra":"df","_id":"58e79f2d5d1cac15b27bbacf"},{"title":"fd","pro":"df","contra":"df","_id":"58e79f2d5d1cac15b27bbace"}],"renderedContent":["socool <- 42"]},"user":"coldata"};
   }
 
   test(){
+    this.output = '';
+    this.error = '';
+
     if(!this.methodType || !this.method){
       this.output = 'Please specify method type & path!';
     }
