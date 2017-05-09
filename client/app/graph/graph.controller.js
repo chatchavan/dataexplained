@@ -17,6 +17,7 @@
 
     vm.init = init;
     vm.finish = finish;
+    vm.goBack = goBack;
     vm.showInfo = showInfo;
 
     //=========INIT=========
@@ -81,6 +82,34 @@
         console.log('error exporting plumb', err);
       });
 
+    }
+
+    function goBack(){
+      var that = this;
+
+      let actionText1 = 'Yes, I understand';
+      let actionText2 = 'Stay on this page';
+
+
+      ModalService.showModal({
+        templateUrl: "app/custommodal/custommodal.html",
+        controller: "CustomModalController",
+        inputs: {
+          title: "Edit Blocks",
+          text: ['Please be aware that the graphical arrangement of your blocks will be lost when going back to the previous step.'],
+          actionText1: actionText1,
+          actionText2: actionText2
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          if(result === actionText1){
+            $http.post('/api/blocks/plumb/delete', {user: vm.user});
+            that.Auth.setUserStep(2);
+            $state.go('^.finish');
+          }
+        });
+      });
     }
 
     function saveFlowchart(instance){

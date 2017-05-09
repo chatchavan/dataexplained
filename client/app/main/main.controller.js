@@ -260,6 +260,7 @@ class MainController {
           that.$http.post('/api/logs/finish', {logs: that.loglist, user: that.user }).then(response => {
             console.log('response', response);
             if(response.data){
+              that.Auth.setUserStep(2);
               that.$state.go('^.finish', {'loglist': that.loglist, 'dbLogs': response.data.logs, 'blockList': that.blockList});
             }
             else{

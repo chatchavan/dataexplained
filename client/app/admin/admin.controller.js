@@ -45,6 +45,8 @@ class AdminController {
     }, (err) => {
       console.log('error getting configuration: ', err);
     });
+
+
   }
 
   setSurvey(){
@@ -74,7 +76,7 @@ class AdminController {
 
   displayAllUsers(){
     this.resetView();
-    this.users = this.User.query()
+    this.users = this.User.query();
     this.displayUsers = true;
   }
 

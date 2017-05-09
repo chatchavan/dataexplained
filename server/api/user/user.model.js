@@ -21,6 +21,10 @@ var UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  step: {
+    type: Number,
+    default: 1
+  },
   password: String,
   provider: String,
   salt: String

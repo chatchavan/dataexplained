@@ -229,7 +229,39 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User, Stor
      */
     getToken() {
       return $cookies.get('token');
+    },
+
+    /**
+     *
+     * Updates User
+     *
+     */
+    updateUser(user){
+      return $http.put('/api/users/', user)
+        .then(res => {
+          return res.$promise;
+        })
+        .catch(err => {
+          return $q.reject(err.data);
+        });
+    },
+
+    /**
+     *
+     * Updates/Sets the step of current User
+     *
+     */
+    setUserStep(step){
+
+      return Auth.getCurrentUser(null)
+        .then(user => {
+          user.step = step;
+          return Auth.updateUser(user);
+      });
+
     }
+
+
   };
 
   return Auth;

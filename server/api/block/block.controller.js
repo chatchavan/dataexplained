@@ -170,8 +170,8 @@ export function create(req, res) {
 
 }
 
-//sets js-plump workflow export
-export function createPlump(req, res){
+//sets js-plumb workflow export
+export function createPlumb(req, res){
   let user = req.body.user;
   let plumb = req.body.plumb;
 
@@ -190,14 +190,48 @@ export function createPlump(req, res){
       b.plumb = plumb;
       b.save(function (err) {
         if (err) {
-          console.log('could not save/update block-plump for user '+user, err);
+          console.log('could not save/update block-plumb for user '+user, err);
         }
         else {
-          console.log('block-plump updated');
+          console.log('block-plumb updated');
         }
         UserCtrl.setFinish(user, function(success){
           return res.status(200).json(b);
         });
+
+      });
+
+
+    }
+
+  });
+
+
+}
+
+//resets/delets js-plumb workflow export
+export function deletePlumb(req, res){
+  let user = req.body.user;
+
+  Block.findOne({'user': user}).exec(function (err, b) {
+
+    if (err || !b) {
+      return res.status(404).end();
+    }
+    else if(!plumb){
+      return res.status(200).json(b);
+    }
+    else {
+      b.plumb = undefined;
+      b.save(function (err) {
+        if (err) {
+          console.log('could not reset block-plump for user '+user, err);
+          return res.status(500).end();
+        }
+        else {
+          console.log('block-plump for user '+user+' reset');
+          return res.status(200).end();
+        }
 
       });
 

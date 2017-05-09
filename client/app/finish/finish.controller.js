@@ -5,7 +5,7 @@
     .module('rationalecapApp')
     .controller('FinishCtrl', FinishCtrl);
 
-  function FinishCtrl($stateParams, $http, $state, Util, StorageUtil, LogUtil, BlockUtil, ModalService) {
+  function FinishCtrl($stateParams, $http, $state, Auth, Util, StorageUtil, LogUtil, BlockUtil, ModalService) {
 
     var vm = this;
     vm.loglist = $stateParams.loglist;
@@ -18,6 +18,7 @@
     vm.removeLog = removeLog;
     vm.editBlock = editBlock;
     vm.confirmBlocks = confirmBlocks;
+    vm.goBack = goBack;
     vm.dragDrop = dragDrop;
     vm.dragEnd = dragEnd;
     vm.dragEndLog = dragEndLog;
@@ -170,8 +171,13 @@
     }
 
     function confirmBlocks(){
+      Auth.setUserStep(3);
       $state.go('^.graph', {'blocks': vm.blockList});
+    }
 
+    function goBack(){
+      Auth.setUserStep(1);
+      $state.go('^.main');
     }
 
     function dragEnd(originIndex, list){

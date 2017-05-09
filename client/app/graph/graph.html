@@ -1,11 +1,12 @@
 <div class="graph" ng-if="!vm.exported">
 
   <div class="title-container">
+    <img ng-click="vm.goBack()"  src="assets/images/back.png" class="icon back-icon icon" />
     <label class="title-label">
       <h3 class="margin-none">Please finalise the workflow you followed during data analysis.</h3>
     </label>
     <md-button class="md-raised" ng-click="vm.finish()">Finish</md-button>
-    <img ng-click="vm.showInfo()"  src="assets/images/info.png" style="height: 43px" id="myId" class="icon" />
+    <img ng-click="vm.showInfo()"  src="assets/images/info.png" id="myId" class="icon" />
     <label class="title-label">
       <h5 class="margin-none">You can move blocks and draw lines between blocks by clicking on block edges to connect blocks such that the graph best reflects the workflow of your analysis. Also, you can edit every block by double clicking on it.</h5>
     </label>
