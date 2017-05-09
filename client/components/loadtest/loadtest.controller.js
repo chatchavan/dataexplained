@@ -26,6 +26,7 @@ class LoadTestController {
     let now = new Date().getTime();
     for(let i = 0; i < this.nrRequests; i++){
       this.$http.get(this.method+'?ts='+now).then(response => {
+        this.status = i == this.nrRequests-1 ? 'All Requests processed.' : 'Processing ' + i + ' / '+ this.nrRequests;
         if(response.data){
           this.output = JSON.stringify(response.data);
         }
@@ -40,6 +41,7 @@ class LoadTestController {
   testPost(){
     for(let i = 0; i < this.nrRequests; i++){
       this.$http.post(this.method, this.body).then(response => {
+        this.status = i == this.nrRequests-1 ? 'All Requests processed.' : 'Processing ' + i + ' / '+ this.nrRequests;
         if(response.data){
           this.output = JSON.stringify(response.data);
         }
@@ -53,6 +55,7 @@ class LoadTestController {
   testPut(){
     for(let i = 0; i < this.nrRequests; i++){
       this.$http.put(this.method, this.body).then(response => {
+        this.status = i == this.nrRequests-1 ? 'All Requests processed.' : 'Processing ' + i + ' / '+ this.nrRequests;
         if(response.data){
           this.output = JSON.stringify(response.data);
         }

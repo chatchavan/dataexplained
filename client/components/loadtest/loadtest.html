@@ -18,7 +18,7 @@
 
     <md-input-container>
       <label>Nr. of requests</label>
-      <input type="number" ng-init="vm.nrRequests = 0" ng-model="vm.nrRequests">
+      <input type="number" ng-init="vm.nrRequests = 10" ng-model="vm.nrRequests">
     </md-input-container>
     <md-input-container>
       <label>Body</label>
@@ -29,6 +29,8 @@
   <md-button class="md-raised" ng-click="vm.test()">Test</md-button>
 
   <div class="output">
+    {{vm.status}}
+    <br>
     {{vm.output}}
   </div>
   <div class="error-output" style="color: red">
