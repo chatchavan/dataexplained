@@ -132,9 +132,10 @@ class AdminController {
           var style = element.currentStyle || window.getComputedStyle(element);
 
           // console.log("Current height: " + style.height, tempJson);
-          tempJson.marginTop = style.height;
+          tempJson.marginTop = '20px';//style.height;
           this.noWorkflow = false;
           this.plumbJson = tempJson;
+          this.plumbList = tempJson.nodes;
 
         }
         else{

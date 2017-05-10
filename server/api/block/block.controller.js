@@ -13,6 +13,7 @@ import _ from 'lodash';
 var Block = require('./block.model');
 var UserCtrl = require('./../user/user.controller');
 var LogCtrl = require('./../log/log.controller');
+var auth = require('../../auth/auth.service');
 var fs = require('fs');
 var config = require('../../config/environment');
 var githubService = require('../../util/github.service');
@@ -100,6 +101,24 @@ export function show(req, res) {
 
 }
 
+export function showFromDb(req, res) {
+  // let user = req.params.user;
+  if(!req.user || !req.user.username){
+    return res.status(404).end();
+  }
+
+  Block.findOne({'user': req.user.username}).exec(function (err, b) {
+
+    if (err || !b) {
+      return res.status(404).end();
+    }
+    return res.status(200).json({'blocks': b});
+
+  });
+
+
+}
+
 export function showAdmin(req, res) {
   let user = req.params.user;
 
@@ -174,9 +193,7 @@ export function create(req, res) {
 export function createPlumb(req, res){
   let user = req.body.user;
   let plumb = req.body.plumb;
-
-  console.log('getting plumb for user', user);
-
+  let finished = req.body.finished;
 
   Block.findOne({'user': user}).exec(function (err, b) {
 
@@ -192,12 +209,17 @@ export function createPlumb(req, res){
         if (err) {
           console.log('could not save/update block-plumb for user '+user, err);
         }
-        else {
-          console.log('block-plumb updated');
-        }
-        UserCtrl.setFinish(user, function(success){
+        else if (!finished){
+          //console.log('block-plumb updated');
           return res.status(200).json(b);
-        });
+        }
+        else{
+          UserCtrl.setFinish(user, function(success){
+            return res.status(200).json(b);
+          });
+        }
+
+
 
       });
 
@@ -218,7 +240,7 @@ export function deletePlumb(req, res){
     if (err || !b) {
       return res.status(404).end();
     }
-    else if(!plumb){
+    else if(!b.plumb){
       return res.status(200).json(b);
     }
     else {

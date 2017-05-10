@@ -5,7 +5,7 @@
 /**
  * The Util service is for thin, globally reusable, utility functions
  */
-function UtilService($window, $sce, ModalService, $timeout, $http) {
+function UtilService($window, $sce, $state, ModalService, StorageUtil, $timeout, $http, $injector) {
   var Util = {
 
     /**
@@ -13,6 +13,35 @@ function UtilService($window, $sce, ModalService, $timeout, $http) {
      */
     getRStudioUri() {
       return $sce.trustAsResourceUrl('http://34.253.169.17:8787');
+    },
+
+    /**
+     * Checks whether user is on right step and redirects if necessary
+     * */
+    checkUserStep(step){
+      let auth = $injector.get('Auth');
+      if(!auth.isLoggedIn()){
+        $state.go('^.login');
+        return null;
+      }
+
+      let u = auth.getCurrentUser();
+      let user = u.username;
+      console.log('saving', user);
+      StorageUtil.saveSStorage('user', user);
+      if (u.finished) {
+        $state.go('^.graph', {'finished': true});
+      }
+      else if (u.step === 1 && u.step !== step) {
+        $state.go('^.main');
+      }
+      else if (u.step === 2 && u.step !== step) {
+        $state.go('^.finish');
+      }
+      else if (u.step === 3 && u.step !== step) {
+        $state.go('^.graph');
+      }
+      return user;
     },
 
     /**

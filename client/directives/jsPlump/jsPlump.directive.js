@@ -10,10 +10,11 @@
       template: '<div class="state-machine canvas-wide jtk-surface jtk-surface-nopan" id="canvas"></div>',
       restrict: 'EA',
       scope: {
-        plumplist : '=',
+        plumbList : '=',
         instance : '=',
         user : '<',
-        json : '<'
+        json : '<',
+        autosave: '&'
       },
       controller: ['$scope', 'ModalService', 'Util', 'BlockUtil', controller],
       controllerAs: 'vm'
@@ -35,13 +36,13 @@
 
     function init(){
 
-      // scope.plumpList = [];
-      // scope.plumpList.push({name: "NODE 1", id: "id1"});
-      // scope.plumpList.push({name: "NODE 2", id: "id2"});
-      // scope.plumpList.push({name: "NODE 3", id: "id3"});
-      // scope.plumpList.push({name: "NODE 4", id: "id4"});
-      // scope.plumpList.push({name: "NODE 5", id: "id5"});
-      // scope.plumpList.push({name: "NODE 6", id: "id6"});
+      // scope.plumbList = [];
+      // scope.plumbList.push({name: "NODE 1", id: "id1"});
+      // scope.plumbList.push({name: "NODE 2", id: "id2"});
+      // scope.plumbList.push({name: "NODE 3", id: "id3"});
+      // scope.plumbList.push({name: "NODE 4", id: "id4"});
+      // scope.plumbList.push({name: "NODE 5", id: "id5"});
+      // scope.plumbList.push({name: "NODE 6", id: "id6"});
 
 
       jsPlumb.ready(function () {
@@ -80,14 +81,12 @@
 
         var canvas = document.getElementById("canvas");
 
-        if($scope.json){
-          // var flowChart = JSON.parse(json);
-          $scope.plumplist = $scope.json.nodes;
-          $scope.marginTop = getPxValue($scope.json.marginTop)+50;
+        if($scope.json && $scope.json.nodes.length > 0){
+          $scope.marginTop = getPxValue($scope.json.marginTop);
         }
 
-        for(var i = 0; i < $scope.plumplist.length; i++){
-          var p = $scope.plumplist[i];
+        for(var i = 0; i < $scope.plumbList.length; i++){
+          var p = $scope.plumbList[i];
           if(!$scope.json){
             document.getElementById("canvas").appendChild(createPlump(p.name, p.id, p.id+'action'));
           }
@@ -174,14 +173,15 @@
           }
 
           if($scope.json && $scope.json.connections){
-            console.log($scope.json.connections);
             for(let i = 0; i < $scope.json.connections.length; i++){
               let connection = $scope.instance.connect({ source: $scope.json.connections[i].pageSourceId, target: $scope.json.connections[i].pageTargetId, type:"basic" });
-              if(!!$scope.json.connections[i].label){
-                connection.getOverlay("label").setLabel($scope.json.connections[i].label);
-              }
-              else{
-                connection.getOverlay("label").hide();
+              if(connection){
+                if(!!$scope.json.connections[i].label){
+                  connection.getOverlay("label").setLabel($scope.json.connections[i].label);
+                }
+                else{
+                  connection.getOverlay("label").hide();
+                }
               }
 
             }
@@ -262,9 +262,11 @@
           connection.locked = false;
           if(result === 'delete'){
             connection.getOverlay("label").hide();
+            save();
           }
           else if(result){
             connection.getOverlay("label").setLabel(result);
+            save();
             // connection.hideOverlays();
           }
           else if(!edit){
@@ -278,16 +280,18 @@
       jsPlumb.detach(connection, {
         fireEvent: false, //fire a connection detached event?
         forceDetach: false //override any beforeDetach listeners
-      })
+      });
+      save();
     }
 
     function editBlock (block){
 
       let b = undefined;
 
-      for (let i = 0; i < $scope.plumplist.length; i++){
-        if($scope.plumplist[i].id === block.id){
-          b = $scope.plumplist[i].block;
+      for (let i = 0; i < $scope.plumbList.length; i++){
+        if($scope.plumbList[i].id === block.id || $scope.plumbList[i].blockId === block.id){
+          b = $scope.plumbList[i].block;
+          break;
         }
       }
       if(b){
@@ -321,9 +325,9 @@
       BlockUtil.updateBlock(newBlock, $scope.user, undefined, undefined).then(function(success){
         let blocks = success.blockList;
         if(blocks){
-          $scope.plumplist = [];
+          $scope.plumbList = [];
           for(var i = 0; i < blocks.length; i++){
-            $scope.plumplist.push({name: blocks[i].title, id: blocks[i]._id, block: blocks[i]});
+            $scope.plumbList.push({name: blocks[i].title, id: blocks[i]._id, block: blocks[i]});
             if(blocks[i]._id === newBlock._id){
               let el = document.getElementById(newBlock._id);
               el.childNodes[0].nodeValue = blocks[i].title;
@@ -332,11 +336,18 @@
           }
 
           $scope.instance.setSuspendDrawing(false, true);
+          save();
           // $scope.instance.batch();
 
         }
 
       });
+    }
+
+    function save(){
+      if($scope.autosave){
+        $scope.autosave();
+      }
     }
 
 

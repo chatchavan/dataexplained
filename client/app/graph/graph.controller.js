@@ -3,41 +3,45 @@
 
   angular
     .module('rationalecapApp')
-    .controller('GraphCtrl', FinishCtrl);
+    .controller('GraphCtrl', GraphCtrl);
 
-  function FinishCtrl($stateParams, $http, $state, StorageUtil, ModalService) {
+  function GraphCtrl($scope, $stateParams, $http, $state, $interval, Util, ModalService, Auth) {
 
     var vm = this;
     vm.instance = undefined;
-    vm.plumpList = [];
+    // vm.plumpList = [];
     vm.blocks = $stateParams.blocks;
-    vm.exported = $stateParams.finished;
-    console.log('vm.exported', vm.exported);
+    vm.finished = $stateParams.finished;
+    let currentPlump;
+
 
 
     vm.init = init;
+    vm.autoSave = autoSave;
     vm.finish = finish;
     vm.goBack = goBack;
     vm.showInfo = showInfo;
 
     //=========INIT=========
 
-    if(!vm.exported){
-      vm.init();
-    }
+    vm.init();
 
     function init() {
-      if(!vm.blocks){
-        $state.go('^.main');
-      }
-      vm.user = StorageUtil.retrieveSStorage('user');
 
-      // console.log('vm.blocks', vm.blocks);
-      if(vm.blocks){
-        for(var i = 0; i < vm.blocks.length; i++){
-          vm.plumpList.push({name: vm.blocks[i].title, id: vm.blocks[i]._id, block: vm.blocks[i]});
-        }
-      }
+      vm.user = Util.checkUserStep(3);
+
+          $http.get('/api/blocks/user/db').then(response => {
+            if(response.data.blocks){
+              vm.blocks = response.data.blocks;
+              initPlumb();
+            }
+          }, (err) => {
+            //no blocks found
+            console.log('error fetching blocks', err);
+          });
+
+
+
 
       // vm.plumpList.push({name: "NODE 2 NODE 2 NODE 2 NODE 2", id: "id2"});
       // vm.plumpList.push({name: "NODE 3", id: "id3"});
@@ -46,7 +50,57 @@
       // vm.plumpList.push({name: "NODE 6", id: "id6"});
     }
 
+    function initPlumb(){
+      let tempJson = {'nodes' : []};
+      if(vm.blocks.plumb){
+        tempJson = JSON.parse(vm.blocks.plumb);
+      }
+
+      if(vm.blocks.plumb && tempJson.nodes.length > 0){
+        tempJson.marginTop = '0px';
+        vm.plumbJson = tempJson;
+        vm.plumbList = [];
+        let blockContents = vm.blocks.blocks;
+        for(var i = 0; i < blockContents.length; i++){
+          let plumb = {name: blockContents[i].title, id: blockContents[i]._id, block: blockContents[i]};
+          if(tempJson.nodes && tempJson.nodes.length > 0){
+            let plumbExport = tempJson.nodes.filter(function( obj ) {
+              return obj.blockId === plumb.id;
+            });
+            plumb = angular.extend(plumb, plumbExport[0]);
+          }
+
+          vm.plumbList.push(plumb);
+        }
+
+      }
+       else{
+        vm.plumbList = [];
+        let blockContents = vm.blocks.blocks;
+        for(var i = 0; i < blockContents.length; i++){
+          vm.plumbList.push({name: blockContents[i].title, id: blockContents[i]._id, block: blockContents[i]});
+        }
+      }
+
+
+      let autoSaveInterval = $interval(autoSave, 5000);
+      $scope.$on('$destroy', function() {
+        $interval.cancel(autoSaveInterval);
+      });
+    }
+
     //=========CONTROLLER=========
+
+    function autoSave(){
+      let plumb = saveFlowchart(vm.instance);
+      if(plumb !== currentPlump){
+        $http.post('/api/blocks/plumb', {user: vm.user, plumb: plumb}).then(response => {
+          currentPlump = plumb;
+        }, (err) => {
+          console.log('error exporting plumb', err);
+        });
+      }
+    }
 
     function showInfo(){
       let text = ['Connect Blocks by dragging arrows from the yellow marker to another block.',
@@ -73,10 +127,10 @@
     function finish(){
       let plumb = saveFlowchart(vm.instance);
 
-      $http.post('/api/blocks/plumb', {user: vm.user, plumb: plumb}).then(response => {
+      $http.post('/api/blocks/plumb', {user: vm.user, plumb: plumb, finished : true}).then(response => {
         if(response.data){
           console.log('export success', response.data);
-          vm.exported = true;
+          vm.finished = true;
         }
       }, (err) => {
         console.log('error exporting plumb', err);
@@ -85,7 +139,6 @@
     }
 
     function goBack(){
-      var that = this;
 
       let actionText1 = 'Yes, I understand';
       let actionText2 = 'Stay on this page';
@@ -105,8 +158,9 @@
         modal.close.then(result => {
           if(result === actionText1){
             $http.post('/api/blocks/plumb/delete', {user: vm.user});
-            that.Auth.setUserStep(2);
+            Auth.setUserStep(2);
             $state.go('^.finish');
+            $state.go('^.finish', {'blockList': vm.blocks.blocks});
           }
         });
       });

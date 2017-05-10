@@ -6,8 +6,8 @@ var auth = require('../../auth/auth.service');
 
 var router = express.Router();
 
-router.get('/',controller.index);
-router.get('/env',controller.showEnv);
+router.get('/', auth.isAuthenticated(), controller.index);
+router.get('/env', auth.isAuthenticated(), controller.showEnv);
 // router.get('/:id', controller.show);
 router.post('/',auth.hasRole('admin'), controller.create);
 // router.put('/:id', controller.update);

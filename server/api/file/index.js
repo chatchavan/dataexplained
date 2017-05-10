@@ -2,15 +2,17 @@
 
 var express = require('express');
 var controller = require('./file.controller');
+var auth = require('../../auth/auth.service');
+
 
 var router = express.Router();
 
-router.get('/', controller.index);
-router.get('/:user/:timestamp', controller.show);
-router.get('/:user/:timestamp/diff', controller.showDiff);
-router.post('/', controller.createTemp);
-router.put('/:id', controller.update);
-router.patch('/:id', controller.update);
-router.delete('/:id', controller.destroy);
+router.get('/', auth.isAuthenticated(), controller.index);
+router.get('/:user/:timestamp', auth.isAuthenticated(), controller.show);
+router.get('/:user/:timestamp/diff', auth.isAuthenticated(), controller.showDiff);
+router.post('/', auth.isAuthenticated(), controller.createTemp);
+router.put('/:id', auth.isAuthenticated(), controller.update);
+router.patch('/:id', auth.isAuthenticated(), controller.update);
+router.delete('/:id', auth.isAuthenticated(), controller.destroy);
 
 module.exports = router;

@@ -39,21 +39,11 @@ class MainController {
 
 
   init(){
-    if(!this.Auth.isLoggedIn()){
-        this.$state.go('^.login');
-    }
-    else{
-      let u = this.Auth.getCurrentUser();
-      this.user = u.username;
-      if(u.finished){
-        this.$state.go('^.graph', {'finished': true});
-      }
-      else if(this.user){
-        this.StorageUtil.saveSStorage('user',this.user);
-        this.userDefined = true;
-        this.startPolling();
-      }
-    }
+
+    this.user = this.Util.checkUserStep(1);
+    console.log('user', this.user);
+    this.userDefined = true;
+    this.startPolling();
 
   }
 
@@ -261,6 +251,7 @@ class MainController {
             console.log('response', response);
             if(response.data){
               that.Auth.setUserStep(2);
+              console.log('blockList', that.blockList);
               that.$state.go('^.finish', {'loglist': that.loglist, 'dbLogs': response.data.logs, 'blockList': that.blockList});
             }
             else{
