@@ -238,7 +238,7 @@ class MainController {
       controller: "CustomModalController",
       inputs: {
         title: "Finish Analysis",
-        text: ['Please confirm that you have finished analysis'],
+        text: ['Please confirm that you have finished your analysis.'],
         actionText1: actionText1,
         actionText2: actionText2
       }

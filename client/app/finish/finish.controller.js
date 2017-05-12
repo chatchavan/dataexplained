@@ -61,12 +61,11 @@
 
     function getDbLogs() {
       let deferred = $q.defer();
-      $http.get('/api/logs/user/db').then(response => {
-        if (response.data.dbLogs) {
-          vm.dbLogs = response.data.dbLogs;
-          vm.loglist = LogUtil.markLogs(vm.loglist, vm.dbLogs);
-          deferred.resolve();
-        }
+      $http.get('/api/logs/file/'+vm.user).then(response => {
+        vm.dbLogs = response.data.dbLogs;
+        let fileLogs = response.data.fileLogs;
+        vm.loglist = LogUtil.formatLogs(fileLogs.split('\n'), vm.dbLogs);
+        deferred.resolve();
       }, (err) => {
         //file does not exist yet
         console.log('error fetching blocks', err);

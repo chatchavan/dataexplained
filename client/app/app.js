@@ -33,6 +33,16 @@ angular.module('rationalecapApp', [
   })
   .run(function($rootScope, $window, User, Auth){
     $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
+
+      var interval = setInterval(function(){
+        console.log('readyState', document.readyState);
+        if (document.readyState === 'complete') {
+          $window.scrollTo(0, 0);
+          clearInterval(interval);
+        }
+      }, 100);
+
+
       if(to && to.name === 'main' && toParams.survey){
         //update user surveyDone = true
         let u = Auth.getCurrentUser();
@@ -44,4 +54,6 @@ angular.module('rationalecapApp', [
         })
       }
     });
+
+
   });

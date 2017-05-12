@@ -1,0 +1,34 @@
+<div class="faq">
+  <div class="title-container">
+    <img ng-click="vm.goBack()" src="assets/images/back2.png" class="back-icon"/>
+  </div>
+  <div class="container faq-title text-center">
+    <label class="title-label">
+      <h3 class="margin-none">FAQs</h3>
+    </label>
+  </div>
+
+  <div class="faq-container">
+
+    <div class="panel-group" ng-repeat="faq in vm.faqs">
+      <div class="panel panel-default">
+        <a class="panel-default" data-toggle="collapse" href="#faq{{$index}}">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              {{faq.question}}
+            </h4>
+          </div>
+        </a>
+        <div id="faq{{$index}}" class="panel-collapse collapse">
+          <div class="panel-body" ng-bind-html="faq.answer">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
+
+<footer faq="true"></footer>
