@@ -113,6 +113,7 @@ export function createAdmin(req, res){
   shell.exec('sudo usermod -aG sudo '+username);
   shell.exec('sudo mkdir /home/'+username+'/rstudio-workspace');
   shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
+  shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/'+username+'/rstudio-workspace/');
 
   var newUser = new User(req.body);
   newUser.saveAsync()
@@ -157,6 +158,7 @@ export function resetAdmin(req, res){
                   console.log('user reset in db');
                 }
                 shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
+                shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/'+user+'/rstudio-workspace/');
                 shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
                 return res.status(200).end();
               });
