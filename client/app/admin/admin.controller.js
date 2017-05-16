@@ -132,7 +132,7 @@ class AdminController {
           var style = element.currentStyle || window.getComputedStyle(element);
 
           // console.log("Current height: " + style.height, tempJson);
-          tempJson.marginTop = '20px';//style.height;
+          tempJson.marginTop = style.height;
           this.noWorkflow = false;
           this.plumbJson = tempJson;
           this.plumbList = tempJson.nodes;
@@ -211,6 +211,69 @@ class AdminController {
         });
     }
   }
+
+  downloadWorkflow(){
+    let node = document.getElementById('plumb-container');
+    let that = this;
+    domtoimage.toPng(node)
+      .then(function (dataUrl) {
+        console.log('dataUrl', dataUrl);
+        let img = new Image();
+        img.src = dataUrl;
+        var hiddenElement = document.createElement('a');
+
+        hiddenElement.href = dataUrl;
+        hiddenElement.target = '_blank';
+        hiddenElement.download = 'workflow_'+that.searchUser+'.png';
+        hiddenElement.click();
+      })
+      .catch(function (error) {
+        console.error('oops, something went wrong!', error);
+      });
+  }
+
+  exportCsv(user){
+    if(user) {
+
+      let that = this;
+
+      let actionText1 = 'Yes';
+      let actionText2 = 'No';
+
+
+      this.ModalService.showModal({
+        templateUrl: "app/custommodal/custommodal.html",
+        controller: "CustomModalController",
+        inputs: {
+          title: "Export User "+user.username,
+          text: ['Do you want to include the content (code) of the blocks?'],
+          actionText1: actionText1,
+          actionText2: actionText2
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          let blockContent = result === actionText1;
+          that.$http.post('api/users/csv/'+blockContent, user).then(content => {
+            console.log('content', content);
+            var hiddenElement = document.createElement('a');
+
+            hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = user.username+'.csv';
+            hiddenElement.click();
+          }, (err) => {
+            console.log('error exporting user');
+          });
+
+
+
+        });
+      });
+
+    }
+  }
+
 
 
 

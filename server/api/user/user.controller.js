@@ -8,8 +8,10 @@ import shell from 'shelljs';
 import _ from 'lodash';
 import githubService from '../../util/github.service';
 var FileCtrl = require('./../file/file.controller');
+var Block = require('./../block/block.model');
 var BlockCtrl = require('./../block/block.controller');
 var LogCtrl = require('./../log/log.controller');
+var csv = require('csv-express');
 
 
 function saveUpdates(updates) {
@@ -143,7 +145,6 @@ export function resetAdmin(req, res){
         LogCtrl.removeLogsByUser(user, function(lSuccess){
 
           User.findOne({'username': user}).exec(function (errFind, u){
-            console.log('u', u);
             if(!u){
               res.status(404).end();
             }
@@ -329,6 +330,52 @@ export function setFinish(user, cb){
     }
   });
 }
+
+
+/**
+ * Export all Blocks data of a user
+ */
+export function csv(req, res) {
+  let user = req.body;
+  let withContent = req.params.content;
+  let users = [];
+
+  let userData = {
+    username: user.username,
+    surveyDone: user.surveyDone,
+    finished: user.finished,
+    step: user.step
+  };
+
+  Block.findOne({'user': user.username}).exec(function (err, b) {
+
+    if (err || !b) {
+      return res.status(404).end();
+    }
+
+    for(let i = 0; i < b.blocks.length; i++){
+
+      //Block Title
+      userData['Block '+(i+1)+' Title'] = b.blocks[i].title;
+
+      //Block Goal
+      userData['Block '+(i+1)+' Goal'] = b.blocks[i].goal;
+
+      //Block Criteria
+      userData['Block '+(i+1)+' Criteria'] = b.blocks[i].criteria;
+
+      //Block Preconditions
+      userData['Block '+(i+1)+' Preconditions'] = b.blocks[i].preconditions;
+
+      if(withContent === 'true'){
+        //Block Content
+        userData['Block '+(i+1)+' Content'] = b.blocks[i].content;
+      }
+    }
+
+    users.push(userData);
+    res.csv(users, true);
+  });}
 
 /**
  * Authentication callback

@@ -29,7 +29,7 @@
       <md-button class="md-raised" ng-click="admin.showWorkflow()">Show Workflow</md-button>
       <md-button class="md-raised" ng-click="admin.showBlocks()">Show Blocks</md-button>
       <md-button class="md-raised" ng-click="admin.createUser()">Create User</md-button>
-
+      <md-button ng-if="admin.plumbJson" class="md-raised" ng-click="admin.downloadWorkflow()">Download Workflow</md-button>
 
 
     </div>
@@ -52,7 +52,11 @@
                 ng-click="admin.toggleSurvey(user)">{{user.surveyDone}}</span></td>
       <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"
                 ng-click="admin.toggleFinished(user)">{{user.finished}}</span></td>
-      <td><i class="fa fa-undo" aria-hidden="true" ng-click="admin.resetUser(user)"></i><i class="fa fa-trash" aria-hidden="true" ng-click="admin.deleteUser(user)"></i></td>
+      <td>
+        <i class="fa fa-undo" aria-hidden="true" ng-click="admin.resetUser(user)"></i>
+        <i class="fa fa-trash" aria-hidden="true" ng-click="admin.deleteUser(user)"></i>
+        <i class="fa fa-download" aria-hidden="true" ng-click="admin.exportCsv(user)"></i>
+      </td>
     </tr>
     </tbody>
   </table>
@@ -89,7 +93,7 @@
 
 </div>
 
-<div class="jsplumb-container">
+<div class="jsplumb-container" id="plumb-container">
   <js-plump class="jsplumb" ng-if="admin.plumbJson && !admin.loadTest" plumb-list="admin.plumbList" json="admin.plumbJson" instance="admin.plumbInstance" user="admin.searchUser"></js-plump>
 </div>
 

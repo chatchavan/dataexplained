@@ -82,7 +82,6 @@
         }
       }
 
-
       let autoSaveInterval = $interval(autoSave, 5000);
       $scope.$on('$destroy', function() {
         $interval.cancel(autoSaveInterval);
@@ -107,7 +106,8 @@
         'Please indicate a label/description for your newly created arrow.',
         'You can <span style="font-weight: bold">delete an arrow</span style="font-weight: bold"> by double-clicking on it or select the arrow with a single click and press delete/backspace.',
         'To <span style="font-weight: bold">edit or delete the label</span>, double-click on it.',
-        'To <span style="font-weight: bold">edit a block</span>, double-click on the respective box.'];
+        'To <span style="font-weight: bold">edit a block</span>, double-click on the respective box.',
+        '<span>Support (Mail/Skype): <a href="mailto:dataexplained@gmail.com?Subject=Inquiry%20DataExplained" target="_top">dataexplained@gmail.com</a></span>'];
       ModalService.showModal({
         templateUrl: "app/custommodal/custommodal.html",
         controller: "CustomModalController",
