@@ -77,6 +77,7 @@ class AdminController {
   displayAllUsers(){
     this.resetView();
     this.users = this.User.query();
+    this.searchUser = undefined;
     this.displayUsers = true;
   }
 
