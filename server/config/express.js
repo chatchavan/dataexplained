@@ -24,7 +24,7 @@ var mongoStore = connectMongo(session);
 
 export default function(app) {
   var env = app.get('env');
-  let customLogFormat = ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":user-agent"';
+  let customLogFormat = ':remote-addr - :remote-user ":method :url HTTP/:http-version" :status';
 
 
   app.set('views', config.root + '/server/views');
