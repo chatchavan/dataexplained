@@ -24,6 +24,8 @@ var mongoStore = connectMongo(session);
 
 export default function(app) {
   var env = app.get('env');
+  let customLogFormat = ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":user-agent"';
+
 
   app.set('views', config.root + '/server/views');
   app.engine('html', require('ejs').renderFile);
@@ -72,7 +74,7 @@ export default function(app) {
   if ('production' === env) {
     app.use(favicon(path.join(config.root, 'client', 'favicon.ico')));
     app.use(express.static(app.get('appPath')));
-    app.use(morgan('dev'));
+    app.use(morgan(customLogFormat));
   }
 
   if ('development' === env) {
@@ -82,7 +84,16 @@ export default function(app) {
   if ('development' === env || 'test' === env) {
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static(app.get('appPath')));
-    app.use(morgan('dev'));
+    app.use(morgan(customLogFormat));
     app.use(errorHandler()); // Error handler - has to be last
   }
+
+  app.use(function(req, res, next){
+    if(req.originalUrl.indexOf('.php') !== -1) {
+      res.status(404).send('Not found');
+    }
+    else {
+      next();
+    }
+  })
 }
