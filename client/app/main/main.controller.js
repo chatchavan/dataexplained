@@ -42,8 +42,10 @@ class MainController {
 
     this.user = this.Util.checkUserStep(1);
     console.log('user', this.user);
-    this.userDefined = true;
-    this.startPolling();
+    if(this.user){
+      this.userDefined = true;
+      this.startPolling();
+    }
 
   }
 
