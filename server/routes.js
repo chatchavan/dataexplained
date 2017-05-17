@@ -32,6 +32,12 @@ export default function(app) {
   // All other routes should redirect to the index.html
   app.route('/*')
     .get((req, res) => {
-      res.sendFile(path.resolve(app.get('appPath') + '/index.html'));
+      res.status(404);
+      if(req.url === '/muieblackcat'){
+        res.status(404).end();
+      }
+      else{
+        res.sendFile(path.resolve(app.get('appPath') + '/index.html'));
+      }
     });
 }
