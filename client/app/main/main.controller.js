@@ -27,7 +27,7 @@ class MainController {
     this.dbLogs = [];
     this.displayPanel = false;
 
-    this.rStudioEndpoint = this.Util.getRStudioUri();
+    this.rStudioEndpoint = undefined;
     this.logThreshold = 20;
     this.logWarningShowed = false;
 
@@ -43,6 +43,7 @@ class MainController {
     this.user = this.Util.checkUserStep(1);
     console.log('user', this.user);
     if(this.user){
+      this.rStudioEndpoint = this.Util.getRStudioUri();
       this.userDefined = true;
       this.startPolling();
     }
