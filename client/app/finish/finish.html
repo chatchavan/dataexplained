@@ -6,7 +6,8 @@
       <h3>Check whether all logs are assigned to the correct block and confirm by clicking 'Confirm Blocks'.</h3>
       <div class="panel-group" id="accordion">
 
-        <div ng-if="vm.itemlist" ng-repeat="item in vm.itemlist" class="panel panel-default" id="panel_{{$index}}">
+        <div ng-if="vm.itemlist" ng-repeat="item in vm.itemlist" class="panel panel-default" id="panel_{{$index}}"
+              ng-class="{'log-container' : !item.renderedContent}">
           <div class="panel-heading" data-toggle="collapse" data-target="#collapse_{{$index}}"
                ng-class="{'log-entry' : !item.renderedContent, 'log-entry-empty' : item.renderedContent && item.content.length<1}">
             <span ng-if="item.renderedContent && item.content.length>0" class="pull-right fa fa-arrows-v"></span>

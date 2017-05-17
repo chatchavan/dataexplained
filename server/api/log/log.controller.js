@@ -110,7 +110,6 @@ export function showFromFile(req, res) {
 
     fs.readFile(rHistory, 'utf8', function (err,data) {
       if (err) {
-        console.log('no user history found for user '+user,err);
         return res.status(404).send(err);
       }
 
