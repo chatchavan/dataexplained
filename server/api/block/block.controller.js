@@ -21,7 +21,7 @@ var base64 = require('js-base64').Base64;
 
 var blockPrefix = '//startBlock\\n';
 var blockSuffix = '//endBlock\\n';
-
+var blockRepo = 'blocks';
 
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
@@ -79,7 +79,7 @@ export function index(req, res) {
 export function show(req, res) {
   let user = req.params.user;
 
-  githubService.getContent(config.github.user, 'blocks',  user+'/blocks.txt',
+  githubService.getContent(config.github.user, blockRepo,  user+'/blocks.txt',
     function(re){
       //file does exist
       let blockString = base64.decode(re.data.content);
@@ -144,7 +144,7 @@ export function create(req, res) {
 
   var file = {
     owner: config.github.user,
-    repo: 'blocks',
+    repo: blockRepo,
     path: user+'/blocks.txt',
     message: 'auto commit'
   };
@@ -330,7 +330,7 @@ export function destroy(req, res) {
 
   var file = {
     owner: config.github.user,
-    repo: 'blocks',
+    repo: blockRepo,
     path: user+'/blocks.txt',
     message: 'auto commit - delete',
   };
