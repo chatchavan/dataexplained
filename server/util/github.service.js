@@ -7,6 +7,7 @@ var File = require('../api/file/file.model');
 var fs = require('fs');
 var Octokat = require('octokat');
 var base64 = require('js-base64').Base64;
+var blockRepo = 'blocks-dev';
 
 
 
@@ -91,7 +92,7 @@ function updateDirectory(message, dir, user, timestamp, res) {
   let octo = new Octokat({
     token: config.github.token
   });
-  m_repo = octo.repos(config.github.user, 'blocks');
+  m_repo = octo.repos(config.github.user, blockRepo);
 
   fs.readdir(dir, function (err, filenames) {
 
@@ -131,7 +132,7 @@ function updateDirectoryTemp(message, dir, user, timestamp, res) {
   let octo = new Octokat({
     token: config.github.token
   });
-  m_repo = octo.repos(config.github.user, 'blocks');
+  m_repo = octo.repos(config.github.user, blockRepo);
 
   fs.readdir(dir, function (err, filenames) {
 
@@ -203,7 +204,7 @@ function deleteDirectory(user, cb){
     token: config.github.token
   });
 
-  m_repo = octo.repos(config.github.user, 'blocks');
+  m_repo = octo.repos(config.github.user, blockRepo);
 
   m_newCommit = {};
   m_filesToCommit = [];
@@ -286,7 +287,7 @@ function restoreFiles(user, commit){
   let octo = new Octokat({
     token: config.github.token
   });
-  m_repo = octo.repos(config.github.user, 'blocks');
+  m_repo = octo.repos(config.github.user, blockRepo);
 
   return getTreeBySha(commit)
     .then((re) => getUserTreeFromTree(re.tree, user))
@@ -330,7 +331,7 @@ function getFiles(treeObject){
 function getFile(file){
   if(file.type === 'blob'){
     let gh = authGithub();
-    return gh.gitdata.getBlob({owner: config.github.user, repo: 'blocks', sha: file.sha})
+    return gh.gitdata.getBlob({owner: config.github.user, repo: blockRepo, sha: file.sha})
       .then((blob) => {
           let content = base64.decode(blob.data.content);
             m_filesToRestore.push({fileName: file.path , content: content});
@@ -346,7 +347,7 @@ function getFile(file){
 function pushFiles(message, files, user, timestamp, res) {
   m_newCommit = {};
   m_filesToCommit = [];
-  let diffUrl = 'https://github.com/nicost71/blocks/commit/';
+  let diffUrl = 'https://github.com/nicost71/'+blockRepo+'/commit/';
   return fetchHead()
     // .then(() => deleteFilesSilent(user, files))
     .then(() => getCurrentTreeSHA())
