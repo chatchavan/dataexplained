@@ -47,7 +47,7 @@
     </thead>
     <tbody>
     <tr ng-repeat="user in admin.users | orderBy: 'username' | filter : admin.searchUser">
-      <td>{{user.username}}</td>
+      <td class="cursorpointer" ng-click="admin.searchUser = user.username">{{user.username}}</td>
       <td><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}"
                 ng-click="admin.toggleSurvey(user)">{{user.surveyDone}}</span></td>
       <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"
