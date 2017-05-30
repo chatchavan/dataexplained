@@ -31,7 +31,7 @@ angular.module('rationalecapApp', [
 
     $locationProvider.html5Mode(true);
   })
-  .run(function($rootScope, $window, User, Auth){
+  .run(function($rootScope, $window, User, $http, StorageUtil){
     $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
 
       var interval = setInterval(function(){
@@ -45,13 +45,22 @@ angular.module('rationalecapApp', [
 
       if(to && to.name === 'main' && toParams.survey){
         //update user surveyDone = true
-        let u = Auth.getCurrentUser();
-        User.setSurveyDone({ id: u._id }
-        , function() {
+        //let u = Auth.getCurrentUser();
+        let user = StorageUtil.retrieveSStorage('user');
+        console.log('updating survey for user', user);
+
+        $http.put('/api/users/me/survey', {'username' : user}).then(response => {
           console.log('user surveyDone updated');
-        }, function(err) {
-            console.log('user surveyDone update FAILED', err);
-        })
+        }, (err) => {
+          console.log('user surveyDone update FAILED', err);
+        });
+
+        // User.setSurveyDone({ id: u._id }, {user : user}
+        // , function() {
+        //   console.log('user surveyDone updated');
+        // }, function(err) {
+        //     console.log('user surveyDone update FAILED', err);
+        // })
       }
     });
 
