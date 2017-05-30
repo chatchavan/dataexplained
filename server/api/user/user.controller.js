@@ -293,21 +293,47 @@ export function me(req, res, next) {
 }
 
 export function updateSurvey(req, res, next){
-  var userId = req.user._id;
-  console.log('userId', userId);
+  //var userId = req.user._id;
 
-  User.findOneAsync({ _id: userId }, '-salt -password')
-    .then(user => {
-      if (!user) {
-        return res.status(401).end();
-      }
-      user.surveyDone = true;
-      user.save(function (err) {
-        if (err) { return handleError(res, err); }
-        return res.send(user);
+  // console.log('userId', userId);
+
+  // User.findOneAsync({ _id: userId }, '-salt -password')
+  //   .then(user => {
+  //     if (!user) {
+  //       return res.status(401).end();
+  //     }
+  //     user.surveyDone = true;
+  //     user.save(function (err) {
+  //       if (err) { return handleError(res, err); }
+  //       return res.send(user);
+  //     });
+  //   })
+  //   .catch(err => next(err));
+
+  let user = req.body.username;
+  console.log('updating survey for user '+ user);
+
+  User.findOne({'username': user}).exec(function (errFind, u){
+    if(!u){
+      res.status(404).end();
+    }
+    else if(!errFind){
+      u.surveyDone = true;
+      u.save(function (err) {
+        if (err) {
+          console.log('could not update survey for user '+user+' in db');
+        }
+        else{
+          console.log('survey for user '+user+' successfully updated in db');
+        }
+        return res.send(u);
       });
-    })
-    .catch(err => next(err));
+    }
+    else{
+      return res.status(500).send(errFind);
+    }
+
+  });
 }
 
 export function setFinish(user, cb){

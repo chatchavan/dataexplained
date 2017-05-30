@@ -10,7 +10,7 @@ router.get('/', auth.hasRole('admin'), controller.index);
 router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.put('/',  auth.isAuthenticated(), controller.update);
-router.put('/me/survey', auth.isAuthenticated(), controller.updateSurvey);
+router.put('/me/survey', controller.updateSurvey);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.get('/:id', auth.isAuthenticated(), controller.show);
 router.post('/csv/:content', auth.hasRole('admin'), controller.csv);
