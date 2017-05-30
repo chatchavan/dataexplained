@@ -21,6 +21,10 @@
         answer: 'Yes, you can just login again, and your session will be restored! <br> As your progress is continuously saved, you can continue with your work at the very same point you suspended the application.'
       },
       {
+        question: 'Where can I find the dataset for the analysis?',
+        answer: 'The dataset ("edge1.1.csv") together with a description of all the variables ("Variable Description.docx") is stored in your RStudio workspace.'
+      },
+      {
         question: 'How do I save my work when I want to suspend my analysis?',
         answer: 'You do not need to explicitly save your work, as this will be done automatically for you.<br>You can just close your browser - easy as that! :-)'
       },
