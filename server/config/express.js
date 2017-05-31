@@ -75,7 +75,7 @@ export default function(app) {
     app.use(favicon(path.join(config.root, 'client', 'favicon.ico')));
     app.use(express.static(app.get('appPath')));
     app.use(morgan(customLogFormat, {
-      skip: function (req, res) { return ((req.originalUrl.indexOf('/api/logs/file/') !== -1) && (res.statusCode === 304)); }
+      skip: function (req, res) { return ((req.originalUrl.indexOf('/api/logs/file/') !== -1) && ((res.statusCode === 304) || (res.statusCode === 404))); }
     }));  }
 
   if ('development' === env) {
