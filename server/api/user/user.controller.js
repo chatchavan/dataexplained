@@ -115,6 +115,7 @@ export function createAdmin(req, res){
   shell.exec('sudo usermod -aG sudo '+username);
   shell.exec('sudo mkdir /home/'+username+'/rstudio-workspace');
   shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
+  shell.exec('sudo chown '+username+' /home/'+username+'/rstudio-workspace');
   shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/'+username+'/rstudio-workspace/');
 
   var newUser = new User(req.body);
