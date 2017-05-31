@@ -84,7 +84,9 @@ export default function(app) {
   if ('development' === env || 'test' === env) {
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static(app.get('appPath')));
-    app.use(morgan(customLogFormat));
+    app.use(morgan(customLogFormat, {
+      skip: function (req, res) { return ((req.originalUrl.indexOf('/api/logs/file/') !== -1) && (res.statusCode === 304)); }
+    }));
     app.use(errorHandler()); // Error handler - has to be last
   }
 
