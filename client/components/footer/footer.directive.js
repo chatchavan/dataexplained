@@ -12,7 +12,6 @@ angular.module('rationalecapApp')
         element.addClass('footer');
       },
       controller: function ($scope, $state) {
-        console.log('faq', $scope.faq);
         $scope.goFaq = function(){
           console.log('goFaq', $state.current.name);
           $state.go('^.faq', {'prevState': $state.current.name});
