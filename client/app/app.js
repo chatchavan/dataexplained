@@ -46,10 +46,9 @@ angular.module('rationalecapApp', [
       if(to && to.name === 'main' && toParams.survey){
         //update user surveyDone = true
         //let u = Auth.getCurrentUser();
-        let user = StorageUtil.retrieveSStorage('user');
-        console.log('updating survey for user', user);
+        //let user = StorageUtil.retrieveSStorage('user');
 
-        $http.put('/api/users/me/survey', {'username' : user}).then(response => {
+        $http.put('/api/users/me/survey', {'username' : toParams.survey}).then(response => {
           console.log('user surveyDone updated');
         }, (err) => {
           console.log('user surveyDone update FAILED', err);
