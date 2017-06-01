@@ -29,7 +29,10 @@ class MainController {
 
     this.rStudioEndpoint = undefined;
     this.logThreshold = 20;
+    this.logThresholdExtra = 10;
     this.logWarningShowed = false;
+    this.extraLogs = 0;
+    this.nrLogsThresholdReached = 0;
 
     this.init();
 
@@ -93,35 +96,79 @@ class MainController {
       let unusedLogs = logList.filter(function(item){
         return !item.used;
       });
-      if(unusedLogs.length > this.logThreshold && !this.logWarningShowed){
+      //console.log('unusedLogs: '+unusedLogs.length, 'extraLogs: '+ this.extraLogs, 'logWarningShowed: ' +this.logWarningShowed);
+      if(unusedLogs.length > this.logThreshold + this.extraLogs && !this.logWarningShowed){
         this.logWarningShowed = true;
-        let actionText1 = 'Ok';
-        let text = ['Please create a new block.'];
+        this.nrLogsThresholdReached = unusedLogs.length;
 
-        this.ModalService.showModal({
-          templateUrl: "app/custommodal/custommodal.html",
-          controller: "CustomModalController",
-          inputs: {
-            title: 'More than '+this.logThreshold +' logs are not assigned to a block.',
-            text: text,
-            actionText1: actionText1,
-            actionText2: undefined
-          }
-        }).then(function(modal) {
-          modal.element.modal();
-          modal.close.then(result => {
+        if(this.extraLogs === 0){
+          this.showExtraLogsModal(unusedLogs);
+        }
+        else{
+          //force user to make blocks
+          let actionText1 = 'Ok';
+          let text = ['Please create a new block.'];
+
+          let that = this;
+          this.ModalService.showModal({
+            templateUrl: "app/custommodal/custommodal.html",
+            controller: "CustomModalController",
+            inputs: {
+              title: 'More than '+this.logThreshold +' logs are not assigned to a block.',
+              text: text,
+              actionText1: actionText1,
+              actionText2: undefined
+            }
+          }).then(function(modal) {
+            modal.element.modal();
+            modal.close.then(result => {
+              that.nrLogsThresholdReached = 0;
+            });
           });
-        });
+        }
       }
       else if(unusedLogs.length <= this.logThreshold){
         this.logWarningShowed = false;
+        this.extraLogs = 0;
       }
 
     }
     else{
       this.logWarningShowed = false;
+      this.extraLogs = 0;
     }
 
+  }
+
+  showExtraLogsModal(unusedLogs){
+    let text = ['Currently, there are '+unusedLogs.length+' unassigned logs.','What is the reason you have not created a block yet?'];
+    let actionText1 = 'I simply forgot to create a block.';
+    let actionText2 = 'I have not finished coding the block yet.';
+
+    let that = this;
+
+    this.ModalService.showModal({
+      templateUrl: "app/custommodal/custommodal.html",
+      controller: "CustomModalController",
+      inputs: {
+        title: 'More than '+this.logThreshold +' logs are not assigned to a block.',
+        text: text,
+        actionText1: actionText1,
+        actionText2: actionText2
+      }
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(result => {
+        if(result === actionText2){
+          that.extraLogs = (that.nrLogsThresholdReached - that.logThreshold) + that.logThresholdExtra;
+        }
+        else{
+          that.extraLogs = 0;
+          that.nrLogsThresholdReached = 0;
+        }
+      });
+
+    });
   }
 
   //=========BLOCKS=========
