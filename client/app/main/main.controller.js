@@ -62,7 +62,7 @@ class MainController {
   startPolling(){
     this.pollLogs();
     this.getAllBlocks();
-    let logPollInterval = this.$interval(this.pollLogs.bind(this), 5000);
+    let logPollInterval = this.$interval(this.pollLogs.bind(this), 1000);
     let that = this;
     this.$scope.$on('$destroy', function() {
       that.$interval.cancel(logPollInterval);
