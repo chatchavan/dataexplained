@@ -86,7 +86,7 @@
             <div ng-class="{'button-group' : edit}">
               <md-button ng-if="step<5 && !edit"  type="button" ng-click="increaseStep(bmodal.form)" class="md-raised pull-right">Next</md-button>
               <md-button ng-if="step>1 && !edit"  type="button" ng-click="decreaseStep()" class="md-raised" id="back-btn">Back</md-button>
-              <md-button ng-if="step==5 || edit"  type="button" ng-click="close(bmodal.form)" class="md-raised pull-right">Save</md-button>
+              <md-button ng-if="step==5 || edit"  type="button" ng-click="saveBlock()" class="md-raised pull-right">Save</md-button>
               <md-button ng-if="edit" type="button" ng-click="showDiff()" class="md-raised">Show Diff</md-button>
               <md-button ng-if="edit && edit !== 'jsplumb' " type="button" ng-click="deleteBlock()" class="md-raised">Delete Block</md-button>
               <md-button ng-if="edit && edit !== 'jsplumb' && edit!== 'finish' && edit !== 'admin'" type="button" ng-click="loadFiles()" class="md-raised">Load Files</md-button>

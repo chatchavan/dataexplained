@@ -193,7 +193,7 @@
           else if (result === 'showFilesDiff') {
             Util.showFilesDiff(block, vm.user);
           }
-          else if (result) {
+          else if (result === 'saveBlock') {
             let newBlock = BlockUtil.createBlockString(result, undefined);
             BlockUtil.updateBlock(newBlock, vm.user, vm.loglist, vm.dbLogs).then(function (success) {
               vm.block = success.block;
