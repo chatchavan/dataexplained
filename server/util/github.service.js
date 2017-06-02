@@ -8,6 +8,7 @@ var fs = require('fs');
 var Octokat = require('octokat');
 var base64 = require('js-base64').Base64;
 var blockRepo = 'blocks-dev';
+blockRepo =  config.env === 'development' ? 'blocks-lh' : blockRepo;
 
 
 
