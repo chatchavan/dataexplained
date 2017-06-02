@@ -12,7 +12,7 @@ function UtilService($window, $sce, $state, ModalService, StorageUtil, $timeout,
      * Returns URL of RStudio-Server
      */
     getRStudioUri() {
-      return $sce.trustAsResourceUrl('http://develop.dataexplained.org:8787');
+      return $sce.trustAsResourceUrl('http://dataexplained.org:8787');
     },
 
     /**
