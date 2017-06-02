@@ -7,7 +7,7 @@ var File = require('../api/file/file.model');
 var fs = require('fs');
 var Octokat = require('octokat');
 var base64 = require('js-base64').Base64;
-var blockRepo = 'blocks';
+var blockRepo = 'blocks-dev';
 
 
 

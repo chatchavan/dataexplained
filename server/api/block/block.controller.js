@@ -21,7 +21,7 @@ var base64 = require('js-base64').Base64;
 
 var blockPrefix = '//startBlock\\n';
 var blockSuffix = '//endBlock\\n';
-var blockRepo = 'blocks';
+var blockRepo = 'blocks-dev';
 
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
