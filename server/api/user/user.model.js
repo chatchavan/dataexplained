@@ -25,6 +25,7 @@ var UserSchema = new Schema({
     type: Number,
     default: 1
   },
+  lastLogin: Date,
   password: String,
   provider: String,
   salt: String

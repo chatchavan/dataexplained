@@ -3,6 +3,7 @@
 import express from 'express';
 import passport from 'passport';
 import {signToken} from '../auth.service';
+import User from '../.././api/user/user.model';
 
 var router = express.Router();
 
@@ -15,6 +16,13 @@ router.post('/', function(req, res, next) {
     if (!user) {
       return res.status(404).json({message: 'Something went wrong, please try again.'});
     }
+
+    User.findOne({'username': user.username}).exec(function (errFind, u){
+      if(u && !errFind){
+        u.lastLogin = new Date();
+        u.save(function (err) {});
+      }
+    });
 
     var token = signToken(user._id, user.role);
     res.json({ token });

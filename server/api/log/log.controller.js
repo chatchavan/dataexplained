@@ -340,8 +340,6 @@ export function createOrUpdateLogs(user, blockId, selection, cb) {
       //blocks for user already exist
       else {
 
-        console.log('logs.logs', logs.logs);
-        console.log('SELECTION', selection);
         logs.logs.push.apply(logs.logs, selection);
         logs.save(function (err) {
           if (err) {

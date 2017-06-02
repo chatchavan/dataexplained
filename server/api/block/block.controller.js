@@ -164,14 +164,14 @@ export function create(req, res) {
 
           LogCtrl.createOrUpdateLogs(user, updatedBlock._id, selection, function(logs){
             let resContent = {'blockList': userBlocks, 'dbLogs': logs};
-            githubService.updateFile(sha, file, resContent, res);
+            githubService.updateFile(sha, file, resContent, user, res);
           });
 
         });
 
     },
     function(err){
-      console.log('file does not exist yet, creating new one');
+      console.log('file for '+user+' does not exist yet, creating new one');
       createOrUpdateBlocks(user, block, function (createdBlock, userBlocks){
         console.log('created new list with block', createdBlock);
         if(!createdBlock || !userBlocks){
@@ -180,7 +180,7 @@ export function create(req, res) {
         file.content = base64.encode(blockPrefix+createdBlock._id+'\\n/'+blockSuffix);
         LogCtrl.createOrUpdateLogs(user, createdBlock._id, selection, function(logs){
           let resContent = {'blockList': userBlocks, 'dbLogs': logs};
-          githubService.createFile(file, resContent, res);
+          githubService.createFile(file, resContent, user, res);
         });
 
       });
@@ -348,10 +348,10 @@ export function destroy(req, res) {
             let resContent = {'blockList': userBlocks, 'dbLogs': logs};
 
             if(newContent && newContent.length > 0){
-              githubService.updateFile(sha, file, resContent, res);
+              githubService.updateFile(sha, file, resContent, user, res);
             }
             else{
-              githubService.deleteFile(sha, file, resContent, res);
+              githubService.deleteFile(sha, file, resContent, user, res);
             }
           });
 

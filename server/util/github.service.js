@@ -47,41 +47,41 @@ function getContent(owner, repo, path, cbSuccess, cbError) {
 
 }
 
-function createFile(file, content, res) {
+function createFile(file, content, user, res) {
   let github = authGithub();
   github.repos.createFile(file).then((re) => {
-    console.log('FILE SUCCESSFULLY CREATED');
+    console.log('FILE FOR '+user+' SUCCESSFULLY CREATED');
       return res.status(200).json(content);
   }, (err) => {
-    console.log('file could not be created:', err);
+    console.log('file for '+user+' could not be created:', err);
     return res.status(500).send('error in creating file' + err);
 
 
   });
 }
 
-function updateFile(sha, file, content, res) {
+function updateFile(sha, file, content, user, res) {
   let github = authGithub();
   file.sha = sha;
   github.repos.updateFile(file).then((re) => {
-    console.log('FILE SUCCESSFULLY UPDATED');
+    console.log('FILE FOR '+user+' SUCCESSFULLY UPDATED');
       return res.status(200).json(content);
 
   }, (err) => {
-    console.log('file could not be updated', err);
+    console.log('file for '+user+' could not be updated', err);
     return res.status(500).send('error while updating file' + err);
   });
 }
 
-function deleteFile(sha, file, content, res) {
+function deleteFile(sha, file, content, user, res) {
   let github = authGithub();
   file.sha = sha;
   github.repos.deleteFile(file).then((re) => {
-    console.log('FILE SUCCESSFULLY DELETED');
+    console.log('FILE FOR '+user+' SUCCESSFULLY DELETED');
     return res.status(200).json(content);
 
   }, (err) => {
-    console.log('file could not be deleted', err);
+    console.log('file for '+user+' could not be deleted', err);
     return res.status(500).send('error while deleting file' + err);
   });
 }
