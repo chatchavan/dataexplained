@@ -174,7 +174,6 @@ export function create(req, res) {
     function(err){
       console.log('file for '+user+' does not exist yet, creating new one');
       createOrUpdateBlocks(user, block, function (createdBlock, userBlocks){
-        console.log('created new list with block', createdBlock);
         if(!createdBlock || !userBlocks){
           return res.status(500).end();
         }
