@@ -29,8 +29,8 @@
         answer: 'You do not need to explicitly save your work, as this will be done automatically for you.<br>You can just close your browser - easy as that! :-)'
       },
       {
-        question: 'Why am I forced to create blocks every 20 lines of logs?',
-        answer: 'The reason we "force" you to frequently create blocks is to prevent large blocks, containing lots of logs whose individual rationales behind may vary.<br>Even if you are "trying out commands" or inspecting different parts of the data, rationales may vary.'
+        question: 'Why am I constrained to create blocks every 20 lines of logs?',
+        answer: 'We limit data analysts to create blocks every 20-30 logs in order to prevent large blocks.<br>Large blocks might make it difficult to explain the rationale of your logs.<br>Note that you can still merge and edit blocks as well as their description in a later step.'
       },
       {
         question: 'Am I somehow limited in libraries or functions I can use or install?',
