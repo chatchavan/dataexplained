@@ -143,7 +143,7 @@ export function showDiff(req, res){
           res.status(200).json({data: diff});
         }
         else {
-          res.status(404).end();
+          res.status(200).json({data: undefined});
         }
 
       });

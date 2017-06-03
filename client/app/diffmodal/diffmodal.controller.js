@@ -12,7 +12,6 @@ angular.module('rationalecapApp')
 
       if(newValue){
         $timeout(function(){
-          console.log('drawing', $scope.text);
           diff2htmlUi = new Diff2HtmlUI({diff: $scope.text});
           diff2htmlUi.draw('#line-by-line', {inputFormat: 'diff', showFiles: true, matching: 'none'});
           diff2htmlUi.highlightCode('#line-by-line');
