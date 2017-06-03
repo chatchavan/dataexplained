@@ -312,8 +312,8 @@
             if(result === 'showFilesDiff'){
               Util.showFilesDiff(b, $scope.user);
             }
-            else if(result === 'saveBlock'){
-              updateBlock(result);
+            else if(result && result.saveBlock){
+              updateBlock(result.saveBlock);
             }
           });
         });

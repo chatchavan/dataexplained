@@ -224,8 +224,8 @@ class MainController {
         else if(result === 'showFilesDiff'){
           that.Util.showFilesDiff(block, that.user);
         }
-        else if(result === 'saveBlock'){
-          that.updateBlock(result);
+        else if(result && result.saveBlock){
+          that.updateBlock(result.saveBlock);
         }
       });
     });

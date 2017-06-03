@@ -137,8 +137,8 @@
           }).then(function(modal) {
             modal.element.modal();
             modal.close.then(result => {
-              if(result === 'saveBlock'){
-                BlockUtil.saveBlock(BlockUtil.createBlockString(result, selection), selection, loglist, dbLogs, user, deferred);
+              if(result && result.saveBlock){
+                BlockUtil.saveBlock(BlockUtil.createBlockString(result.saveBlock, selection), selection, loglist, dbLogs, user, deferred);
               }
             });
           });

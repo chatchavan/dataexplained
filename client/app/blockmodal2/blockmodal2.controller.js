@@ -70,9 +70,9 @@ angular.module('rationalecapApp')
       close('showFilesDiff', 500);
     };
 
-    $scope.saveBlock = function(){
+    $scope.saveBlock = function(form){
       $element.modal('hide');
-      close('saveBlock', 500);
+      close({'saveBlock' : form}, 500);
     };
 
     $scope.addAlternative = function(){
