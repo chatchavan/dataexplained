@@ -114,7 +114,7 @@ class MainController {
             templateUrl: "app/custommodal/custommodal.html",
             controller: "CustomModalController",
             inputs: {
-              title: 'More than '+this.logThreshold +' logs are not assigned to a block.',
+              title: 'More than '+(this.logThreshold + this.logThresholdExtra)+' logs are not assigned to a block.',
               text: text,
               actionText1: actionText1,
               actionText2: undefined
