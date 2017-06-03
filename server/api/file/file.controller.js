@@ -239,7 +239,7 @@ export function removeFilesByUser(user, cb){
 
 function getCommitByTimestamp(user, timestamp, callback){
   File.findOne({'user': user}).exec(function (errFind, files){
-      if(errFind) {callback(undefined); return; }
+      if(errFind || !files || !files.commits) {callback(undefined); return; }
 
       for(let commit in files.commits){
         let time =  files.commits[commit].timestamp;
