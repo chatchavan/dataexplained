@@ -28,10 +28,10 @@
         question: 'How do I save my work when I want to suspend my analysis?',
         answer: 'You do not need to explicitly save your work, as this will be done automatically for you.<br>You can just close your browser - easy as that! :-)'
       },
-      {
-        question: 'Why am I forced to create blocks every 20 lines of logs?',
-        answer: 'The reason we "force" you to frequently create blocks is to prevent large blocks, containing lots of logs whose individual rationales behind may vary.<br>Even if you are "trying out commands" or inspecting different parts of the data, rationales may vary.'
-      },
+      // {
+      //   question: 'Why am I forced to create blocks every 20 lines of logs?',
+      //   answer: 'The reason we "force" you to frequently create blocks is to prevent large blocks, containing lots of logs whose individual rationales behind may vary.<br>Even if you are "trying out commands" or inspecting different parts of the data, rationales may vary.'
+      // },
       {
         question: 'Am I somehow limited in libraries or functions I can use or install?',
         answer: 'No! You can install any libraries/packages of your preference.<br>There is also a big variety of common R-packages for analytic work already pre-installed for your use.'
