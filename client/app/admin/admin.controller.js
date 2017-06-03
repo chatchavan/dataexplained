@@ -348,8 +348,8 @@ class AdminController {
       else if(result === 'showFilesDiff'){
         that.Util.showFilesDiff(block, that.searchUser);
       }
-      else if(result && result.saveBlock){
-        let newBlock = that.BlockUtil.createBlockString(result.saveBlock, undefined);
+      else if(result && result.title){
+        let newBlock = that.BlockUtil.createBlockString(result, undefined);
         that.BlockUtil.updateBlock(newBlock, that.searchUser, that.loglist, that.dbLogs).then(function(success){
           that.block = success.block;
           that.loglist = success.loglist;
