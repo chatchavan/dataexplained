@@ -315,10 +315,8 @@ export function updateSurvey(req, res, next){
   console.log('updating survey for user '+ user);
 
   User.findOne({'username': user}).exec(function (errFind, u){
-    if(!u){
-      res.status(404).end();
-    }
-    else if(!errFind){
+
+    if(u && !errFind){
       u.surveyDone = true;
       u.save(function (err) {
         if (err) {
@@ -330,8 +328,29 @@ export function updateSurvey(req, res, next){
         return res.send(u);
       });
     }
+    else if(!u){
+      console.log('user not found, try via auth-id');
+      if(req.user && req.user._id){
+        User.findOneAsync({ _id: req.user._id }, '-salt -password')
+          .then(user => {
+            if (!user) {
+              return res.status(401).end();
+            }
+            user.surveyDone = true;
+            user.save(function (err) {
+              if (err) { return handleError(res, err); }
+              return res.send(user);
+            });
+          })
+          .catch(err => next(err));
+      }
+      else{
+        console.log('no auth-id found');
+        return res.status(404).end();
+      }
+    }
     else{
-      return res.status(500).send(errFind);
+      return res.status(500).send(errFind ? errFind : 'error updating survey');
     }
 
   });
