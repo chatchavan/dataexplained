@@ -262,18 +262,37 @@ function getCommitByTimestamp(user, timestamp, callback){
 function removeFiles(dirPath){
   try {
     var files = fs.readdirSync(dirPath);
+    var protectedFiles = [];
+    if(config.env !== 'development'){
+      protectedFiles = fs.readdirSync('/home/ubuntu/dataset/')
+    }
+    //!!!!!!!!!!!TEST!!!!!!
+    else{
+      protectedFiles = fs.readdirSync('./z_dataset/')
+    }
   }
   catch(e) {
     return;
   }
+
+  if (protectedFiles.length > 0){
+    for (var i = 0; i < protectedFiles.length; i++) {
+      console.log('file in dataset', protectedFiles[i]);
+    }
+  }
+
+
+
   if (files.length > 0){
     for (var i = 0; i < files.length; i++) {
-      var filePath = dirPath + '/' + files[i];
-      if (fs.statSync(filePath).isFile()){
-        fs.unlinkSync(filePath);
-      }
-      else{
-        removeFiles(filePath);
+      if (!protectedFiles.includes(files[i])){
+        var filePath = dirPath + '/' + files[i];
+        if (fs.statSync(filePath).isFile()){
+          fs.unlinkSync(filePath);
+        }
+        else{
+          removeFiles(filePath);
+        }
       }
     }
   }
