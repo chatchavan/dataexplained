@@ -266,7 +266,6 @@ function removeFiles(dirPath){
     if(config.env !== 'development'){
       protectedFiles = fs.readdirSync('/home/ubuntu/dataset/')
     }
-    //!!!!!!!!!!!TEST!!!!!!
     else{
       protectedFiles = fs.readdirSync('./z_dataset/')
     }
