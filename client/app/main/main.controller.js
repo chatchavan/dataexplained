@@ -73,7 +73,7 @@ class MainController {
   //=========LOGS=========e
 
   pollLogs(){
-    this.$http.get('/api/logs/file/user').then(response => {
+    this.$http.get('/api/logs/file/'+this.user).then(response => {
       let fileLogs = response.data.fileLogs;
       this.dbLogs = response.data.dbLogs;
       if(!this.selectFocus) {

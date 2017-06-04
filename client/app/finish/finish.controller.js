@@ -61,7 +61,7 @@
 
     function getDbLogs() {
       let deferred = $q.defer();
-      $http.get('/api/logs/file/user').then(response => {
+      $http.get('/api/logs/file/'+vm.user).then(response => {
         vm.dbLogs = response.data.dbLogs;
         let fileLogs = response.data.fileLogs;
         vm.loglist = LogUtil.formatLogs(fileLogs.split('\n'), vm.dbLogs);

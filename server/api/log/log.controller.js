@@ -100,12 +100,16 @@ export function show(req, res) {
 
 // Get logs of user from history-file
 export function showFromFile(req, res) {
+  let user = req.params.user;
 
-  if(!req.user || !req.user.username){
-    return res.status(404).end();
+  // if(!req.user || !req.user.username){
+  //   return res.status(404).end();
+  // }
+  if(!user){
+    return res.status(400).end();
   }
   else{
-    let user = req.user.username;
+    //let user = req.user.username;
     let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
 
     fs.readFile(rHistory, 'utf8', function (err,data) {

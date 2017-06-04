@@ -154,6 +154,8 @@ export function create(req, res) {
     message: 'auto commit'
   };
 
+  console.log('Creating Block for user ' + user);
+
   githubService.getContent(config.github.user, file.repo, file.path,
     function(re){
         let sha = re.data.sha;
@@ -219,6 +221,7 @@ export function createPlumb(req, res){
         }
         else{
           UserCtrl.setFinish(user, function(success){
+            console.log('=========== USER '+user+' FINISHED! ===========');
             return res.status(200).json(b);
           });
         }
