@@ -173,7 +173,6 @@ export function showHistory(req, res){
 
     return res.status(200).json(fileLogs);
 
-
   });
 
 
