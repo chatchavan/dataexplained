@@ -34,7 +34,7 @@
 
       //CHECK LISTS
       if (!vm.blockList || !vm.loglist || !vm.dbLogs) {
-        $http.get('/api/blocks/' + vm.user).then(response => {
+        $http.get('/api/blocks/user').then(response => {
           if (response.data.length > 0) {
             vm.blockList = response.data;
             getDbLogs().then(function () {
@@ -61,7 +61,7 @@
 
     function getDbLogs() {
       let deferred = $q.defer();
-      $http.get('/api/logs/file/'+vm.user).then(response => {
+      $http.get('/api/logs/file/user').then(response => {
         vm.dbLogs = response.data.dbLogs;
         let fileLogs = response.data.fileLogs;
         vm.loglist = LogUtil.formatLogs(fileLogs.split('\n'), vm.dbLogs);
