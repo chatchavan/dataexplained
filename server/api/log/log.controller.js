@@ -145,8 +145,6 @@ export function showFromDb(req, res){
 
 export function showHistory(req, res){
   let user = req.params.user;
-  //req.user.username
-  console.log('showing history for user '+req.user);
 
   let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
 
