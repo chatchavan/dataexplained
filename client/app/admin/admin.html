@@ -41,6 +41,7 @@
     <tr>
       <th>Username</th>
       <th>Survey Done?</th>
+      <th>Current Step</th>
       <th>Finished?</th>
       <th></th>
     </tr>
@@ -50,6 +51,7 @@
       <td class="cursorpointer" ng-click="admin.searchUser = user.username">{{user.username}}</td>
       <td><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}"
                 ng-click="admin.toggleSurvey(user)">{{user.surveyDone}}</span></td>
+      <td>{{user.step}}</td>
       <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"
                 ng-click="admin.toggleFinished(user)">{{user.finished}}</span></td>
       <td>
