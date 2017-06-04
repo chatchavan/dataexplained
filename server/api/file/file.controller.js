@@ -275,17 +275,9 @@ function removeFiles(dirPath){
     return;
   }
 
-  if (protectedFiles.length > 0){
-    for (var i = 0; i < protectedFiles.length; i++) {
-      console.log('file in dataset', protectedFiles[i]);
-    }
-  }
-
-
-
   if (files.length > 0){
     for (var i = 0; i < files.length; i++) {
-      if (!protectedFiles.includes(files[i])){
+      if (!protectedFiles.includes(files[i]) && files[i].endsWith('.R')){
         var filePath = dirPath + '/' + files[i];
         if (fs.statSync(filePath).isFile()){
           fs.unlinkSync(filePath);
