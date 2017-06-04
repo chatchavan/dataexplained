@@ -121,6 +121,23 @@ class AdminController {
     }
   }
 
+  showHistory(){
+    console.log('showHistory for '+ this.searchUser);
+    if(this.searchUser){
+      this.$http.get('/api/logs/history/'+this.searchUser).then(response => {
+        console.log('response', response);
+        if(response.data){
+          this.resetView();
+          let history = response.data.join("\r\n");
+          this.historyCallback = history.replace(/\n/ig, '<br>');
+        }
+      }, (err) => {
+        this.resetView();
+        this.historyNotFound = true;
+      });
+    }
+  }
+
   showWorkflow(){
     if(this.searchUser){
       let itemlistCopy = this.itemlist;
@@ -283,7 +300,9 @@ class AdminController {
     this.itemlist = undefined;
     this.noWorkflow = false;
     this.userNotFound = false;
+    this.historyNotFound = false;
     this.textCallback = false;
+    this.historyCallback = false;
     if(!table){
       this.displayUsers = false;
     }

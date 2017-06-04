@@ -73,7 +73,7 @@ class MainController {
   //=========LOGS=========e
 
   pollLogs(){
-    this.$http.get('/api/logs/file/'+this.user).then(response => {
+    this.$http.get('/api/logs/file/user').then(response => {
       let fileLogs = response.data.fileLogs;
       this.dbLogs = response.data.dbLogs;
       if(!this.selectFocus) {
@@ -175,7 +175,7 @@ class MainController {
   getAllBlocks(){
 
 
-    this.$http.get('/api/blocks/'+this.user).then(response => {
+    this.$http.get('/api/blocks/user').then(response => {
       if(response.data.length > 0){
         console.log('got all blocks', response.data);
         this.blockList = response.data;
@@ -258,7 +258,7 @@ class MainController {
     console.log(block);
     if(block && block.timestamp){
       this.Util.showLoadingModal('Restoring Workspace...');
-      this.$http.get('/api/files/'+this.user+'/'+block.timestamp).then(response => {
+      this.$http.get('/api/files/'+block.timestamp).then(response => {
         console.log('files replaced', response.data);
         this.Util.hideModal('processing-modal');
 

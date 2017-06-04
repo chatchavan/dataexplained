@@ -77,7 +77,11 @@ export function index(req, res) {
 
 // Load new files in filesystem
 export function show(req, res) {
-  let user = req.params.user;
+  if(!req.user || !req.user.username){
+    return res.status(404).end();
+  }
+  let user = req.user.username;
+
   let timestamp = req.params.timestamp;
 
   let rScripts = config.env === 'development' ? './rstudio-workspace/' : '/home/' + user + '/rstudio-workspace/';
@@ -127,10 +131,13 @@ export function show(req, res) {
 }
 
 export function showDiff(req, res){
-  let user = req.params.user;
+  if(!req.user || !req.user.username){
+    return res.status(404).end();
+  }
+  let user = req.user.username;
+
   let timestamp = req.params.timestamp;
 
-  console.log('showDiff');
 
   getCommitByTimestamp(user, timestamp, function(commit) {
     const http = require("http");
@@ -255,18 +262,28 @@ function getCommitByTimestamp(user, timestamp, callback){
 function removeFiles(dirPath){
   try {
     var files = fs.readdirSync(dirPath);
+    var protectedFiles = [];
+    if(config.env !== 'development'){
+      protectedFiles = fs.readdirSync('/home/ubuntu/dataset/')
+    }
+    else{
+      protectedFiles = fs.readdirSync('./z_dataset/')
+    }
   }
   catch(e) {
     return;
   }
+
   if (files.length > 0){
     for (var i = 0; i < files.length; i++) {
-      var filePath = dirPath + '/' + files[i];
-      if (fs.statSync(filePath).isFile()){
-        fs.unlinkSync(filePath);
-      }
-      else{
-        removeFiles(filePath);
+      if (!protectedFiles.includes(files[i]) && files[i].endsWith('.R')){
+        var filePath = dirPath + '/' + files[i];
+        if (fs.statSync(filePath).isFile()){
+          fs.unlinkSync(filePath);
+        }
+        else{
+          removeFiles(filePath);
+        }
       }
     }
   }

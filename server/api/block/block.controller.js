@@ -78,7 +78,11 @@ export function index(req, res) {
 
 // Gets all Blocks on Github from the DB
 export function show(req, res) {
-  let user = req.params.user;
+  if(!req.user || !req.user.username){
+    return res.status(404).end();
+  }
+  let user = req.user.username;
+
 
   githubService.getContent(config.github.user, blockRepo,  user+'/blocks.txt',
     function(re){

@@ -100,12 +100,12 @@ export function show(req, res) {
 
 // Get logs of user from history-file
 export function showFromFile(req, res) {
-  let user = req.params.user;
 
-  if(!user){
-    return res.status(400).end();
+  if(!req.user || !req.user.username){
+    return res.status(404).end();
   }
   else{
+    let user = req.user.username;
     let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
 
     fs.readFile(rHistory, 'utf8', function (err,data) {
@@ -140,6 +140,44 @@ export function showFromDb(req, res){
       return logs ? res.status(200).json({'dbLogs' : logs}) : res.status(404).end();
     });
   }
+
+}
+
+export function showHistory(req, res){
+  let user = req.params.user;
+  //req.user.username
+  console.log('showing history for user '+req.user);
+
+  let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
+
+  fs.readFile(rHistory, 'utf8', function (err,data) {
+    if (err) {
+      return res.status(404).send(err);
+    }
+
+    let fileLogs = data.toString().split('\n');
+    for (let log in fileLogs) {
+      let l = fileLogs[log];
+      l = l.replace(':', ':&emsp;');
+      let ts = l.substr(0, l.indexOf(':'));
+      if(ts && ts.length > 0){
+        let date = new Date(parseInt(ts));
+        l = l.replace(ts, date.toISOString());
+        fileLogs[log] = l;
+      }
+
+      //console.log('l', l);
+      // fileLogs[log] = {
+      //   'timestamp': l.substr(0, l.indexOf(':')),
+      //   'log': l.substr(l.indexOf(':') + 1, l.length)
+      // };
+    }
+
+    return res.status(200).json(fileLogs);
+
+
+  });
+
 
 }
 
