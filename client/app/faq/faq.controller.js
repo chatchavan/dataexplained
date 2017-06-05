@@ -17,7 +17,7 @@
 
     vm.faqs = [
       {
-        question: 'Can I log out and continue later my analysis?',
+        question: 'Can I log out and continue my analysis later?',
         answer: 'Yes, you can just login again, and your session will be restored! <br> As your progress is continuously saved, you can continue with your work at the very same point you suspended the application.'
       },
       {
