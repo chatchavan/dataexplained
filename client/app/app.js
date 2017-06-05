@@ -7,7 +7,7 @@ if(document.location.hostname === 'localhost') {
   backend = 'http://localhost';
   port = '9000';
 }else{
-  backend = 'http://develop.dataexplained.org';
+  backend = 'http://dataexplained.org';
   port = '80';
 }
 
