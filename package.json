@@ -30,7 +30,8 @@
     "passport-local": "^1.0.0",
     "pmx": "^1.2.0",
     "serve-favicon": "^2.3.0",
-    "shelljs": "^0.7.7"
+    "shelljs": "^0.7.7",
+    "socket.io": "^2.0.2"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.0",

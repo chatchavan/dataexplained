@@ -1,5 +1,16 @@
 'use strict';
 
+var backend = '';
+var port = '';
+
+if(document.location.hostname === 'localhost') {
+  backend = 'http://localhost';
+  port = '9000';
+}else{
+  backend = 'http://develop.dataexplained.org';
+  port = '80';
+}
+
 angular.module('rationalecapApp', [
   'rationalecapApp.constants',
   'rationalecapApp.auth',
@@ -31,7 +42,15 @@ angular.module('rationalecapApp', [
 
     $locationProvider.html5Mode(true);
   })
-  .run(function($rootScope, $window, User, $http, StorageUtil){
+  .constant('constants', {
+    'backendUrl' : (function(){return backend})(),
+    'backendPort' : (function(){return port})()
+  })
+  .run(function($rootScope, $window, User, $http, constants, StorageUtil){
+
+    //CONNECT SOCKET FOR LIVE-METRICS
+    var socket = io.connect(constants.backendUrl+':'+constants.backendPort);
+
     $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from, fromParams) {
 
       var interval = setInterval(function(){

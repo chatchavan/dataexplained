@@ -12,7 +12,6 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 
-
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
 mongoose.connection.on('error', function(err) {
@@ -57,23 +56,9 @@ function startServer() {
   //   });
   // }
 
-  var probe = require('pmx').probe();
+  var socketio = require('socket.io')(server);
+  require('./config/socketio')(socketio);
 
-  var counter = 0;
-
-  var metric = probe.metric({
-    name    : 'Realtime user',
-    value   : function() {
-      return counter;
-    }
-  });
-
-
-  setInterval(function() {
-    server.getConnections(function(error, count) {
-      counter = count;
-    });
-  }, 5000);
 }
 
 setImmediate(startServer);
