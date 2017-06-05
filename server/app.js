@@ -12,7 +12,6 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 
-
 // Connect to MongoDB
 mongoose.connect(config.mongo.uri, config.mongo.options);
 mongoose.connection.on('error', function(err) {
@@ -36,7 +35,7 @@ require('./routes')(app);
 function startServer() {
 
   // if(config.env === 'development'){
-    http.createServer(app).listen(config.port, config.ip, function() {
+   var server =  http.createServer(app).listen(config.port, config.ip, function() {
       console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
     });
   // }
@@ -56,6 +55,10 @@ function startServer() {
   //     console.log('Express server listening on %d, in %s mode', 443, app.get('env'));
   //   });
   // }
+
+  var socketio = require('socket.io')(server);
+  require('./config/socketio')(socketio);
+
 }
 
 setImmediate(startServer);
