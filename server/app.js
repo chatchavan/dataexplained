@@ -36,7 +36,7 @@ require('./routes')(app);
 function startServer() {
 
   // if(config.env === 'development'){
-    http.createServer(app).listen(config.port, config.ip, function() {
+   var server =  http.createServer(app).listen(config.port, config.ip, function() {
       console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
     });
   // }
@@ -56,6 +56,24 @@ function startServer() {
   //     console.log('Express server listening on %d, in %s mode', 443, app.get('env'));
   //   });
   // }
+
+  var probe = require('pmx').probe();
+
+  var counter = 0;
+
+  var metric = probe.metric({
+    name    : 'Realtime user',
+    value   : function() {
+      return counter;
+    }
+  });
+
+
+  setInterval(function() {
+    server.getConnections(function(error, count) {
+      counter = count;
+    });
+  }, 5000);
 }
 
 setImmediate(startServer);
