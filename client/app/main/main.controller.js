@@ -28,8 +28,8 @@ class MainController {
     this.displayPanel = false;
 
     this.rStudioEndpoint = undefined;
-    this.logThreshold = 20;
-    this.logThresholdExtra = 10;
+    this.logThreshold = 30;
+    this.logThresholdExtra = 20;
     this.logWarningShowed = false;
     this.extraLogs = 0;
     this.nrLogsThresholdReached = 0;
