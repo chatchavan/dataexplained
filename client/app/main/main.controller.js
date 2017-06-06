@@ -141,9 +141,9 @@ class MainController {
   }
 
   showExtraLogsModal(unusedLogs){
-    let text = ['Currently, there are '+unusedLogs.length+' unassigned logs.','What is the reason you have not created a block yet?'];
-    let actionText1 = 'I simply forgot to create a block.';
-    let actionText2 = 'I have not finished coding the block yet.';
+    let text = ['You have executed '+unusedLogs.length+' commands without creating a block so far.', 'We just wanted to remind you that annotating your commands with blocks is very important for this study.'];
+    let actionText1 =  undefined;
+    let actionText2 = 'I got it.';
 
     let that = this;
 
