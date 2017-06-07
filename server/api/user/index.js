@@ -12,6 +12,7 @@ router.get('/me', auth.isAuthenticated(), controller.me);
 router.put('/',  auth.isAuthenticated(), controller.update);
 router.put('/me/survey', controller.updateSurvey);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
+router.put('/setFinished/:finished', auth.isAuthenticated(), controller.setFinished);
 router.get('/:id', auth.isAuthenticated(), controller.show);
 router.post('/csv/:content', auth.hasRole('admin'), controller.csv);
 router.post('/',  auth.isAuthenticated(), controller.create);

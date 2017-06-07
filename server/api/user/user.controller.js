@@ -278,6 +278,34 @@ export function changePassword(req, res, next) {
 }
 
 /**
+ * Set "finished" of user
+ */
+export function setFinished(req, res, next) {
+  var userId = req.user._id;
+  var finished = req.params.finished;
+
+  User.findByIdAsync(userId)
+    .then(user => {
+      if (!user) {
+        return res.status(404).end();
+      }
+      delete user._id;
+      user.finished = finished;
+      user.save(function (err) {
+        if (err) {
+          console.log('could not save user in setFinished '+user, err);
+          return res.status(500).end();
+        }
+        else {
+          console.log('successfully updated user '+user.username+' in setFinished to '+ finished);
+          return res.status(200).end();
+        }
+      });
+    })
+    .catch(err => next(err));
+}
+
+/**
  * Get my info
  */
 export function me(req, res, next) {
