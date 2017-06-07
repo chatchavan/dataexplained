@@ -163,11 +163,11 @@
               if(!$scope.json){
                 windows[i].style.left = 2*$scope.leftMargin+windows[i-1].offsetWidth+ getPxValue(windows[i-1].style.left) + "px";
                 let connection = $scope.instance.connect({ source: windows[i-1].id, target: windows[i].id, type:"basic" });
-                connection.getOverlay("label").hide();
+                connection.removeOverlay("label");
               }
             }
             else{
-              windows[i].style.left = $scope.leftMargin+'px';
+              // windows[i].style.left = $scope.leftMargin+'px';
             }
 
           }
@@ -180,7 +180,7 @@
                   connection.getOverlay("label").setLabel($scope.json.connections[i].label);
                 }
                 else{
-                  connection.getOverlay("label").hide();
+                  connection.removeOverlay("label");
                 }
               }
 
@@ -224,7 +224,7 @@
       let el = $('#'+id);
       el.css('left', posX);
       el.css('top', posY+marginTop);
-      jsPlumb.repaint(id);
+      jsPlumb.revalidate(id);
     }
 
     function createPlump(text, id, action){
@@ -238,6 +238,22 @@
       wDiv.appendChild(epDiv);
       return wDiv;
     }
+    //
+    // function createPlumpJSON(text, id, x, y, marginTop, action){
+    //   let top = y+marginTop;
+    //   var wDiv = document.createElement('div');
+    //   wDiv.id = id;
+    //   wDiv.className = 'w';
+    //   wDiv.innerText = text;
+    //   console.log('id', id, x);
+    //   wDiv.setAttribute("style", 'top:'+top+'px;left:'+x+'px;');
+    //   var epDiv = document.createElement('div');
+    //   epDiv.setAttribute('action', action);
+    //   epDiv.className = 'ep';
+    //   wDiv.appendChild(epDiv);
+    //   console.log('createPlumpJSON', wDiv);
+    //   return wDiv;
+    // }
 
     function getPxValue(element){
       if(!element || element.length <= 0){
@@ -261,7 +277,8 @@
         modal.close.then(result => {
           connection.locked = false;
           if(result === 'delete'){
-            connection.getOverlay("label").hide();
+            // connection.getOverlay("label").hide();
+            connection.removeOverlay("label");
             save();
           }
           else if(result){

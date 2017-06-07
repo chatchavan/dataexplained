@@ -12,6 +12,7 @@
     // vm.plumpList = [];
     vm.blocks = $stateParams.blocks;
     vm.finished = $stateParams.finished;
+    vm.autoSaveInterval = undefined;
     let currentPlump;
 
 
@@ -20,6 +21,7 @@
     vm.autoSave = autoSave;
     vm.finish = finish;
     vm.goBack = goBack;
+    vm.goBackWorkflow = goBackWorkflow;
     vm.showInfo = showInfo;
 
     //=========INIT=========
@@ -30,15 +32,17 @@
 
       vm.user = Util.checkUserStep(3);
 
-          $http.get('/api/blocks/user/db').then(response => {
-            if(response.data.blocks){
-              vm.blocks = response.data.blocks;
-              initPlumb();
-            }
-          }, (err) => {
-            //no blocks found
-            console.log('error fetching blocks', err);
-          });
+      if(!vm.finished){
+        $http.get('/api/blocks/user/db').then(response => {
+          if(response.data.blocks){
+            vm.blocks = response.data.blocks;
+            initPlumb();
+          }
+        }, (err) => {
+          //no blocks found
+          console.log('error fetching blocks', err);
+        });
+      }
 
 
 
@@ -82,17 +86,20 @@
         }
       }
 
-      let autoSaveInterval = $interval(autoSave, 5000);
+      vm.autoSaveInterval = $interval(autoSave, 5000);
       $scope.$on('$destroy', function() {
-        $interval.cancel(autoSaveInterval);
+        $interval.cancel(vm.autoSaveInterval);
       });
     }
 
     //=========CONTROLLER=========
 
-    function autoSave(){
+    function autoSave(force){
       let plumb = saveFlowchart(vm.instance);
-      if(plumb !== currentPlump){
+      if(force === -1){
+        $interval.cancel(vm.autoSaveInterval);
+      }
+      if((force === -1) || (plumb !== currentPlump)){
         $http.post('/api/blocks/plumb', {user: vm.user, plumb: plumb}).then(response => {
           currentPlump = plumb;
         }, (err) => {
@@ -125,17 +132,10 @@
     }
 
     function finish(){
-      let plumb = saveFlowchart(vm.instance);
-
-      $http.post('/api/blocks/plumb', {user: vm.user, plumb: plumb, finished : true}).then(response => {
-        if(response.data){
-          console.log('export success', response.data);
-          vm.finished = true;
-        }
-      }, (err) => {
-        console.log('error exporting plumb', err);
-      });
-
+      vm.autoSave(-1);
+      $http.put('/api/users/setFinished/true').then(response => {
+        vm.finished = true;
+      }, (err) => { });
     }
 
     function goBack(){
@@ -166,6 +166,15 @@
       });
     }
 
+    function goBackWorkflow(){
+      $http.put('/api/users/setFinished/false').then(response => {
+          console.log('export success', response.data);
+          $state.reload();
+      }, (err) => {
+        console.log('error updating user', err);
+      });
+    }
+
     function saveFlowchart(instance){
 
        var nodes = [];
@@ -185,13 +194,10 @@
       var connections = [];
       $.each(instance.getAllConnections(), function (idx, connection) {
 
-        // console.log('connection', connection);
-
-        connections.push({
+        let newConnection = {
           connectionId: connection.id,
           pageSourceId: connection.sourceId,
           pageTargetId: connection.targetId,
-          label: connection.getOverlay("label").labelText,
           anchors: $.map(connection.endpoints, function(endpoint) {
 
             return [[endpoint.anchor.x,
@@ -203,7 +209,13 @@
               endpoint.anchor.getCurrentLocation({element : {id: endpoint.id}})]];
 
           })
-        });
+        };
+
+        let la = connection.getOverlay("label");
+        if(la){
+          newConnection.label = la.labelText;
+        }
+        connections.push(newConnection);
       });
 
       var flowChart = {};
