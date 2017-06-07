@@ -1,4 +1,4 @@
-<div class="graph" ng-if="!vm.exported">
+<div class="graph" ng-if="!vm.finished">
 
   <div class="title-container">
     <img ng-click="vm.goBack()"  src="assets/images/back.png" class="icon back-icon" />
@@ -20,7 +20,7 @@
 
 </div>
 
-<div class="graph text-center" ng-if="vm.exported">
+<div class="graph text-center" ng-if="vm.finished">
   <h1>Thank you for your participation!</h1>
   <h3>You will be contacted as soon as the results are compiled by the project coordinators. </h3>
 </div>

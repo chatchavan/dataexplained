@@ -257,6 +257,8 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User, Stor
         .then(user => {
           user.step = step;
           return Auth.updateUser(user);
+      }, function(err){
+          return Auth.updateUser(StorageUtil.retrieveSStorage('user'));
       });
 
     }
