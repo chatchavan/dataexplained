@@ -143,7 +143,7 @@ class MainController {
   showExtraLogsModal(unusedLogs){
     let text = ['You have executed '+unusedLogs.length+' commands without creating a block so far.', 'We just wanted to remind you that annotating your commands with blocks is very important for this study.'];
     let actionText1 =  undefined;
-    let actionText2 = 'I got it.';
+    let actionText2 = 'I got it';
 
     let that = this;
 
