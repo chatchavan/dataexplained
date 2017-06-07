@@ -19,7 +19,7 @@
           <form name="bmodal.form" class="form-horizontal" role="form">
             <div ng-if="step==1 || edit" class="form-group question-group">
               <label for="title" class="">Please give a name to the block:</label>
-              <textarea type="text" class="form-control" name="title" id="title" placeholder="" ng-model="block.title" required></textarea>
+              <textarea spellcheck="false" type="text" class="form-control" name="title" id="title" placeholder="" ng-model="block.title" required></textarea>
               <div ng-messages="bmodal.form.title.$error" ng-show="bmodal.form.$submitted || bmodal.form.title.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
@@ -27,7 +27,7 @@
 
             <div ng-if="step==2 || edit" class="form-group question-group">
               <label for="goal" class="">Please shortly explain <span style="font-style: italic; text-decoration: underline">what</span> you did in this block:</label>
-              <textarea type="text" class="form-control" name="goal" id="goal" placeholder="" ng-model="block.goal" required></textarea>
+              <textarea spellcheck="false" type="text" class="form-control" name="goal" id="goal" placeholder="" ng-model="block.goal" required></textarea>
               <div ng-messages="bmodal.form.goal.$error" ng-show="bmodal.form.$submitted || bmodal.form.goal.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
@@ -39,21 +39,21 @@
               <div ng-repeat="alternative in block.alternatives" ng-class="{'alternative-not-last' : !$last, 'alternative-not-first' : $last}">
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="">Alternative</div>
-                  <textarea type="text" class="sublabel-input form-control" name="alternativeTitle{{$index}}" placeholder="" ng-model="block.alternatives[$index].title"></textarea>
+                  <textarea spellcheck="false" type="text" class="sublabel-input form-control" name="alternativeTitle{{$index}}" placeholder="" ng-model="block.alternatives[$index].title"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativeTitle'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeTitle'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="">Advantages of this alternative</div>
-                  <textarea type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro"></textarea>
+                  <textarea spellcheck="false" type="text" class="sublabel-input form-control" name="alternativePro{{$index}}" placeholder="" ng-model="block.alternatives[$index].pro"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativePro'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativePro'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
                 </div>
                 <div class="multilabel-container padding-top-medium">
                   <div class="sublabel" class="">Disadvantages of this alternative</div>
-                  <textarea type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra"></textarea>
+                  <textarea spellcheck="false" type="text" class="sublabel-input form-control" name="alternativeContra{{$index}}" placeholder="" ng-model="block.alternatives[$index].contra"></textarea>
                 </div>
                 <div ng-messages="bmodal.form['alternativeContra'+$index].$error" ng-show="bmodal.form.$submitted || bmodal.form['alternativeContra'+$index].$touched">
                   <div class="inline-error required" ng-message="required">Input required</div>
@@ -67,7 +67,7 @@
 
             <div ng-if="step==4 || edit" class="form-group question-group">
               <label for="criteria" class=""><span style="font-style: italic; text-decoration: underline">Why</span> did you choose your option?</label>
-              <textarea type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required></textarea>
+              <textarea spellcheck="false" type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required></textarea>
               <div ng-messages="bmodal.form.criteria.$error" ng-show="bmodal.form.$submitted || bmodal.form.criteria.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
@@ -75,7 +75,7 @@
 
             <div ng-if="step==5 || edit" class="form-group question-group">
               <label for="preconditions" class="">What preconditions should be fulfilled to successfully execute this block?</label>
-              <textarea type="text" class="form-control" name="preconditions" id="preconditions" placeholder="" ng-model="block.preconditions" required></textarea>
+              <textarea spellcheck="false" type="text" class="form-control" name="preconditions" id="preconditions" placeholder="" ng-model="block.preconditions" required></textarea>
               <div ng-messages="bmodal.form.preconditions.$error" ng-show="bmodal.form.$submitted || bmodal.form.preconditions.$touched">
                 <div class="required" ng-message="required">Input required</div>
               </div>
