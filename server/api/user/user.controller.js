@@ -499,11 +499,18 @@ function getLastLogDate(user, cb){
       fileLogs.splice(fileLogs.length-1,1); //remove empty last line
       let lastLogDate = 'N/A';
       if(fileLogs && fileLogs.length>=0){
-        let lastLog = fileLogs[fileLogs.length-1];
-        let ts = lastLog.substr(0, lastLog.indexOf(':'));
-        if(ts && ts.length > 0){
-          lastLogDate = new Date(parseInt(ts));
+        for(var i = fileLogs.length-1; i >= 0; i--){
+          let lastLog = fileLogs[i];
+          if(lastLog && lastLog.length > 0){
+            let ts = lastLog.substr(0, lastLog.indexOf(':'));
+            if(ts && ts.length > 0){
+              lastLogDate = new Date(parseInt(ts));
+              break;
+            }
+          }
+
         }
+
       }
       return cb(lastLogDate)
     }
