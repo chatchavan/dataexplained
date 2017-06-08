@@ -102,6 +102,19 @@ function UtilService($window, $sce, $state, ModalService, StorageUtil, $timeout,
       }, (err) => {
         //file does not exist yet
         console.log('error getting diff', err);
+
+        ModalService.showModal({
+          templateUrl: "app/diffmodal/diffmodal.html",
+          controller: "DiffModalController",
+          inputs: {
+            text: undefined
+          }
+        }).then(function(modal) {
+          modal.element.modal();
+          modal.close.then(result => {
+          });
+        });
+
       });
 
     },

@@ -97,7 +97,6 @@
         // to get a value that is either negative, positive, or zero.
         return new Date(a.timestamp) - new Date(b.timestamp);
       });
-      console.log('itemlist', vm.itemlist);
     }
 
     function showInfo() {
@@ -124,8 +123,6 @@
         return item.block === block._id && item.log === line;
       });
 
-      console.log(logEntries);
-      //console.log(block.content.split('\\n').length > 1);
 
 
       if (logEntries.length > 0) {
@@ -223,7 +220,6 @@
 
       vm.drop = undefined;
 
-      // console.log('itemlist', vm.itemlist);
     }
 
     function dragEndLog(originIndex, list) {
@@ -232,8 +228,6 @@
         if (!vm.drop.loglog) {
 
           let newBlock = vm.drop.destItem;
-          // console.log('originIndex '+ originIndex, 'list', list);
-          console.log(vm.drop.item, newBlock);
           newBlock.renderedContent[vm.drop.index] = vm.drop.item.log;
           if (newBlock.content.length > 0) {
             let content = newBlock.content.split('\\n');
@@ -251,11 +245,8 @@
 
           $http.post('/api/logs', {user: vm.user, log: vm.drop.item, blockId: vm.drop.destItem._id}).then(response => {
             vm.dbLogs = response.data;
-            console.log('new dblogs', vm.dbLogs);
             //delete vm.drop.destItem.renderedContent
-            console.log('update BLOCK', vm.loglist, vm.dbLogs);
             BlockUtil.updateBlock(newBlock, vm.user, vm.loglist, vm.dbLogs).then(function (success) {
-              console.log('success', success);
               vm.blockList = success.blockList;
               vm.loglist = success.loglist;
               vm.drop = undefined;
