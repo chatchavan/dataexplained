@@ -73,7 +73,9 @@ function removeEntity(res) {
 
 // Gets a list of Blocks
 export function index(req, res) {
-  return res.status(200).json({'index': 'all'});
+  Block.findAsync()
+    .then(responseWithResult(res))
+    .catch(handleError(res));
 }
 
 // Gets all Blocks on Github from the DB

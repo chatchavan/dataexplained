@@ -11,6 +11,7 @@ var FileCtrl = require('./../file/file.controller');
 var Block = require('./../block/block.model');
 var BlockCtrl = require('./../block/block.controller');
 var LogCtrl = require('./../log/log.controller');
+var fs = require('fs');
 var csv = require('csv-express');
 
 
@@ -34,6 +35,7 @@ function validationError(res, statusCode) {
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
   return function(err) {
+    console.log('ERROR', err);
     res.status(statusCode).send(err);
   };
 }
@@ -68,6 +70,31 @@ export function index(req, res) {
       res.status(200).json(users);
     })
     .catch(handleError(res));
+}
+
+export function indexAdmin(req, res) {
+  User.find({}, '-salt -password')
+    .then(users => {
+      let users2 = [];
+
+      var onComplete = function() {
+        return res.status(200).json(users2);
+      };
+
+      var tasksToGo = users.length;
+        users.forEach(function(i) {
+            let userObject = i.toObject();
+            getLastLogDate(userObject.username, function(history){
+              userObject.history = history;
+              users2.push(userObject);
+                if (--tasksToGo === 0) {
+                  // No tasks left, good to go
+                  onComplete();
+                }
+            });
+        });
+
+    })
 }
 
 /**
@@ -152,6 +179,7 @@ export function resetAdmin(req, res){
             else if(!errFind){
               u.finished = false;
               u.surveyDone = false;
+              u.step = 1;
               u.save(function (err) {
                 if (err) {
                   console.log('could not reset user in db');
@@ -457,3 +485,29 @@ export function csv(req, res) {
 export function authCallback(req, res, next) {
   res.redirect('/');
 }
+
+function getLastLogDate(user, cb){
+
+  let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
+
+  fs.readFile(rHistory, 'utf8', function (err,data) {
+    if (err) {
+      return cb('err - N/A');
+    }
+    else{
+      let fileLogs = data.toString().split('\n');
+      fileLogs.splice(fileLogs.length-1,1); //remove empty last line
+      let lastLogDate = 'N/A';
+      if(fileLogs && fileLogs.length>=0){
+        let lastLog = fileLogs[fileLogs.length-1];
+        let ts = lastLog.substr(0, lastLog.indexOf(':'));
+        if(ts && ts.length > 0){
+          lastLogDate = new Date(parseInt(ts));
+        }
+      }
+      return cb(lastLogDate)
+    }
+
+  });
+}
+

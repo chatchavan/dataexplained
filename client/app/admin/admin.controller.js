@@ -5,7 +5,6 @@
 class AdminController {
   constructor($scope, Auth, User, LogUtil, Util, BlockUtil, ModalService, $http, $timeout, $state) {
     // Use the User $resource to fetch all users
-    this.users = User.query();
     this.$scope = $scope;
     this.Auth = Auth;
     this.User = User;
@@ -25,13 +24,37 @@ class AdminController {
     this.displayUsers = true;
     this.loadTest = false;
 
+    this.sort = {
+      column: 'username',
+      descending: false
+    };
+
 
     this.init();
 
   }
 
+  toggleStepDisable(event){
+    let id = ''+event.target.id;
+    let user = id.substring(id.indexOf('_')+1, id.length);
+    let element = $("#"+id);
+    let readOnly = element.prop('readonly');
+    element.prop('readonly', !readOnly);
+    if(!readOnly){
+      for(var i = 0; i < this.users.length; i++){
+        if(this.users[i].username === user){
+          this.users[i].step = element.val();
+          this.updateUser(this.users[i]);
+          break;
+        }
+      }
+    }
+  }
 
   init(){
+
+    this.initUsersAndBlocks();
+
     this.$http.get('/api/configurations/').then(response => {
       if(response.data && response.data.length>0){
         this.configSurvey = response.data[0].survey;
@@ -46,7 +69,22 @@ class AdminController {
       console.log('error getting configuration: ', err);
     });
 
+  }
 
+  initUsersAndBlocks(){
+    this.BlockUtil.getAllBlocksAdmin().then(blocks => {
+      this.blocks = blocks;
+    });
+
+    this.$http.get('/api/users/admin/all').then(response => {
+      console.log('admin all users', response);
+      if(response.data){
+        this.users = response.data;
+      }
+
+    }, (err) => {
+      console.log('error getting configuration: ', err);
+    });
   }
 
   setSurvey(){
@@ -76,7 +114,7 @@ class AdminController {
 
   displayAllUsers(){
     this.resetView();
-    this.users = this.User.query();
+    this.initUsersAndBlocks();
     this.searchUser = undefined;
     this.displayUsers = true;
   }
@@ -377,6 +415,45 @@ class AdminController {
     });
   });
 }
+
+  /**
+   * Return nr. of blocks added in last session for user
+   */
+getLastBlockProgress(user){
+  let counter = 0;
+  let total = 0;
+  if(!user.lastLogin){
+    return 'N/A';
+  }
+  for(var i = 0; i < this.blocks.length; i++){
+    if(this.blocks[i].user === user.username){
+
+      let userblocks = this.blocks[i].blocks;
+      total = userblocks.length;
+      for(var j = 0; j < userblocks.length; j++){
+        if(userblocks[j].timestamp > user.lastLogin){
+          counter ++;
+        }
+      }
+      return counter+' ('+total+')';
+    }
+  }
+
+  return 'N/A';
+}
+
+sortTable(column){
+  console.log('sort by', column);
+  var sort = this.sort;
+
+  if (sort.column === column) {
+    sort.descending = !sort.descending;
+  } else {
+    sort.column = column;
+    sort.descending = false;
+  }
+}
+
 
 
 }
