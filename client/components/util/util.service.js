@@ -27,7 +27,6 @@ function UtilService($window, $sce, $state, ModalService, StorageUtil, $timeout,
 
       let u = auth.getCurrentUser();
       let user = u.username;
-      console.log('saving', user);
       StorageUtil.saveSStorage('user', user);
       if (u.finished) {
         $state.go('^.graph', {'finished': true});
