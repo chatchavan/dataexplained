@@ -492,7 +492,7 @@ function getLastLogDate(user, cb){
 
   fs.readFile(rHistory, 'utf8', function (err,data) {
     if (err) {
-      return cb('err - N/A');
+      return cb('Not logged in to Rstudio yet');
     }
     else{
       let fileLogs = data.toString().split('\n');
