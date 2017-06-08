@@ -278,10 +278,28 @@
         return "//startBlock";
       },
 
-      getBlockSuffix(){
+    getBlockSuffix(){
         return "//endBlock";
 
+    },
+
+      getAllBlocksAdmin(){
+
+      let deferred = $q.defer();
+        $http.get('/api/blocks').then(response => {
+          if(response.data){
+            deferred.resolve(response.data);
+          }
+          else{
+            deferred.reject();
+          }
+        }, (err) => {
+          console.log(err);
+          deferred.reject();
+        });
+        return deferred.promise;
       }
+
 
 
     };

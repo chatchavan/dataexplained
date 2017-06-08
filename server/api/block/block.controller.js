@@ -73,7 +73,9 @@ function removeEntity(res) {
 
 // Gets a list of Blocks
 export function index(req, res) {
-  return res.status(200).json({'index': 'all'});
+  Block.findAsync()
+    .then(responseWithResult(res))
+    .catch(handleError(res));
 }
 
 // Gets all Blocks on Github from the DB
@@ -117,6 +119,9 @@ export function showFromDb(req, res) {
     if (err || !b) {
       return res.status(404).end();
     }
+    b.blocks.sort(function(a,b){
+      return new Date(a.timestamp) - new Date(b.timestamp);
+    });
     return res.status(200).json({'blocks': b});
 
   });
@@ -525,7 +530,7 @@ function deleteBlockFromBlockString(blockId, blockString){
   return blockString;
 }
 
-export function stripLogFromBlockContent(user, blockId, logEntry, latestLog, cb){
+export function stripLogFromBlockContent(user, blockId, logIndex, logEntry, latestLog, cb){
   Block.findOne({'user': user}).exec(function (err, b) {
 
     if (err || !b) {
@@ -537,7 +542,10 @@ export function stripLogFromBlockContent(user, blockId, logEntry, latestLog, cb)
         if(b.blocks[i]._id.toHexString() === blockId){
           let contents = b.blocks[i].content.split('\\n');
           let index = contents.indexOf(logEntry.log);
-          if(index > -1){
+          if(contents.length > logIndex){
+            index = logIndex;
+          }
+          if(index > -1 && contents[index] === logEntry.log){
             contents.splice(index, 1);
           }
           b.blocks[i].content = contents.join('\\n');

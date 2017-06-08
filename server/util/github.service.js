@@ -147,6 +147,11 @@ function updateDirectoryTemp(message, dir, user, timestamp, res) {
       return typeof item == 'string' && item.indexOf('s-') > -1;
     });
 
+    if(filenames.length <= 0){
+      console.log('no files to update, returning');
+      return res.status(200).end();
+    }
+
     for (let i = filenames.length - 1; i >= 0; i--) {
 
         fs.readdir(dir+'/'+filenames[i], function(err2, filenames2){

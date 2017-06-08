@@ -12,6 +12,7 @@
     // vm.plumpList = [];
     vm.blocks = $stateParams.blocks;
     vm.finished = $stateParams.finished;
+    vm.userBack = false;
     vm.autoSaveInterval = undefined;
     let currentPlump;
 
@@ -30,7 +31,10 @@
 
     function init() {
 
-      vm.user = Util.checkUserStep(3);
+      // Auth.refreshUser();
+      if(!vm.userBack){
+        vm.user = Util.checkUserStep(3);
+      }
 
       if(!vm.finished){
         $http.get('/api/blocks/user/db').then(response => {
@@ -169,7 +173,9 @@
     function goBackWorkflow(){
       $http.put('/api/users/setFinished/false').then(response => {
           console.log('export success', response.data);
-          $state.reload();
+          vm.userBack = true;
+          vm.finished = false;
+          vm.init();
       }, (err) => {
         console.log('error updating user', err);
       });
