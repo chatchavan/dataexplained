@@ -135,8 +135,6 @@
             vm.dbLogs = response.data.dbLogs;
             vm.blockList = response.data.blockList;
             vm.init();
-            // vm.blockList = response.data;
-            // vm.loglist = LogUtil.formatLogs(log.split("\n"), vm.blockList);
             console.log('log deleted');
           }
         }, (err) => {
