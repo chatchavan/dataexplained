@@ -525,7 +525,7 @@ function deleteBlockFromBlockString(blockId, blockString){
   return blockString;
 }
 
-export function stripLogFromBlockContent(user, blockId, logEntry, latestLog, cb){
+export function stripLogFromBlockContent(user, blockId, logIndex, logEntry, latestLog, cb){
   Block.findOne({'user': user}).exec(function (err, b) {
 
     if (err || !b) {
@@ -537,7 +537,10 @@ export function stripLogFromBlockContent(user, blockId, logEntry, latestLog, cb)
         if(b.blocks[i]._id.toHexString() === blockId){
           let contents = b.blocks[i].content.split('\\n');
           let index = contents.indexOf(logEntry.log);
-          if(index > -1){
+          if(contents.length > logIndex){
+            index = logIndex;
+          }
+          if(index > -1 && contents[index] === logEntry.log){
             contents.splice(index, 1);
           }
           b.blocks[i].content = contents.join('\\n');

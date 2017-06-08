@@ -118,8 +118,7 @@
       });
     }
 
-    function removeLog(line, block) {
-      console.log('removing ' + line + ' from block ' + block._id);
+    function removeLog(line, logIndex, block) {
 
       let logEntries = vm.dbLogs.filter(function (item) {
         return item.block === block._id && item.log === line;
@@ -130,7 +129,7 @@
 
 
       if (logEntries.length > 0) {
-        $http.post('/api/logs/delete', {user: vm.user, logId: logEntries[0]._id, blockId: block._id}).then(response => {
+        $http.post('/api/logs/delete', {user: vm.user, logId: logEntries[0]._id, blockId: block._id, logIndex: logIndex}).then(response => {
           if (response.data) {
             console.log('dbLogs now', vm.dbLogs, response.data.dbLogs);
             vm.dbLogs = response.data.dbLogs;
@@ -285,7 +284,7 @@
         }
         else {
           //loglog
-          if (!areSameLogs(vm.drop.destItem, vm.drop.item)) {
+          if (vm.drop.itemListIndexOrigin !== originIndex) {
             createBlock(vm.drop);
           }
         }
@@ -293,9 +292,9 @@
 
     }
 
-    function dragDrop(index, item, destItem, loglog) {
+    function dragDrop(index, item, destItem, loglog, itemListIndexOrigin) {
       // console.log('drag drop', index, destItem);
-      vm.drop = {item: item, destItem: destItem, index: index, loglog: loglog};
+      vm.drop = {item: item, destItem: destItem, index: index, loglog: loglog, itemListIndexOrigin: itemListIndexOrigin};
     }
 
 

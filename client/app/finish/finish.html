@@ -19,7 +19,7 @@
             </h4>
 
             <div dnd-list="[item]"
-            dnd-inserted="vm.dragDrop(index, item, {{item}}, true)">
+            dnd-inserted="vm.dragDrop(index, item, {{item}}, true, $index)">
             <p ng-if="!item.renderedContent" dnd-draggable="item"
                dnd-moved="vm.dragEndLog($index, item)"
                dnd-effect-allowed="move"
@@ -44,7 +44,7 @@
                     dnd-selected="models.selected = c"
                     ng-class="{'selected': models.selected === item}"
                     class="log-line">
-                    {{c}}<span ng-click="vm.removeLog(c, item)" class="pull-right  glyphicon glyphicon-remove"></span>
+                    {{c}}<span ng-click="vm.removeLog(c, $index, item)" class="pull-right  glyphicon glyphicon-remove"></span>
                 </p>
               </div>
 

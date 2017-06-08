@@ -230,6 +230,7 @@ export function destroy(req, res){
   console.log('deleting log', logId);
   let user = req.body.user;
   let blockId = req.body.blockId;
+  let logIndex = req.body.logIndex;
 
   Log.findOne({'user': user}).exec(function (err, l) {
 
@@ -260,7 +261,7 @@ export function destroy(req, res){
         return res.status(201).json({dbLogs: logsCopy});
       }
       else {
-        BlockCtrl.stripLogFromBlockContent(user, blockId, log, latestLog, function(blocks){
+        BlockCtrl.stripLogFromBlockContent(user, blockId, logIndex, log, latestLog, function(blocks){
           if(!blocks){
             return res.status(200).json({dbLogs: l.logs});
           }
