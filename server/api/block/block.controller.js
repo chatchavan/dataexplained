@@ -117,6 +117,9 @@ export function showFromDb(req, res) {
     if (err || !b) {
       return res.status(404).end();
     }
+    b.blocks.sort(function(a,b){
+      return new Date(a.timestamp) - new Date(b.timestamp);
+    });
     return res.status(200).json({'blocks': b});
 
   });
