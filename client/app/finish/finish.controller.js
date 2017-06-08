@@ -131,7 +131,6 @@
       if (logEntries.length > 0) {
         $http.post('/api/logs/delete', {user: vm.user, logId: logEntries[0]._id, blockId: block._id, logIndex: logIndex}).then(response => {
           if (response.data) {
-            console.log('dbLogs now', vm.dbLogs, response.data.dbLogs);
             vm.dbLogs = response.data.dbLogs;
             vm.blockList = response.data.blockList;
             vm.init();
