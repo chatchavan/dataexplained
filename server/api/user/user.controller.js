@@ -312,7 +312,7 @@ export function setFinished(req, res, next) {
   var userId = req.user._id;
   var finished = req.params.finished;
 
-  User.findByIdAsync(userId)
+  User.findByIdAsync(userId, '-salt -password')
     .then(user => {
       if (!user) {
         return res.status(404).end();
@@ -326,7 +326,7 @@ export function setFinished(req, res, next) {
         }
         else {
           console.log('successfully updated user '+user.username+' in setFinished to '+ finished);
-          return res.status(200).end();
+          return res.status(200).json(user);
         }
       });
     })

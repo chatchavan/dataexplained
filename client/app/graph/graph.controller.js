@@ -172,7 +172,9 @@
 
     function goBackWorkflow(){
       $http.put('/api/users/setFinished/false').then(response => {
-          console.log('export success', response.data);
+        if(response && response.data){
+          Auth.setCurrentUser(response.data);
+        }
           vm.userBack = true;
           vm.finished = false;
           vm.init();

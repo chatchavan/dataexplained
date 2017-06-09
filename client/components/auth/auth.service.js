@@ -51,6 +51,14 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User, Stor
     },
 
     /**
+     * Manually set current user
+     */
+    setCurrentUser(user){
+      console.log('set current user manual', user);
+      currentUser = user;
+    },
+
+    /**
      * Create a new user
      *
      * @param  {Object}   user     - user info
