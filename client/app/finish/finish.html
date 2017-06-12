@@ -37,16 +37,17 @@
 
               <div class="dnd-list" dnd-list="item.renderedContent"
                    dnd-inserted="vm.dragDrop(index, item, {{item}})">
-                <div ng-repeat="c in item.renderedContent track by $index">
-                  <md-checkbox ng-model="isChecked" ng-click="vm.checkItem(item, $index, isChecked)">
+                <div class="row" ng-repeat="c in item.renderedContent track by $index">
+                  <md-checkbox class="col-sm-11" ng-model="isChecked" ng-click="vm.checkItem(item, $index, isChecked)">
                     <p dnd-draggable="vm.checkedList.length > 0 ? vm.checkedList : c"
                        dnd-dragstart="vm.onDragstart(item, event)"
                        dnd-moved="vm.dragEnd($index, item)"
                        dnd-effect-allowed="move"
                        class="log-line">
-                      {{c}}<span ng-click="vm.removeLog(c, $index, item)" class="pull-right glyphicon glyphicon-remove"></span>
+                      {{c}}
                     </p>
                   </md-checkbox>
+                  <div class="col-sm-1 remove-icon pull-right glyphicon glyphicon-remove" ng-click="vm.removeLog(c, $index, item)"></div>
                 </div>
               </div>
 
