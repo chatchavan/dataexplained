@@ -15,7 +15,7 @@
             <span ng-click="vm.editBlock(item)"
                   class="pull-right fa fa-pencil-square-o"></span>
             <h4 ng-if="item.renderedContent" class="panel-title">
-              <a data-toggle="collapse" data-target="#collapse_{{$index}}"href="#collapse_{{$index}}">{{item.title}}</a>
+              <a data-toggle="collapse" data-target="#collapse_{{$index}}" href="#collapse_{{$index}}">{{item.title}}</a>
             </h4>
 
             <div dnd-list="[item]"
@@ -37,15 +37,17 @@
 
               <div class="dnd-list" dnd-list="item.renderedContent"
                    dnd-inserted="vm.dragDrop(index, item, {{item}})">
-                <p ng-repeat="c in item.renderedContent track by $index"
-                    dnd-draggable=""
-                    dnd-moved="vm.dragEnd($index, item.renderedContent)"
-                    dnd-effect-allowed="move"
-                    dnd-selected="models.selected = c"
-                    ng-class="{'selected': models.selected === item}"
-                    class="log-line">
-                    {{c}}<span ng-click="vm.removeLog(c, $index, item)" class="pull-right  glyphicon glyphicon-remove"></span>
-                </p>
+                <div ng-repeat="c in item.renderedContent track by $index">
+                  <md-checkbox ng-model="isChecked" ng-click="vm.checkItem(item, $index, isChecked)">
+                    <p dnd-draggable="vm.checkedList.length > 0 ? vm.checkedList : c"
+                       dnd-dragstart="vm.onDragstart(item, event)"
+                       dnd-moved="vm.dragEnd($index, item)"
+                       dnd-effect-allowed="move"
+                       class="log-line">
+                      {{c}}<span ng-click="vm.removeLog(c, $index, item)" class="pull-right glyphicon glyphicon-remove"></span>
+                    </p>
+                  </md-checkbox>
+                </div>
               </div>
 
             </div>

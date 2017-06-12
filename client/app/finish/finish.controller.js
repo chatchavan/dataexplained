@@ -5,12 +5,14 @@
     .module('rationalecapApp')
     .controller('FinishCtrl', FinishCtrl);
 
-  function FinishCtrl($stateParams, $http, $state, $q, Auth, Util, StorageUtil, LogUtil, BlockUtil, ModalService) {
+  function FinishCtrl($stateParams, $http, $state, $q, $timeout, Auth, Util, StorageUtil, LogUtil, BlockUtil, ModalService) {
 
     var vm = this;
     vm.loglist = $stateParams.loglist;
     vm.dbLogs = $stateParams.dbLogs;
     vm.blockList = $stateParams.blockList;
+    vm.checkedList = [];
+    vm.collapsed = [];
 
 
     vm.init = init;
@@ -23,13 +25,13 @@
     vm.dragEnd = dragEnd;
     vm.dragEndLog = dragEndLog;
     vm.checkAllItems = checkAllItems;
-
+    vm.checkItem = checkItem;
     //=========INIT=========
 
     vm.init();
 
     function init() {
-
+      saveCollapsed();
       vm.user = Util.checkUserStep(2);
 
       //CHECK LISTS
@@ -97,6 +99,8 @@
         // to get a value that is either negative, positive, or zero.
         return new Date(a.timestamp) - new Date(b.timestamp);
       });
+
+      loadCollapsed();
     }
 
     function showInfo() {
@@ -117,7 +121,20 @@
       });
     }
 
-    function removeLog(line, logIndex, block) {
+    function checkItem(item, index, unChecked){
+      let element = {block: item, index: index, log: item.renderedContent[index]};
+      if(unChecked){
+        let index = arrayObjectIndexOf(vm.checkedList, element);
+        if(index > -1){
+          vm.checkedList.splice(index, 1);
+        }
+      }
+      else{
+        vm.checkedList.push(element);
+      }
+    }
+
+    function removeLog(line, logIndex, block, norefresh) {
 
       let logEntries = vm.dbLogs.filter(function (item) {
         return item.block === block._id && item.log === line;
@@ -127,7 +144,7 @@
 
       if (logEntries.length > 0) {
         $http.post('/api/logs/delete', {user: vm.user, logId: logEntries[0]._id, blockId: block._id, logIndex: logIndex}).then(response => {
-          if (response.data) {
+          if (response.data && !norefresh) {
             vm.dbLogs = response.data.dbLogs;
             vm.blockList = response.data.blockList;
             vm.init();
@@ -208,16 +225,105 @@
       $state.go('^.main');
     }
 
-    function dragEnd(originIndex, list) {
-      if (list && list.length > 0) {
-        if (vm.drop && vm.drop.index < originIndex) {
-          list.splice(originIndex + 1, 1);
+
+    // function onDragstart(list, event){
+    //   list.dragging = true;
+    //   if (event.dataTransfer.setDragImage) {
+    //     var img = new Image();
+    //     img.src = 'assets/images/content-copy.png';
+    //     event.dataTransfer.setDragImage(img, 0, 0);
+    //   }
+    // }
+
+    function dragEnd(originIndex, originItem) {
+
+      let originList = originItem.renderedContent;
+      let blocksToUpdate = [];
+      let newBlock = vm.drop.destItem;
+
+
+
+      if(vm.checkedList.length <= 0){
+        //SINGLE DRAG&DROP
+
+        if(originItem._id === vm.drop.destItem._id){
+          //same block
+          if (originList && originList.length > 0) {
+            if (vm.drop && vm.drop.index < originIndex) {
+              originList.splice(originIndex + 1, 1);
+            }
+            else {
+              originList.splice(originIndex, 1);
+            }
+          }
+          originItem.content = originList.join('\\n');
+          newBlock = originItem;
+          updateBlock(newBlock, function(success){
+            vm.blockList = success.blockList;
+            vm.loglist = success.loglist;
+
+            vm.init();
+          });
         }
-        else {
-          list.splice(originIndex, 1);
+        else{
+          //different block
+          newBlock.renderedContent.splice(vm.drop.index, 1);
+          shiftLog(originItem.renderedContent[originIndex], originIndex, vm.drop.index, originItem, newBlock);
+          vm.checkedList.length = 0;
+          vm.drop = undefined;
+          return;
         }
+
+      }
+      else{
+
+        //MULTIPLE DRAG& DROP
+
+        for(var i = 0; i < vm.checkedList.length; i++){
+          vm.checkedList[i].block.renderedContent[vm.checkedList[i].index] = undefined;
+        }
+
+        for(var i =0; i < vm.checkedList.length; i++){
+          let rContent = vm.checkedList[i].block.renderedContent;
+          for(var j= rContent.length -1; j >= 0; j--){
+            if(rContent[j] === undefined){
+              rContent.splice(j,1);
+            }
+          }
+          vm.checkedList[i].block.content =  vm.checkedList[i].block.renderedContent.join('\\n');
+          if (!blocksToUpdate.filter(function(b) { return b._id === vm.checkedList[i].block._id; }).length > 0) {
+            blocksToUpdate.push(vm.checkedList[i].block);
+          }
+        }
+
+        newBlock.renderedContent.splice(vm.drop.index, 1);
+
+        for(var i = 0; i < vm.checkedList.length; i++){
+          newBlock.renderedContent.splice(vm.drop.index+i, 0, vm.checkedList[i].log);
+        }
+
+        newBlock.content = newBlock.renderedContent.join('\\n');
       }
 
+
+      let updates = 0;
+      for(var k=0; k< blocksToUpdate.length; k++){
+        updates++;
+        updateBlock(blocksToUpdate[k], function(){
+          updates--;
+         if(updates === 0){
+           updateBlock(newBlock, function(success){
+               vm.blockList = success.blockList;
+               vm.loglist = success.loglist;
+               vm.drop = undefined;
+
+               vm.init();
+           });
+         }
+       });
+      }
+
+      vm.checkedList.length = 0;
       vm.drop = undefined;
 
     }
@@ -242,32 +348,7 @@
             newBlock.timestamp = vm.drop.item.timestamp;
           }
 
-
-          $http.post('/api/logs', {user: vm.user, log: vm.drop.item, blockId: vm.drop.destItem._id}).then(response => {
-            vm.dbLogs = response.data;
-            //delete vm.drop.destItem.renderedContent
-            BlockUtil.updateBlock(newBlock, vm.user, vm.loglist, vm.dbLogs).then(function (success) {
-              vm.blockList = success.blockList;
-              vm.loglist = success.loglist;
-              vm.drop = undefined;
-
-              // vm.itemlist.splice(originIndex, 1);
-              // if(vm.drop && vm.drop.index < originIndex){
-              //   list.splice(originIndex+1, 1);
-              // }
-              // else{
-              //   list.splice(originIndex, 1);
-              // }
-
-              vm.init();
-
-
-            });
-
-          }, (err) => {
-            console.log(err);
-          });
-
+          updateData(vm.drop, newBlock, true);
 
         }
         else {
@@ -280,8 +361,64 @@
 
     }
 
+    function updateData(vmdrop, newBlock, reload){
+      $http.post('/api/logs', {user: vm.user, log: vmdrop.item, blockId: vmdrop.destItem._id}).then(response => {
+        vm.dbLogs = response.data;
+        BlockUtil.updateBlock(newBlock, vm.user, vm.loglist, vm.dbLogs).then(function (success) {
+          if(reload){
+            vm.blockList = success.blockList;
+            vm.loglist = success.loglist;
+            vm.drop = undefined;
+
+            vm.init();
+          }
+        });
+
+      }, (err) => {
+        console.log(err);
+      });
+    }
+
+    function updateBlock(newBlock, cb){
+      BlockUtil.updateBlock(newBlock, vm.user, vm.loglist, vm.dbLogs).then(function (success) {
+        cb(success);
+      });
+    }
+
+    function shiftLog(log, originLogIndex, destLogIndex, originBlock, destBlock){
+
+      let logEntries = vm.dbLogs.filter(function (item) {
+        return item.block === originBlock._id && item.log === log;
+      });
+
+      if (logEntries.length > 0) {
+        Util.showLoadingModal('Updating Blocks...');
+        $http.put('/api/logs/shift', {user: vm.user, logEntry: logEntries[0], originLogIndex: originLogIndex,
+          destLogIndex: destLogIndex, originBlockId: originBlock._id, destBlockId: destBlock._id}).then(response => {
+          Util.hideModal('processing-modal');
+          if(response.data){
+            vm.blockList = response.data.blockList ? response.data.blockList : vm.blockList;
+            vm.dbLogs = response.data.dbLogs ? response.data.dbLogs : vm.dbLogs;
+            vm.init();
+          }
+
+        }, (err) => {
+          Util.hideModal('processing-modal');
+          console.log('shift error', err);
+        });
+      }
+
+    }
+
+    function updateLog(destBlock, log){
+      $http.post('/api/logs', {user: vm.user, log: log, blockId: destBlock._id}).then(response => {
+        vm.dbLogs = response.data;
+      }, (err) => {
+        console.log(err);
+      });
+    }
+
     function dragDrop(index, item, destItem, loglog, itemListIndexOrigin) {
-      // console.log('drag drop', index, destItem);
       vm.drop = {item: item, destItem: destItem, index: index, loglog: loglog, itemListIndexOrigin: itemListIndexOrigin};
     }
 
@@ -300,9 +437,40 @@
       return true;
     }
 
-    function areSameLogs(logItem1, logItem2) {
-      return logItem1.log === logItem2.log && new Date(logItem1.timestamp).getTime() === new Date(logItem2.timestamp).getTime();
+    function saveCollapsed(){
+      vm.collapsed = [];
+      $('[id^="collapse_"]').each(function(e) {
+        let el = $(this);
+        if(el.hasClass('panel-collapse') && el.hasClass('out') && el.hasClass('fade') && el.hasClass('collapse')
+            && el.hasClass('in')){
+          vm.collapsed.push(this.id);
+        }
+      });
+
     }
+
+    function loadCollapsed(){
+      $('[id^="collapse_"]').each(function(e) {
+        let el = $(this);
+        if(vm.collapsed.indexOf(this.id) > -1){
+          var id = this.id;
+          $timeout(function(){
+              $("#"+id).collapse('show');
+          }, 500);
+        }
+
+      });
+
+    }
+
+
+    function arrayObjectIndexOf(myArray, object) {
+      for(var i = 0, len = myArray.length; i < len; i++) {
+        if (myArray[i]['block'] === object.block && myArray[i]['index'] === object.index) return i;
+      }
+      return -1;
+    }
+
 
 
 //check if all logs used + no block without content

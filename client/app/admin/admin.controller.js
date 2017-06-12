@@ -146,7 +146,7 @@ class AdminController {
         .then(() => {
           // Account created, redirect to home
           this.textCallback = 'User "'+user.username+'" deleted.';
-          this.users = this.User.query();
+          this.initUsersAndBlocks();
         })
         .catch(err => {
           this.textCallback = 'Error deleting user "'+user.username+'": ';
@@ -232,7 +232,7 @@ class AdminController {
         .then(() => {
           // Account created, redirect to home
           this.textCallback = 'User "'+this.searchUser+'" created.';
-          this.users = this.User.query();
+          this.initUsersAndBlocks();
         })
         .catch(err => {
           console.log('err', err);
@@ -255,7 +255,7 @@ class AdminController {
         .then(() => {
           // Account created, redirect to home
           this.textCallback = 'User "'+user.username+'" reset.';
-          this.users = this.User.query();
+          this.initUsersAndBlocks();
         })
         .catch(err => {
           this.textCallback = 'Error resetting user "'+user.username+'": ';

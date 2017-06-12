@@ -28,12 +28,37 @@
   }
 
   .log-line {
-    //margin
+    margin: 0;
   }
   .log-line > span{
     color: grey;
     cursor: pointer;
   }
+
+  md-checkbox{
+    width: 100%;
+    .md-container{
+      height: 18px;
+      width:  18px;
+      .md-icon{
+        height: 18px;
+        width:  18px;
+      }
+    }
+    .md-label{
+      width: ~"calc(100% - 30px)";
+    }
+  }
+
+  md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-checked .md-icon{
+    background-color: rgb(128,128,128) !important;
+  }
+
+  .selected{
+    background-color: #dff0d8;
+    color: #3c763d;
+  }
+
 
   .log-container{
     border-top: none;

@@ -159,8 +159,6 @@ export function create(req, res) {
     message: 'auto commit'
   };
 
-  console.log('Creating Block for user ' + user);
-
   githubService.getContent(config.github.user, file.repo, file.path,
     function(re){
         let sha = re.data.sha;
@@ -168,7 +166,6 @@ export function create(req, res) {
         // file.content = base64.encode(newContent);
         createOrUpdateBlocks(user, block, function(updatedBlock, userBlocks){
           if(!updatedBlock || !userBlocks){
-            console.log('updatedBlock', updatedBlock, 'userBlocks', userBlocks);
             return res.status(500).end();
           }
           oldContent+= blockPrefix+updatedBlock._id+'\\n'+blockSuffix;
@@ -280,11 +277,12 @@ export function deletePlumb(req, res){
 // Updates an existing Block in the DB
 export function update(req, res) {
   let block = req.body.block;
-  let blockCopy = clone(block);
+  let user = req.body.user;
+
+  //let blockCopy = clone(block);
   // let selection = req.body.selection; //selection (optional)
 
-  console.log('updating block', block);
-  let user = req.body.user;
+  console.log('updating block for user '+user, block._id);
 
   Block.findOne({'user': user}).exec(function (err, b) {
 
@@ -565,6 +563,65 @@ export function stripLogFromBlockContent(user, blockId, logIndex, logEntry, late
         else {
           console.log('block updated');
           return cb(b.blocks);
+
+        }
+      });
+
+    }
+
+  });
+}
+
+
+export function shiftLogFromBlocks(user, originBlockId, destBlockId, originLogIndex, destLogIndex,
+                                   logEntry, latestLogOrigin, latestLogDest, cb){
+  Block.findOne({'user': user}).exec(function (err, b) {
+
+    if (err || !b) {
+      //creating first entry for user
+      cb();
+    }
+    else {
+      for(var i = 0; i < b.blocks.length; i++){
+
+        //DELETE LOG AT ORIGIN
+        if(b.blocks[i]._id.toHexString() === originBlockId){
+          let contents1 = b.blocks[i].content.split('\\n');
+          if(originLogIndex > -1 && contents1[originLogIndex] === logEntry.log){
+            // let index = contents.indexOf(logEntry.log);
+            contents1.splice(originLogIndex, 1);
+          }
+          b.blocks[i].content = contents1.join('\\n');
+          delete b.blocks[i]._id;
+          if(latestLogOrigin){
+            b.blocks[i].timestamp = latestLogOrigin.timestamp;
+          }
+
+        }
+
+        //ADD LOG AT DESTINATION
+        else if (b.blocks[i]._id.toHexString() === destBlockId){
+          let contents2 = b.blocks[i].content.split('\\n');
+          if(destLogIndex > -1 && destLogIndex <= contents2.length){
+            contents2.splice(destLogIndex, 0, logEntry.log);
+          }
+          b.blocks[i].content = contents2.join('\\n');
+          delete b.blocks[i]._id;
+          if(latestLogDest){
+            b.blocks[i].timestamp = latestLogDest.timestamp;
+          }
+        }
+      }
+
+      b.save(function (err) {
+        if (err) {
+          console.log('could not save/update block in shift'+originBlockId, err);
+          cb();
+
+        }
+        else {
+          console.log('block for shift successfully updated');
+          cb(b.blocks);
 
         }
       });
