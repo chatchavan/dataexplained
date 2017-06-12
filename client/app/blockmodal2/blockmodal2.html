@@ -18,7 +18,7 @@
 
           <form name="bmodal.form" class="form-horizontal" role="form">
             <div ng-if="step==1 || edit" class="form-group question-group">
-              <label for="title" class="">Please give a name to the block:</label>
+              <label for="title" class="">Please give a name to the block: *</label>
               <textarea spellcheck="false" type="text" class="form-control" name="title" id="title" placeholder="" ng-model="block.title" required></textarea>
               <div ng-messages="bmodal.form.title.$error" ng-show="bmodal.form.$submitted || bmodal.form.title.$touched">
                 <div class="required" ng-message="required">Input required</div>
@@ -26,7 +26,7 @@
             </div>
 
             <div ng-if="step==2 || edit" class="form-group question-group">
-              <label for="goal" class="">Please shortly explain <span style="font-style: italic; text-decoration: underline">what</span> you did in this block:</label>
+              <label for="goal" class="">Please shortly explain <span style="font-style: italic; text-decoration: underline">what</span> you did in this block: *</label>
               <textarea spellcheck="false" type="text" class="form-control" name="goal" id="goal" placeholder="" ng-model="block.goal" required></textarea>
               <div ng-messages="bmodal.form.goal.$error" ng-show="bmodal.form.$submitted || bmodal.form.goal.$touched">
                 <div class="required" ng-message="required">Input required</div>
@@ -66,7 +66,7 @@
             </div>
 
             <div ng-if="step==4 || edit" class="form-group question-group">
-              <label for="criteria" class=""><span style="font-style: italic; text-decoration: underline">Why</span> did you choose your option?</label>
+              <label for="criteria" class=""><span style="font-style: italic; text-decoration: underline">Why</span> did you choose your option? *</label>
               <textarea spellcheck="false" type="text" class="form-control" name="criteria" id="criteria" placeholder="" ng-model="block.criteria" required></textarea>
               <div ng-messages="bmodal.form.criteria.$error" ng-show="bmodal.form.$submitted || bmodal.form.criteria.$touched">
                 <div class="required" ng-message="required">Input required</div>
@@ -74,7 +74,7 @@
             </div>
 
             <div ng-if="step==5 || edit" class="form-group question-group">
-              <label for="preconditions" class="">What preconditions should be fulfilled to successfully execute this block?</label>
+              <label for="preconditions" class="">What preconditions should be fulfilled to successfully execute this block? *</label>
               <textarea spellcheck="false" type="text" class="form-control" name="preconditions" id="preconditions" placeholder="" ng-model="block.preconditions" required></textarea>
               <div ng-messages="bmodal.form.preconditions.$error" ng-show="bmodal.form.$submitted || bmodal.form.preconditions.$touched">
                 <div class="required" ng-message="required">Input required</div>
