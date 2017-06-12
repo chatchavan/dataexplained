@@ -16,6 +16,7 @@ var BlockCtrl = require('./../block/block.controller');
 var fs = require('fs');
 var config = require('../../config/environment');
 var logUtil = require('../../util/logutil.service');
+var mongoose = require('mongoose');
 
 
 function handleError(res, statusCode) {
@@ -181,6 +182,29 @@ export function showHistory(req, res){
 
 
 }
+
+export function shift(req, res){
+  let user = req.body.user;
+  let logEntry = req.body.logEntry;
+  let originLogIndex = req.body.originLogIndex;
+  let destLogIndex = req.body.destLogIndex;
+  let originBlockId = req.body.originBlockId;
+  let destBlockId = req.body.destBlockId;
+
+  shiftLogs(user, originBlockId, destBlockId, logEntry, originLogIndex, destLogIndex, function(lists){
+    console.log('shift complete', lists);
+    if(!lists){
+      console.log('500');
+      return res.status(500).end();
+    }
+    else{
+      return res.status(200).json(lists);
+    }
+
+  });
+
+}
+
 
 //create new log for given blockId
 export function create(req, res){
@@ -396,6 +420,72 @@ export function createOrUpdateLogs(user, blockId, selection, cb) {
     });
   }
 
+}
+export function shiftLogs(user, originBlockId, destBlockId, logEntry, originLogIndex, destLogIndex, cb){
+
+  Log.findOne({'user': user}).exec(function (err, l) {
+
+    if(err || !l || !originBlockId || !destBlockId){
+      console.log('err 1', err, originBlockId, destBlockId);
+      cb();
+    }
+    else if (!err && l) {
+      //blocks for user already exist
+
+      let log;
+      let latestLogOrigin;
+      let latestLogDest;
+
+      for (let i = l.logs.length - 1; i >= 0; i--) {
+
+        //CHANGE BLOCK-ASSIGNMENT IN LOG
+        if(l.logs[i]._id.toHexString() === logEntry._id){
+          log = l.logs[i];//.log;
+          log.block = mongoose.Types.ObjectId(''+destBlockId);
+          delete l._id;
+        }
+        else if(l.logs[i].block && (l.logs[i].block.toHexString() === originBlockId)){
+          if(!latestLogOrigin || new Date(latestLogOrigin.timestamp).getTime() < new Date(l.logs[i].timestamp).getTime()){
+            latestLogOrigin = l.logs[i];
+          }
+        }
+        else if(l.logs[i].block && (l.logs[i].block.toHexString() === destBlockId)){
+          if(!latestLogDest || new Date(latestLogDest.timestamp).getTime() < new Date(l.logs[i].timestamp).getTime()){
+            latestLogDest = l.logs[i];
+          }
+        }
+      }
+
+
+      BlockCtrl.shiftLogFromBlocks(user, originBlockId, destBlockId, originLogIndex, destLogIndex, logEntry, latestLogOrigin, latestLogDest, function(blocks){
+
+
+        console.log('saving logs', l);
+        l.save(function (err) {
+          if (err) {
+            console.log('could not delete log-block assignment for blockId '+originBlockId, err);
+            //cb(l.logs);
+          }
+          else {
+            console.log('log-block assignment deleted');
+            //cb(l.logs);
+          }
+
+          if(!blocks){
+            cb({dbLogs: l.logs});
+          }
+          else{
+            cb({dbLogs: l.logs, blockList: blocks});
+          }
+        });
+      });
+
+    }
+    else{
+      cb();
+    }
+
+  });
 
 }
 
