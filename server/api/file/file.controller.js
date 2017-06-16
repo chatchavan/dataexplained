@@ -131,13 +131,13 @@ export function show(req, res) {
 }
 
 export function showDiff(req, res){
-  if(!req.user || !req.user.username){
-    return res.status(404).end();
-  }
-  let user = req.user.username;
 
+  let user = req.params.user;
   let timestamp = req.params.timestamp;
 
+  if(!user || !timestamp){
+    return res.status(400).end();
+  }
 
   getCommitByTimestamp(user, timestamp, function(commit) {
     const http = require("http");

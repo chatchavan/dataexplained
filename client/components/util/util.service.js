@@ -86,7 +86,7 @@ function UtilService($window, $sce, $state, ModalService, StorageUtil, $timeout,
      * Shows differences of files from user at block-timestamp in a modal
      * */
     showFilesDiff(block, user){
-      $http.get('/api/files/'+block.timestamp+'/diff').then(response => {
+      $http.get('/api/files/'+user+'/'+block.timestamp+'/diff').then(response => {
         ModalService.showModal({
           templateUrl: "app/diffmodal/diffmodal.html",
           controller: "DiffModalController",
