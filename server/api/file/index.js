@@ -9,7 +9,7 @@ var router = express.Router();
 
 router.get('/', auth.isAuthenticated(), controller.index);
 router.get('/:timestamp', auth.isAuthenticated(), controller.show);
-router.get('/:timestamp/diff', auth.isAuthenticated(), controller.showDiff);
+router.get('/:user/:timestamp/diff', auth.isAuthenticated(), controller.showDiff);
 router.post('/', auth.isAuthenticated(), controller.createTemp);
 router.put('/:id', auth.isAuthenticated(), controller.update);
 router.patch('/:id', auth.isAuthenticated(), controller.update);
