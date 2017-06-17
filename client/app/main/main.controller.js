@@ -25,6 +25,8 @@ class MainController {
     this.blockList = [];
     this.loglist = [];
     this.dbLogs = [];
+    this.currentFileLogs = '';
+    this.currentDbLogs  ='';
     this.displayPanel = false;
 
     this.rStudioEndpoint = undefined;
@@ -74,9 +76,11 @@ class MainController {
 
   pollLogs(){
     this.$http.get('/api/logs/file/'+this.user).then(response => {
-      let fileLogs = response.data.fileLogs;
-      this.dbLogs = response.data.dbLogs;
-      if(!this.selectFocus) {
+      if(!this.selectFocus && ((this.currentFileLogs !== response.data.fileLogs) || (this.currentDbLogs !== JSON.stringify(response.data.dbLogs)))) {
+        let fileLogs = response.data.fileLogs;
+        this.dbLogs = response.data.dbLogs;
+        this.currentFileLogs = response.data.fileLogs;
+        this.currentDbLogs = JSON.stringify(response.data.dbLogs);
         let tempLogList = this.LogUtil.formatLogs(fileLogs.split('\n'), this.dbLogs);
         if(tempLogList.length > this.loglist.length){
           this.logWarningShowed = false;
