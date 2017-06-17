@@ -76,7 +76,9 @@ class MainController {
 
   pollLogs(){
     this.$http.get('/api/logs/file/'+this.user).then(response => {
+      console.log('check', this.currentFileLogs !== response.data.fileLogs, this.currentDbLogs !== JSON.stringify(response.data.dbLogs), ((this.currentFileLogs !== response.data.fileLogs) || (this.currentDbLogs !== JSON.stringify(response.data.dbLogs))));
       if(!this.selectFocus && ((this.currentFileLogs !== response.data.fileLogs) || (this.currentDbLogs !== JSON.stringify(response.data.dbLogs)))) {
+        console.log('mark');
         let fileLogs = response.data.fileLogs;
         this.dbLogs = response.data.dbLogs;
         this.currentFileLogs = response.data.fileLogs;
