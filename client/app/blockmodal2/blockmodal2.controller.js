@@ -28,8 +28,8 @@ angular.module('rationalecapApp')
 
     $scope.step = 1;
     console.log('setting step 1');
-    console.log(' $scope.renderedContent',  $scope.renderedContent);
-    console.log('editing block', $scope.block);
+    // console.log(' $scope.renderedContent',  $scope.renderedContent);
+    // console.log('editing block', $scope.block);
 
 
     //  This close function doesn't need to use jQuery or bootstrap, because

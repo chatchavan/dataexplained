@@ -152,7 +152,7 @@
        * **/
 
       saveBlock(newBlock, selection, loglist, dbLogs, user, deferred){
-        console.log('saving new block', newBlock, selection);
+        //console.log('saving new block', newBlock, selection);
         Util.showLoadingModal('Saving new Block...');
 
         $http.post('/api/blocks', {block: newBlock, user: user, selection: selection }).then(response => {

@@ -25,6 +25,8 @@ class MainController {
     this.blockList = [];
     this.loglist = [];
     this.dbLogs = [];
+    this.currentFileLogs = '';
+    this.currentDbLogs  ='';
     this.displayPanel = false;
 
     this.rStudioEndpoint = undefined;
@@ -62,11 +64,7 @@ class MainController {
   startPolling(){
     this.pollLogs();
     this.getAllBlocks();
-    let logPollInterval = this.$interval(this.pollLogs.bind(this), 1000);
-    let that = this;
-    this.$scope.$on('$destroy', function() {
-      that.$interval.cancel(logPollInterval);
-    });
+    this.startPollInterval();
   }
 
 
@@ -74,9 +72,13 @@ class MainController {
 
   pollLogs(){
     this.$http.get('/api/logs/file/'+this.user).then(response => {
-      let fileLogs = response.data.fileLogs;
-      this.dbLogs = response.data.dbLogs;
-      if(!this.selectFocus) {
+      console.log('check', this.currentFileLogs !== response.data.fileLogs, this.currentDbLogs !== JSON.stringify(response.data.dbLogs), ((this.currentFileLogs !== response.data.fileLogs) || (this.currentDbLogs !== JSON.stringify(response.data.dbLogs))));
+      if(!this.selectFocus && ((this.currentFileLogs !== response.data.fileLogs) || (this.currentDbLogs !== JSON.stringify(response.data.dbLogs)))) {
+        console.log('mark');
+        let fileLogs = response.data.fileLogs;
+        this.dbLogs = response.data.dbLogs;
+        this.currentFileLogs = response.data.fileLogs;
+        this.currentDbLogs = JSON.stringify(response.data.dbLogs);
         let tempLogList = this.LogUtil.formatLogs(fileLogs.split('\n'), this.dbLogs);
         if(tempLogList.length > this.loglist.length){
           this.logWarningShowed = false;
@@ -88,6 +90,20 @@ class MainController {
       }
     }, (err) => {
       console.log(err);
+    });
+  }
+
+  cancelPollInterval(){
+    if(this.logPollInterval){
+      this.$interval.cancel(this.logPollInterval);
+    }
+  }
+
+  startPollInterval(){
+    this.logPollInterval = this.$interval(this.pollLogs.bind(this), 1000);
+    let that = this;
+    this.$scope.$on('$destroy', function() {
+      that.$interval.cancel(this.logPollInterval);
     });
   }
 
@@ -188,7 +204,7 @@ class MainController {
   }
 
   createBlock(){
-    this.$interval.cancel(this.logPollInterval);
+    this.cancelPollInterval();
 
     let that = this;
     this.BlockUtil.createBlock(this.selection, this.loglist, this.dbLogs, this.user).then(function(success){
@@ -196,6 +212,7 @@ class MainController {
       that.blockList = success.blockList;
       that.loglist = success.loglist;
       that.dbLogs = success.dbLogs;
+      that.startPollInterval();
     });
   }
 
@@ -233,9 +250,14 @@ class MainController {
 
   updateBlock(newBlock) {
     let that = this;
+    this.cancelPollInterval();
     this.BlockUtil.updateBlock(newBlock, this.user, this.loglist, this.dbLogs).then(function(success){
       that.blockList = success.blockList;
       that.loglist = success.loglist;
+      that.startPollInterval();
+    }, function(err){
+      console.log('error updating block');
+      that.startPollInterval();
     });
   }
 
