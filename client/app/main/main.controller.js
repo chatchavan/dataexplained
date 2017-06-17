@@ -64,11 +64,7 @@ class MainController {
   startPolling(){
     this.pollLogs();
     this.getAllBlocks();
-    let logPollInterval = this.$interval(this.pollLogs.bind(this), 1000);
-    let that = this;
-    this.$scope.$on('$destroy', function() {
-      that.$interval.cancel(logPollInterval);
-    });
+    this.startPollInterval();
   }
 
 
@@ -94,6 +90,20 @@ class MainController {
       }
     }, (err) => {
       console.log(err);
+    });
+  }
+
+  cancelPollInterval(){
+    if(this.logPollInterval){
+      this.$interval.cancel(this.logPollInterval);
+    }
+  }
+
+  startPollInterval(){
+    this.logPollInterval = this.$interval(this.pollLogs.bind(this), 1000);
+    let that = this;
+    this.$scope.$on('$destroy', function() {
+      that.$interval.cancel(this.logPollInterval);
     });
   }
 
@@ -194,14 +204,16 @@ class MainController {
   }
 
   createBlock(){
-    this.$interval.cancel(this.logPollInterval);
+    this.cancelPollInterval();
 
     let that = this;
     this.BlockUtil.createBlock(this.selection, this.loglist, this.dbLogs, this.user).then(function(success){
       console.log('success', success);
+      that.Util.hideModal('processing-modal');
       that.blockList = success.blockList;
       that.loglist = success.loglist;
       that.dbLogs = success.dbLogs;
+      that.startPollInterval();
     });
   }
 
@@ -239,9 +251,14 @@ class MainController {
 
   updateBlock(newBlock) {
     let that = this;
+    this.cancelPollInterval();
     this.BlockUtil.updateBlock(newBlock, this.user, this.loglist, this.dbLogs).then(function(success){
       that.blockList = success.blockList;
       that.loglist = success.loglist;
+      that.startPollInterval();
+    }, function(err){
+      console.log('error updating block');
+      that.startPollInterval();
     });
   }
 
