@@ -209,7 +209,6 @@ class MainController {
     let that = this;
     this.BlockUtil.createBlock(this.selection, this.loglist, this.dbLogs, this.user).then(function(success){
       console.log('success', success);
-      that.Util.hideModal('processing-modal');
       that.blockList = success.blockList;
       that.loglist = success.loglist;
       that.dbLogs = success.dbLogs;
