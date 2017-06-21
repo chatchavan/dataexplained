@@ -56,9 +56,6 @@ function startServer() {
   //   });
   // }
 
-  require('pmx').init({
-    transactions : true
-  });
 
   var socketio = require('socket.io')(server);
   require('./config/socketio')(socketio);

@@ -513,6 +513,9 @@ export function csvAll(req, res) {
       return res.status(404).end();
     }
 
+    let userIndexMaxBlocks = 0;
+
+
       for (let i = 0; i < blocks.length; i++) {
 
         let userBlock = blocks[i];
@@ -520,7 +523,14 @@ export function csvAll(req, res) {
           username: userBlock.user,
         };
 
+        if(userBlock.blocks.length > userIndexMaxBlocks){
+          userIndexMaxBlocks = i;
+        }
+
         for(let j = 0; j < userBlock.blocks.length; j++){
+
+
+
           //Block Title
           let blockTitle = userData['Block ' + (j + 1) + ' Title'];
           let blockTitleContent = replaceNewLines(userBlock.blocks[j].title);
@@ -582,6 +592,13 @@ export function csvAll(req, res) {
         users.push(userData);
 
       }
+
+      //Switch index of user with max. nr of block to top to correctly set headers in csv
+      let m = users[userIndexMaxBlocks];
+      users[userIndexMaxBlocks] = users[0];
+      users[0] = m;
+
+
 
       res.csv(users, true);
     })};
