@@ -479,6 +479,89 @@ export function csv(req, res) {
     res.csv(users, true);
   });}
 
+
+/**
+ * Export all Blocks of all users
+ */
+export function csvAll(req, res) {
+  let withContent = req.params.content;
+  let users = [];
+
+
+  Block.find({}).exec(function (err, blocks) {
+
+    if (err || !blocks) {
+      return res.status(404).end();
+    }
+
+      for (let i = 0; i < blocks.length; i++) {
+
+        let userBlock = blocks[i];
+        let userData = {
+          username: userBlock.user,
+        };
+
+        for(let j = 0; j < userBlock.blocks.length; j++){
+          //Block Title
+          let blockTitle = userData['Block ' + (j + 1) + ' Title'];
+          if(!blockTitle){
+            blockTitle = [userBlock.blocks[j].title];
+          }
+          else{
+            blockTitle.push(userBlock.blocks[j].title);
+          }
+          userData['Block ' + (j + 1) + ' Title'] = blockTitle;
+
+          //Block Goal
+          let blockGoal = userData['Block ' + (j + 1) + ' Goal'];
+          if(!blockGoal){
+            blockGoal = [userBlock.blocks[j].goal];
+          }
+          else{
+            blockGoal.push(userBlock.blocks[j].goal);
+          }
+          userData['Block ' + (j + 1) + ' Goal'] = blockGoal;
+
+          //Block Criteria
+          let blockCriteria = userData['Block ' + (j + 1) + ' Criteria'];
+          if(!blockCriteria){
+            blockCriteria = [userBlock.blocks[j].criteria];
+          }
+          else{
+            blockCriteria.push(userBlock.blocks[j].criteria);
+          }
+          userData['Block ' + (j + 1) + ' Criteria'] = blockCriteria;
+
+          //Block Preconditions
+          let blockPreconditions = userData['Block ' + (j + 1) + ' Preconditions'];
+          if(!blockPreconditions){
+            blockPreconditions = [userBlock.blocks[j].preconditions];
+          }
+          else{
+            blockPreconditions.push(userBlock.blocks[j].preconditions);
+          }
+          userData['Block ' + (j + 1) + ' Preconditions'] = blockPreconditions;
+
+          if (withContent === 'true') {
+            //Block Content
+            let blockContent = userData['Block ' + (j + 1) + ' Content'];
+            if(!blockContent){
+              blockContent = [userBlock.blocks[j].content];
+            }
+            else{
+              blockContent.push(userBlock.blocks[j].content);
+            }
+            userData['Block ' + (j + 1) + ' Content'] = blockContent;
+          }
+        }
+
+        users.push(userData);
+
+      }
+
+      res.csv(users, true);
+    })};
+
 /**
  * Authentication callback
  */

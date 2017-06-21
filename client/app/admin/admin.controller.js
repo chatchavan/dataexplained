@@ -288,6 +288,44 @@ class AdminController {
       });
   }
 
+  exportUsers(){
+    let that = this;
+
+    let actionText1 = 'Yes';
+    let actionText2 = 'No';
+
+
+    this.ModalService.showModal({
+      templateUrl: "app/custommodal/custommodal.html",
+      controller: "CustomModalController",
+      inputs: {
+        title: "Export all users",
+        text: ['Do you want to include the content (code) of the blocks?'],
+        actionText1: actionText1,
+        actionText2: actionText2
+      }
+    }).then(function(modal) {
+      modal.element.modal();
+      modal.close.then(result => {
+        let blockContent = result === actionText1;
+        that.$http.get('api/users/csvAll/'+blockContent).then(content => {
+          console.log('content', content);
+          var hiddenElement = document.createElement('a');
+
+          hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
+          hiddenElement.target = '_blank';
+          hiddenElement.download = 'allUsers.csv';
+          hiddenElement.click();
+        }, (err) => {
+          console.log('error exporting user');
+        });
+
+
+
+      });
+    });
+  }
+
   exportCsv(user){
     if(user) {
 
