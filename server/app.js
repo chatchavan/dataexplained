@@ -4,6 +4,10 @@
 
 'use strict';
 
+require('pmx').init({
+  transactions : true
+});
+
 import express from 'express';
 import mongoose from 'mongoose';
 mongoose.Promise = require('bluebird');
