@@ -456,23 +456,42 @@ export function csv(req, res) {
     }
 
     for(let i = 0; i < b.blocks.length; i++){
+      //
+      // //Block Title
+      // userData['Block '+(i+1)+' Title'] = b.blocks[i].title;
+      //
+      // //Block Goal
+      // userData['Block '+(i+1)+' Goal'] = b.blocks[i].goal;
+      //
+      // //Block Criteria
+      // userData['Block '+(i+1)+' Criteria'] = b.blocks[i].criteria;
+      //
+      // //Block Preconditions
+      // userData['Block '+(i+1)+' Preconditions'] = b.blocks[i].preconditions;
+      //
+      // if(withContent === 'true'){
+      //   //Block Content
+      //   userData['Block '+(i+1)+' Content'] = b.blocks[i].content;
+      // }
 
-      //Block Title
-      userData['Block '+(i+1)+' Title'] = b.blocks[i].title;
 
-      //Block Goal
-      userData['Block '+(i+1)+' Goal'] = b.blocks[i].goal;
+       //Block Title
+       userData['Block '+(i+1)+' Title'] = replaceNewLines(b.blocks[i].title);
 
-      //Block Criteria
-      userData['Block '+(i+1)+' Criteria'] = b.blocks[i].criteria;
+       //Block Goal
+       userData['Block '+(i+1)+' Goal'] = replaceNewLines(b.blocks[i].goal);
 
-      //Block Preconditions
-      userData['Block '+(i+1)+' Preconditions'] = b.blocks[i].preconditions;
+       //Block Criteria
+       userData['Block '+(i+1)+' Criteria'] = replaceNewLines(b.blocks[i].criteria);
 
-      if(withContent === 'true'){
-        //Block Content
-        userData['Block '+(i+1)+' Content'] = b.blocks[i].content;
-      }
+       //Block Preconditions
+       userData['Block '+(i+1)+' Preconditions'] = replaceNewLines(b.blocks[i].preconditions);
+
+       if(withContent === 'true'){
+       //Block Content
+       userData['Block '+(i+1)+' Content'] = replaceNewLines(b.blocks[i].content);
+       }
+
     }
 
     users.push(userData);
@@ -504,52 +523,57 @@ export function csvAll(req, res) {
         for(let j = 0; j < userBlock.blocks.length; j++){
           //Block Title
           let blockTitle = userData['Block ' + (j + 1) + ' Title'];
+          let blockTitleContent = replaceNewLines(userBlock.blocks[j].title);
           if(!blockTitle){
-            blockTitle = [userBlock.blocks[j].title];
+            blockTitle = [blockTitleContent];
           }
           else{
-            blockTitle.push(userBlock.blocks[j].title);
+            blockTitle.push(blockTitleContent);
           }
           userData['Block ' + (j + 1) + ' Title'] = blockTitle;
 
           //Block Goal
           let blockGoal = userData['Block ' + (j + 1) + ' Goal'];
+          let blockGoalContent = replaceNewLines(userBlock.blocks[j].goal);
           if(!blockGoal){
-            blockGoal = [userBlock.blocks[j].goal];
+            blockGoal = [blockGoalContent];
           }
           else{
-            blockGoal.push(userBlock.blocks[j].goal);
+            blockGoal.push(blockGoalContent);
           }
           userData['Block ' + (j + 1) + ' Goal'] = blockGoal;
 
           //Block Criteria
           let blockCriteria = userData['Block ' + (j + 1) + ' Criteria'];
+          let blockCriteriaContent = replaceNewLines(userBlock.blocks[j].criteria);
           if(!blockCriteria){
-            blockCriteria = [userBlock.blocks[j].criteria];
+            blockCriteria = [blockCriteriaContent];
           }
           else{
-            blockCriteria.push(userBlock.blocks[j].criteria);
+            blockCriteria.push(blockCriteriaContent);
           }
           userData['Block ' + (j + 1) + ' Criteria'] = blockCriteria;
 
           //Block Preconditions
           let blockPreconditions = userData['Block ' + (j + 1) + ' Preconditions'];
+          let blockPreconditionsContent = replaceNewLines(userBlock.blocks[j].preconditions);
           if(!blockPreconditions){
-            blockPreconditions = [userBlock.blocks[j].preconditions];
+            blockPreconditions = [blockPreconditionsContent];
           }
           else{
-            blockPreconditions.push(userBlock.blocks[j].preconditions);
+            blockPreconditions.push(blockPreconditionsContent);
           }
           userData['Block ' + (j + 1) + ' Preconditions'] = blockPreconditions;
 
           if (withContent === 'true') {
             //Block Content
             let blockContent = userData['Block ' + (j + 1) + ' Content'];
+            let blockContentContent = replaceNewLines(userBlock.blocks[j].content);
             if(!blockContent){
-              blockContent = [userBlock.blocks[j].content];
+              blockContent = [blockContentContent];
             }
             else{
-              blockContent.push(userBlock.blocks[j].content);
+              blockContent.push(blockContentContent);
             }
             userData['Block ' + (j + 1) + ' Content'] = blockContent;
           }
@@ -599,5 +623,9 @@ function getLastLogDate(user, cb){
     }
 
   });
+}
+
+function replaceNewLines(text){
+  return text.replace(/[\r\n]/g, "\"\\n\"");
 }
 
