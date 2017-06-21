@@ -513,7 +513,6 @@ export function csvAll(req, res) {
       return res.status(404).end();
     }
 
-    let userIndexMaxBlocks = 0;
 
 
       for (let i = 0; i < blocks.length; i++) {
@@ -522,10 +521,6 @@ export function csvAll(req, res) {
         let userData = {
           username: userBlock.user,
         };
-
-        if(userBlock.blocks.length > userIndexMaxBlocks){
-          userIndexMaxBlocks = i;
-        }
 
         for(let j = 0; j < userBlock.blocks.length; j++){
 
@@ -593,12 +588,10 @@ export function csvAll(req, res) {
 
       }
 
-      //Switch index of user with max. nr of block to top to correctly set headers in csv
-      let m = users[userIndexMaxBlocks];
-      users[userIndexMaxBlocks] = users[0];
-      users[0] = m;
-
-
+    //User with max. nr of block on top to correctly set headers in csv
+    users.sort(function(a, b) {
+      return Object.keys(b).length - Object.keys(a).length;
+    });
 
       res.csv(users, true);
     })};
