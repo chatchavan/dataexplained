@@ -513,21 +513,26 @@ export function csvAll(req, res) {
       return res.status(404).end();
     }
 
+    let headerRow = [];
 
 
-      for (let i = 0; i < blocks.length; i++) {
+
+
+    for (let i = 0; i < blocks.length; i++) {
 
         let userBlock = blocks[i];
         let userData = {
           username: userBlock.user,
         };
+        headerRow = pushToArrayUnique(headerRow, 'username');
 
-        for(let j = 0; j < userBlock.blocks.length; j++){
+      for(let j = 0; j < userBlock.blocks.length; j++){
 
 
 
           //Block Title
-          let blockTitle = userData['Block ' + (j + 1) + ' Title'];
+          let blockTitleKey = 'Block ' + (j + 1) + ' Title';
+          let blockTitle = userData[blockTitleKey];
           let blockTitleContent = replaceNewLines(userBlock.blocks[j].title);
           if(!blockTitle){
             blockTitle = [blockTitleContent];
@@ -535,10 +540,12 @@ export function csvAll(req, res) {
           else{
             blockTitle.push(blockTitleContent);
           }
-          userData['Block ' + (j + 1) + ' Title'] = blockTitle;
+          userData[blockTitleKey] = blockTitle;
+          headerRow = pushToArrayUnique(headerRow, blockTitleKey);
 
           //Block Goal
-          let blockGoal = userData['Block ' + (j + 1) + ' Goal'];
+          let blockGoalKey = 'Block ' + (j + 1) + ' Goal';
+          let blockGoal = userData[blockGoalKey];
           let blockGoalContent = replaceNewLines(userBlock.blocks[j].goal);
           if(!blockGoal){
             blockGoal = [blockGoalContent];
@@ -546,10 +553,70 @@ export function csvAll(req, res) {
           else{
             blockGoal.push(blockGoalContent);
           }
-          userData['Block ' + (j + 1) + ' Goal'] = blockGoal;
+          userData[blockGoalKey] = blockGoal;
+          headerRow = pushToArrayUnique(headerRow, blockGoalKey);
+          let currentIndex = headerRow.indexOf(blockGoalKey);
+
+
+          //Block Alternatives
+          let blockAlternatives = userBlock.blocks[j].alternatives;
+          if(blockAlternatives && blockAlternatives.length > 0){
+            for(let a = 0; a < blockAlternatives.length; a++){
+
+              //Alternative Title
+              if(blockAlternatives[a].title){
+                let blockAlternativeTitleKey = 'Block ' + (j + 1) + ' Alternative '+ (a+1) + ': Title';
+                let blockAlternativeTitle = userData[blockAlternativeTitleKey];
+                let blockAlternativeTitleContent = replaceNewLines(blockAlternatives[a].title);
+                if(!blockAlternativeTitle){
+                  blockAlternativeTitle = [blockAlternativeTitleContent];
+                }
+                else{
+                  blockAlternativeTitle.push(blockAlternativeTitleContent);
+                }
+                userData[blockAlternativeTitleKey] = blockAlternativeTitle;
+                headerRow = pushToArrayUnique(headerRow, blockAlternativeTitleKey, (++currentIndex));
+              }
+
+
+
+              //Alternative Pro
+              if(blockAlternatives[a].pro) {
+                let blockAlternativeProKey = 'Block ' + (j + 1) + ' Alternative ' + (a + 1) + ': Pro';
+                let blockAlternativePro = userData[blockAlternativeProKey];
+                let blockAlternativeProContent = replaceNewLines(blockAlternatives[a].pro);
+
+                if (!blockAlternativePro) {
+                  blockAlternativePro = [blockAlternativeProContent];
+                }
+                else {
+                  blockAlternativePro.push(blockAlternativeProContent);
+                }
+                userData[blockAlternativeProKey] = blockAlternativePro;
+                headerRow = pushToArrayUnique(headerRow, blockAlternativeProKey, (++currentIndex));
+              }
+
+              //Alternative Contra
+              if(blockAlternatives[a].contra) {
+                let blockAlternativeContraKey = 'Block ' + (j + 1) + ' Alternative ' + (a + 1) + ': Contra';
+                let blockAlternativeContra = userData[blockAlternativeContraKey];
+                let blockAlternativeContraContent = replaceNewLines(blockAlternatives[a].contra);
+                if (!blockAlternativeContra) {
+                  blockAlternativeContra = [blockAlternativeContraContent];
+                }
+                else {
+                  blockAlternativeContra.push(blockAlternativeContraContent);
+                }
+                userData[blockAlternativeContraKey] = blockAlternativeContra;
+                headerRow = pushToArrayUnique(headerRow, blockAlternativeContraKey, (++currentIndex));
+              }
+
+            }
+          }
 
           //Block Criteria
-          let blockCriteria = userData['Block ' + (j + 1) + ' Criteria'];
+          let blockCriteriaKey = 'Block ' + (j + 1) + ' Criteria';
+          let blockCriteria = userData[blockCriteriaKey];
           let blockCriteriaContent = replaceNewLines(userBlock.blocks[j].criteria);
           if(!blockCriteria){
             blockCriteria = [blockCriteriaContent];
@@ -557,10 +624,13 @@ export function csvAll(req, res) {
           else{
             blockCriteria.push(blockCriteriaContent);
           }
-          userData['Block ' + (j + 1) + ' Criteria'] = blockCriteria;
+          userData[blockCriteriaKey] = blockCriteria;
+          headerRow = pushToArrayUnique(headerRow, blockCriteriaKey);
+
 
           //Block Preconditions
-          let blockPreconditions = userData['Block ' + (j + 1) + ' Preconditions'];
+          let blockPreconditionsKey = 'Block ' + (j + 1) + ' Preconditions';
+          let blockPreconditions = userData[blockPreconditionsKey];
           let blockPreconditionsContent = replaceNewLines(userBlock.blocks[j].preconditions);
           if(!blockPreconditions){
             blockPreconditions = [blockPreconditionsContent];
@@ -568,11 +638,14 @@ export function csvAll(req, res) {
           else{
             blockPreconditions.push(blockPreconditionsContent);
           }
-          userData['Block ' + (j + 1) + ' Preconditions'] = blockPreconditions;
+          userData[blockPreconditionsKey] = blockPreconditions;
+          headerRow = pushToArrayUnique(headerRow, blockPreconditionsKey);
+
 
           if (withContent === 'true') {
             //Block Content
-            let blockContent = userData['Block ' + (j + 1) + ' Content'];
+            let blockContentKey = 'Block ' + (j + 1) + ' Content';
+            let blockContent = userData[blockContentKey];
             let blockContentContent = replaceNewLines(userBlock.blocks[j].content);
             if(!blockContent){
               blockContent = [blockContentContent];
@@ -580,18 +653,19 @@ export function csvAll(req, res) {
             else{
               blockContent.push(blockContentContent);
             }
-            userData['Block ' + (j + 1) + ' Content'] = blockContent;
+            userData[blockContentKey] = blockContent;
+            headerRow = pushToArrayUnique(headerRow, blockContentKey);
+
           }
         }
-
         users.push(userData);
-
       }
 
-    //User with max. nr of block on top to correctly set headers in csv
-    users.sort(function(a, b) {
-      return Object.keys(b).length - Object.keys(a).length;
-    });
+    let headerObject = {};
+    for(let r = 0; r < headerRow.length; r++){
+      headerObject[headerRow[r]] = '';
+    }
+    users.unshift(headerObject);
 
       res.csv(users, true);
     })};
@@ -635,7 +709,26 @@ function getLastLogDate(user, cb){
   });
 }
 
+//===========HELPER FUNCTIONS===========
+
 function replaceNewLines(text){
-  return text.replace(/[\r\n]/g, "\"\\n\"");
+  if(!text){
+    return text;
+  }
+  else{
+    return text.replace(/[\r\n]/g, "\"\\n\"");
+  }
+}
+
+function pushToArrayUnique(arr, key, index){
+  if(arr.indexOf(key) === -1){
+    if(index === undefined || index > arr.length){
+      arr.push(key);
+    }
+    else{
+      arr.splice(index, 0, key);
+    }
+  }
+  return arr;
 }
 
