@@ -114,7 +114,7 @@ export function showFromFile(req, res) {
     let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
 
     fs.readFile(rHistory, 'utf8', function (err,data) {
-      if (err) {
+      if (err || !data) {
         return res.status(404).send(err);
       }
 
