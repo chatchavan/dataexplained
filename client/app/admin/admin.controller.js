@@ -269,7 +269,27 @@ class AdminController {
   }
 
   downloadWorkflow(){
+    let top = 0;
+    let left = 0;
+
+    $( ".w" ).each(function( index ) {
+      let position = $( this ).position();
+      if(position.top > top){
+        top = position.top;
+      }
+      if(position.left > left){
+        left = position.left;
+      }
+    });
     let node = document.getElementById('plumb-container');
+
+    // console.log('plumb-container', 'width: '+left+'px; height: '+top+'px;');
+    // let h = (top+100)/document.documentElement.clientHeight * 100;
+    node.style.width = left>0 ? (left+300)+'px' : node.style.width;
+    node.style.height = '300vh';
+
+    console.log(node.style.height, node.style.width);
+
     let that = this;
     domtoimage.toPng(node)
       .then(function (dataUrl) {
