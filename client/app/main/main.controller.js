@@ -100,10 +100,10 @@ class MainController {
   }
 
   startPollInterval(){
-    this.logPollInterval = this.$interval(this.pollLogs.bind(this), 1000);
+    this.logPollInterval = this.$interval(this.pollLogs.bind(this), 5000);
     let that = this;
     this.$scope.$on('$destroy', function() {
-      that.$interval.cancel(this.logPollInterval);
+      that.$interval.cancel(that.logPollInterval);
     });
   }
 
@@ -318,7 +318,7 @@ class MainController {
       modal.element.modal();
       modal.close.then(result => {
         if(result === actionText1){
-
+          that.Util.showLoadingModal('Saving Analysis...');
           that.$http.post('/api/logs/finish', {logs: that.loglist, user: that.user }).then(response => {
             console.log('response', response);
             if(response.data){

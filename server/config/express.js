@@ -31,8 +31,8 @@ export default function(app) {
   app.engine('html', require('ejs').renderFile);
   app.set('view engine', 'html');
   app.use(compression());
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({limit: '500mb', extended: false }));
+  app.use(bodyParser.json({limit: '500mb'}));
   app.use(methodOverride());
   app.use(cookieParser());
   app.use(passport.initialize());

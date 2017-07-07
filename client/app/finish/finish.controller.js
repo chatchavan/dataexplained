@@ -31,6 +31,7 @@
     vm.init();
 
     function init() {
+      Util.hideModal('processing-modal');
       saveCollapsed();
       vm.user = Util.checkUserStep(2);
 
