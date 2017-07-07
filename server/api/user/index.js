@@ -9,6 +9,7 @@ var router = new Router();
 router.get('/', auth.hasRole('admin'), controller.index);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/admin/all', auth.hasRole('admin'), controller.indexAdmin);
+router.get('/admin/userPackages', auth.hasRole('admin'), controller.getUserPackages);
 router.get('/:id', auth.isAuthenticated(), controller.show);
 router.get('/csvAll/:content', auth.hasRole('admin'), controller.csvAll);
 router.put('/',  auth.isAuthenticated(), controller.update);

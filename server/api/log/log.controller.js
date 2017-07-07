@@ -225,6 +225,7 @@ export function create(req, res){
 
 //Compare and update (sync) complete loglist with db
 export function finish(req, res){
+  console.log('in finish');
   let logs = req.body.logs;
   let user = req.body.user;
 
@@ -233,11 +234,13 @@ export function finish(req, res){
   }
 
   Log.findOne({'user': user}).exec(function (err, l) {
+    console.log('user-logs');
 
     if(err || !l){
       return res.status(500).end();
     }
 
+    console.log('lll');
     return res.status(200).json(l);
 
 

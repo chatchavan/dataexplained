@@ -677,6 +677,68 @@ export function authCallback(req, res, next) {
   res.redirect('/');
 }
 
+export function getUserPackages(req, res){
+
+  User.findAsync({}, '-salt -password')
+    .then(u => {
+
+      let users = [];
+      let headerRow = [];
+      let counter = 0;
+
+
+      for(let j = u.length-1; j >= 0; j--){
+
+        let user = u[j].username;
+        let userData = {
+          username: user,
+        };
+        headerRow = pushToArrayUnique(headerRow, 'username');
+
+        let userPackageNr = 0;
+
+        let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
+
+        fs.readFile(rHistory, 'utf8', function (err,data) {
+
+          if(!err) {
+            let fileLogs = data.toString().split('\n');
+            fileLogs.splice(fileLogs.length - 1, 1); //remove empty last line
+            if (fileLogs && fileLogs.length >= 0) {
+              for (var i = fileLogs.length - 1; i >= 0; i--) {
+                let match = fileLogs[i].match(new RegExp(/library\((.*?)\)/));
+                if (match !== null && match.length > 1) {
+                  let column = 'Package '+(++userPackageNr);
+                  userData[column] = match[1];
+                  headerRow = pushToArrayUnique(headerRow, column);
+
+                }
+              }
+            }
+
+          }
+
+          counter++;
+          if(counter >= u.length){
+            let headerObject = {};
+            for(let r = 0; r < headerRow.length; r++){
+              headerObject[headerRow[r]] = '';
+            }
+            users.unshift(headerObject);
+
+            res.csv(users, true);
+            return;
+          }
+        });
+        users.push(userData);
+
+      }
+
+    })
+    .catch(handleError(res));
+
+}
+
 function getLastLogDate(user, cb){
 
   let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';

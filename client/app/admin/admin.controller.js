@@ -346,6 +346,21 @@ class AdminController {
     });
   }
 
+  exportUserPackages(){
+    this.$http.get('api/users/admin/userPackages').then(content => {
+      console.log('content', content);
+      var hiddenElement = document.createElement('a');
+
+      hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
+      hiddenElement.target = '_blank';
+      hiddenElement.download = 'allUsers_packages.csv';
+      hiddenElement.click();
+    }, (err) => {
+      console.log('error exporting user packages');
+    });
+
+  }
+
   exportCsv(user){
     if(user) {
 
