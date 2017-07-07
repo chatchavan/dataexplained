@@ -693,6 +693,7 @@ export function getUserPackages(req, res){
         let userData = {
           username: user,
         };
+        let userPackages = [];
         headerRow = pushToArrayUnique(headerRow, 'username');
 
         let userPackageNr = 0;
@@ -707,11 +708,11 @@ export function getUserPackages(req, res){
             if (fileLogs && fileLogs.length >= 0) {
               for (var i = fileLogs.length - 1; i >= 0; i--) {
                 let match = fileLogs[i].match(new RegExp(/library\((.*?)\)/));
-                if (match !== null && match.length > 1) {
+                if (match !== null && match.length > 1 && !userPackages.includes(''+[match[1]])) {
                   let column = 'Package '+(++userPackageNr);
                   userData[column] = match[1];
                   headerRow = pushToArrayUnique(headerRow, column);
-
+                  userPackages.push(''+match[1]);
                 }
               }
             }
