@@ -1,12 +1,11 @@
 'use strict';
 
-import User from './user.model';
-import passport from 'passport';
-import config from '../../config/environment';
-import jwt from 'jsonwebtoken';
-import shell from 'shelljs';
-import _ from 'lodash';
-import githubService from '../../util/github.service';
+import User from "./user.model";
+import config from "../../config/environment";
+import jwt from "jsonwebtoken";
+import shell from "shelljs";
+import _ from "lodash";
+import githubService from "../../util/github.service";
 var FileCtrl = require('./../file/file.controller');
 var Block = require('./../block/block.model');
 var BlockCtrl = require('./../block/block.controller');
@@ -16,7 +15,7 @@ var csv = require('csv-express');
 
 
 function saveUpdates(updates) {
-  return function(entity) {
+  return function (entity) {
     var updated = _.merge(entity, updates);
     return updated.saveAsync()
       .spread(updated => {
@@ -27,14 +26,14 @@ function saveUpdates(updates) {
 
 function validationError(res, statusCode) {
   statusCode = statusCode || 422;
-  return function(err) {
+  return function (err) {
     res.status(statusCode).json(err);
   }
 }
 
 function handleError(res, statusCode) {
   statusCode = statusCode || 500;
-  return function(err) {
+  return function (err) {
     console.log('ERROR', err);
     res.status(statusCode).send(err);
   };
@@ -42,7 +41,7 @@ function handleError(res, statusCode) {
 
 
 function handleEntityNotFound(res) {
-  return function(entity) {
+  return function (entity) {
     if (!entity) {
       res.status(404).end();
       return null;
@@ -53,7 +52,7 @@ function handleEntityNotFound(res) {
 
 function responseWithResult(res, statusCode) {
   statusCode = statusCode || 200;
-  return function(entity) {
+  return function (entity) {
     if (entity) {
       res.status(statusCode).json(entity);
     }
@@ -77,22 +76,22 @@ export function indexAdmin(req, res) {
     .then(users => {
       let users2 = [];
 
-      var onComplete = function() {
+      var onComplete = function () {
         return res.status(200).json(users2);
       };
 
       var tasksToGo = users.length;
-        users.forEach(function(i) {
-            let userObject = i.toObject();
-            getLastLogDate(userObject.username, function(history){
-              userObject.history = history;
-              users2.push(userObject);
-                if (--tasksToGo === 0) {
-                  // No tasks left, good to go
-                  onComplete();
-                }
-            });
+      users.forEach(function (i) {
+        let userObject = i.toObject();
+        getLastLogDate(userObject.username, function (history) {
+          userObject.history = history;
+          users2.push(userObject);
+          if (--tasksToGo === 0) {
+            // No tasks left, good to go
+            onComplete();
+          }
         });
+      });
 
     })
 }
@@ -100,7 +99,7 @@ export function indexAdmin(req, res) {
 /**
  * Updates a user
  * */
-export function update(req, res){
+export function update(req, res) {
   let id = req.body._id;
   if (req.body._id) {
     delete req.body._id;
@@ -110,7 +109,7 @@ export function update(req, res){
       .then(responseWithResult(res))
       .catch(handleError(res));
   }
-  else{
+  else {
     return res.status(500).end();
   }
 
@@ -124,30 +123,30 @@ export function create(req, res, next) {
   newUser.provider = 'local';
   newUser.role = 'user';
   newUser.saveAsync()
-    .spread(function(user) {
-      var token = jwt.sign({ _id: user._id }, config.secrets.session, {
+    .spread(function (user) {
+      var token = jwt.sign({_id: user._id}, config.secrets.session, {
         expiresIn: 60 * 60 * 5
       });
-      res.json({ token });
+      res.json({token});
     })
     .catch(validationError(res));
 }
 
-export function createAdmin(req, res){
+export function createAdmin(req, res) {
   let username = req.body.username;
-  console.log('creating user : '+ username);
+  console.log('creating user : ' + username);
 
-  shell.exec('sudo userdel '+username+' --force --remove');
-  shell.exec('sudo useradd -p $(openssl passwd -1 '+username+') '+username+' -m');
-  shell.exec('sudo usermod -aG sudo '+username);
-  shell.exec('sudo mkdir /home/'+username+'/rstudio-workspace');
-  shell.exec('sudo chmod -R 777 /home/'+username+'/rstudio-workspace/');
-  shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/'+username+'/rstudio-workspace/');
-  shell.exec('sudo chown '+username+' /home/'+username+'/rstudio-workspace');
+  shell.exec('sudo userdel ' + username + ' --force --remove');
+  shell.exec('sudo useradd -p $(openssl passwd -1 ' + username + ') ' + username + ' -m');
+  shell.exec('sudo usermod -aG sudo ' + username);
+  shell.exec('sudo mkdir /home/' + username + '/rstudio-workspace');
+  shell.exec('sudo chmod -R 777 /home/' + username + '/rstudio-workspace/');
+  shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/' + username + '/rstudio-workspace/');
+  shell.exec('sudo chown ' + username + ' /home/' + username + '/rstudio-workspace');
 
   var newUser = new User(req.body);
   newUser.saveAsync()
-    .spread(function(user) {
+    .spread(function (user) {
       return res.status(200).json(user);
     })
     .catch(err => {
@@ -156,27 +155,27 @@ export function createAdmin(req, res){
 
 }
 
-export function resetAdmin(req, res){
+export function resetAdmin(req, res) {
   let user = req.body.username;
-  console.log('resetting user : '+ user);
+  console.log('resetting user : ' + user);
 
 
   //Delete Directory on GitHub
-  githubService.deleteDirectory(user, function(success){
-    if(!success){
+  githubService.deleteDirectory(user, function (success) {
+    if (!success) {
       return res.status(500).end();
     }
-    console.log('Github directory of user ' + user+' deleted!');
+    console.log('Github directory of user ' + user + ' deleted!');
 
-    FileCtrl.removeFilesByUser(user, function(fSuccess){
-      BlockCtrl.removeBlocksByUser(user, function(bSuccess){
-        LogCtrl.removeLogsByUser(user, function(lSuccess){
+    FileCtrl.removeFilesByUser(user, function (fSuccess) {
+      BlockCtrl.removeBlocksByUser(user, function (bSuccess) {
+        LogCtrl.removeLogsByUser(user, function (lSuccess) {
 
-          User.findOne({'username': user}).exec(function (errFind, u){
-            if(!u){
+          User.findOne({'username': user}).exec(function (errFind, u) {
+            if (!u) {
               res.status(404).end();
             }
-            else if(!errFind){
+            else if (!errFind) {
               u.finished = false;
               u.surveyDone = false;
               u.step = 1;
@@ -184,22 +183,21 @@ export function resetAdmin(req, res){
                 if (err) {
                   console.log('could not reset user in db');
                 }
-                else{
+                else {
                   console.log('user reset in db');
                 }
-                shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
-                shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/'+user+'/rstudio-workspace/');
-                shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
+                shell.exec('sudo rm -rf /home/' + user + '/rstudio-workspace/{*,.*}');
+                shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/' + user + '/rstudio-workspace/');
+                shell.exec('sudo rm -rf /home/' + user + '/.rstudio/');
                 return res.status(200).end();
               });
             }
-            else{
-             return res.status(200).end(); //NO 500
+            else {
+              return res.status(200).end(); //NO 500
             }
 
 
           });
-
 
 
         });
@@ -211,39 +209,38 @@ export function resetAdmin(req, res){
 
 }
 
-export function deleteAdmin(req, res){
+export function deleteAdmin(req, res) {
   let user = req.body.username;
-  console.log('deleting user : '+ user);
+  console.log('deleting user : ' + user);
 
 
   //Delete Directory on GitHub
-  githubService.deleteDirectory(user, function(success){
-    if(!success){
+  githubService.deleteDirectory(user, function (success) {
+    if (!success) {
       return res.status(500).end();
     }
-    console.log('Github directory of user ' + user+' deleted!');
+    console.log('Github directory of user ' + user + ' deleted!');
 
-    FileCtrl.removeFilesByUser(user, function(fSuccess){
-      BlockCtrl.removeBlocksByUser(user, function(bSuccess){
-        LogCtrl.removeLogsByUser(user, function(lSuccess){
+    FileCtrl.removeFilesByUser(user, function (fSuccess) {
+      BlockCtrl.removeBlocksByUser(user, function (bSuccess) {
+        LogCtrl.removeLogsByUser(user, function (lSuccess) {
 
-          User.remove({'username': user}).exec(function (errRemove, u){
-            if(!u){
+          User.remove({'username': user}).exec(function (errRemove, u) {
+            if (!u) {
               return res.status(404).end();
             }
-            else if(!errRemove){
-              shell.exec('sudo rm -rf /home/'+user+'/rstudio-workspace/{*,.*}');
-              shell.exec('sudo rm -rf /home/'+user+'/.rstudio/');
-              shell.exec('sudo userdel '+user+' --force --remove');
+            else if (!errRemove) {
+              shell.exec('sudo rm -rf /home/' + user + '/rstudio-workspace/{*,.*}');
+              shell.exec('sudo rm -rf /home/' + user + '/.rstudio/');
+              shell.exec('sudo userdel ' + user + ' --force --remove');
               return res.status(200).end();
             }
-            else{
+            else {
               return res.status(500).end();
             }
 
 
           });
-
 
 
         });
@@ -276,7 +273,7 @@ export function show(req, res, next) {
  */
 export function destroy(req, res) {
   User.findByIdAndRemoveAsync(req.params.id)
-    .then(function() {
+    .then(function () {
       res.status(204).end();
     })
     .catch(handleError(res));
@@ -321,11 +318,11 @@ export function setFinished(req, res, next) {
       user.finished = finished;
       user.save(function (err) {
         if (err) {
-          console.log('could not save user in setFinished '+user, err);
+          console.log('could not save user in setFinished ' + user, err);
           return res.status(500).end();
         }
         else {
-          console.log('successfully updated user '+user.username+' in setFinished to '+ finished);
+          console.log('successfully updated user ' + user.username + ' in setFinished to ' + finished);
           return res.status(200).json(user);
         }
       });
@@ -339,7 +336,7 @@ export function setFinished(req, res, next) {
 export function me(req, res, next) {
   var userId = req.user._id;
 
-  User.findOneAsync({ _id: userId }, '-salt -password')
+  User.findOneAsync({_id: userId}, '-salt -password')
     .then(user => { // don't ever give out the password or salt
       if (!user) {
         return res.status(401).end();
@@ -349,7 +346,7 @@ export function me(req, res, next) {
     .catch(err => next(err));
 }
 
-export function updateSurvey(req, res, next){
+export function updateSurvey(req, res, next) {
   //var userId = req.user._id;
 
   // console.log('userId', userId);
@@ -368,63 +365,65 @@ export function updateSurvey(req, res, next){
   //   .catch(err => next(err));
 
   let user = req.body.username;
-  console.log('updating survey for user '+ user);
+  console.log('updating survey for user ' + user);
 
-  User.findOne({'username': user}).exec(function (errFind, u){
+  User.findOne({'username': user}).exec(function (errFind, u) {
 
-    if(u && !errFind){
+    if (u && !errFind) {
       u.surveyDone = true;
       u.save(function (err) {
         if (err) {
-          console.log('could not update survey for user '+user+' in db');
+          console.log('could not update survey for user ' + user + ' in db');
         }
-        else{
-          console.log('survey for user '+user+' successfully updated in db');
+        else {
+          console.log('survey for user ' + user + ' successfully updated in db');
         }
         return res.send(u);
       });
     }
-    else if(!u){
+    else if (!u) {
       console.log('user not found, try via auth-id');
-      if(req.user && req.user._id){
-        User.findOneAsync({ _id: req.user._id }, '-salt -password')
+      if (req.user && req.user._id) {
+        User.findOneAsync({_id: req.user._id}, '-salt -password')
           .then(user => {
             if (!user) {
               return res.status(401).end();
             }
             user.surveyDone = true;
             user.save(function (err) {
-              if (err) { return handleError(res, err); }
+              if (err) {
+                return handleError(res, err);
+              }
               return res.send(user);
             });
           })
           .catch(err => next(err));
       }
-      else{
+      else {
         console.log('no auth-id found');
         return res.status(404).end();
       }
     }
-    else{
+    else {
       return res.status(500).send(errFind ? errFind : 'error updating survey');
     }
 
   });
 }
 
-export function setFinish(user, cb){
+export function setFinish(user, cb) {
   User.findOne({'username': user}).exec(function (err, u) {
     if (err || !u) {
       cb(false);
     }
-    else{
+    else {
       u.finished = true;
       u.save(function (err) {
         if (err) {
-          console.log('could not update "finish" for user '+user, err);
+          console.log('could not update "finish" for user ' + user, err);
         }
         else {
-          console.log('user '+user+' finished');
+          console.log('user ' + user + ' finished');
         }
         cb(true);
 
@@ -435,19 +434,23 @@ export function setFinish(user, cb){
 
 
 /**
- * Export all Blocks data of a user
+ * Export all Blocks data of a single user
  */
 export function csv(req, res) {
   let user = req.body;
   let withContent = req.params.content;
+  let blockWise = req.params.blockWise === 'true';
+
   let users = [];
 
   let userData = {
-    username: user.username,
-    surveyDone: user.surveyDone,
-    finished: user.finished,
-    step: user.step
+    username: user.username
   };
+  if (!blockWise) {
+    userData.surveyDone = user.surveyDone;
+    userData.finished = user.finished;
+    userData.step = user.step;
+  }
 
   Block.findOne({'user': user.username}).exec(function (err, b) {
 
@@ -455,70 +458,75 @@ export function csv(req, res) {
       return res.status(404).end();
     }
 
-    for(let i = 0; i < b.blocks.length; i++){
-      //
-      // //Block Title
-      // userData['Block '+(i+1)+' Title'] = b.blocks[i].title;
-      //
-      // //Block Goal
-      // userData['Block '+(i+1)+' Goal'] = b.blocks[i].goal;
-      //
-      // //Block Criteria
-      // userData['Block '+(i+1)+' Criteria'] = b.blocks[i].criteria;
-      //
-      // //Block Preconditions
-      // userData['Block '+(i+1)+' Preconditions'] = b.blocks[i].preconditions;
-      //
-      // if(withContent === 'true'){
-      //   //Block Content
-      //   userData['Block '+(i+1)+' Content'] = b.blocks[i].content;
-      // }
+    for (let i = 0; i < b.blocks.length; i++) {
 
+      //Block Title
+      let titleKey = blockWise ? 'Block Title' : 'Block ' + (i + 1) + ' Title';
+      userData[titleKey] = replaceNewLines(b.blocks[i].title);
 
-       //Block Title
-       userData['Block '+(i+1)+' Title'] = replaceNewLines(b.blocks[i].title);
+      //Block Goal
+      let goalKey = blockWise ? 'Block Goal' : 'Block ' + (i + 1) + ' Goal';
+      userData[goalKey] = replaceNewLines(b.blocks[i].goal);
 
-       //Block Goal
-       userData['Block '+(i+1)+' Goal'] = replaceNewLines(b.blocks[i].goal);
+      //Block Criteria
+      let criteriaKey = blockWise ? 'Block Criteria' : 'Block ' + (i + 1) + ' Criteria';
+      userData[criteriaKey] = replaceNewLines(b.blocks[i].criteria);
 
-       //Block Criteria
-       userData['Block '+(i+1)+' Criteria'] = replaceNewLines(b.blocks[i].criteria);
+      //Block Preconditions
+      let preconditionsKey = blockWise ? 'Block Preconditions' : 'Block ' + (i + 1) + ' Preconditions';
+      userData[preconditionsKey] = replaceNewLines(b.blocks[i].preconditions);
 
-       //Block Preconditions
-       userData['Block '+(i+1)+' Preconditions'] = replaceNewLines(b.blocks[i].preconditions);
+      if (withContent === 'true') {
+        //Block Content
+        let contentKey = blockWise ? 'Block Content ' : 'Block ' + (i + 1) + ' Content';
+        userData[contentKey] = replaceNewLines(b.blocks[i].content);
+      }
 
-       if(withContent === 'true'){
-       //Block Content
-       userData['Block '+(i+1)+' Content'] = replaceNewLines(b.blocks[i].content);
-       }
+      if (blockWise) {
+        users.push(userData);
+        userData = {
+          username: user.username,
+          surveyDone: user.surveyDone,
+          finished: user.finished,
+          step: user.step
+        };
+      }
 
     }
 
-    users.push(userData);
+    if (!blockWise) {
+      users.push(userData);
+    }
     res.csv(users, true);
-  });}
+
+
+  });
+}
 
 
 /**
- * Export all Blocks of all users
+ * Export all Blocks of all users (each on a line)
  */
 export function csvAll(req, res) {
   let withContent = req.params.content;
+  let blockWise = req.params.blockWise;
+
   let users = [];
-
-
   Block.find({}).exec(function (err, blocks) {
 
     if (err || !blocks) {
       return res.status(404).end();
     }
 
-    let headerRow = [];
+    if (blockWise === 'true') {
+      csvAllBlocks(res, withContent, blocks);
+    }
+    else {
+
+      let headerRow = [];
 
 
-
-
-    for (let i = 0; i < blocks.length; i++) {
+      for (let i = 0; i < blocks.length; i++) {
 
         let userBlock = blocks[i];
         let userData = {
@@ -526,7 +534,7 @@ export function csvAll(req, res) {
         };
         headerRow = pushToArrayUnique(headerRow, 'username');
 
-      for(let j = 0; j < userBlock.blocks.length; j++){
+        for (let j = 0; j < userBlock.blocks.length; j++) {
 
 
 
@@ -534,10 +542,10 @@ export function csvAll(req, res) {
           let blockTitleKey = 'Block ' + (j + 1) + ' Title';
           let blockTitle = userData[blockTitleKey];
           let blockTitleContent = replaceNewLines(userBlock.blocks[j].title);
-          if(!blockTitle){
+          if (!blockTitle) {
             blockTitle = [blockTitleContent];
           }
-          else{
+          else {
             blockTitle.push(blockTitleContent);
           }
           userData[blockTitleKey] = blockTitle;
@@ -547,10 +555,10 @@ export function csvAll(req, res) {
           let blockGoalKey = 'Block ' + (j + 1) + ' Goal';
           let blockGoal = userData[blockGoalKey];
           let blockGoalContent = replaceNewLines(userBlock.blocks[j].goal);
-          if(!blockGoal){
+          if (!blockGoal) {
             blockGoal = [blockGoalContent];
           }
-          else{
+          else {
             blockGoal.push(blockGoalContent);
           }
           userData[blockGoalKey] = blockGoal;
@@ -560,18 +568,18 @@ export function csvAll(req, res) {
 
           //Block Alternatives
           let blockAlternatives = userBlock.blocks[j].alternatives;
-          if(blockAlternatives && blockAlternatives.length > 0){
-            for(let a = 0; a < blockAlternatives.length; a++){
+          if (blockAlternatives && blockAlternatives.length > 0) {
+            for (let a = 0; a < blockAlternatives.length; a++) {
 
               //Alternative Title
-              if(blockAlternatives[a].title){
-                let blockAlternativeTitleKey = 'Block ' + (j + 1) + ' Alternative '+ (a+1) + ': Title';
+              if (blockAlternatives[a].title) {
+                let blockAlternativeTitleKey = 'Block ' + (j + 1) + ' Alternative ' + (a + 1) + ': Title';
                 let blockAlternativeTitle = userData[blockAlternativeTitleKey];
                 let blockAlternativeTitleContent = replaceNewLines(blockAlternatives[a].title);
-                if(!blockAlternativeTitle){
+                if (!blockAlternativeTitle) {
                   blockAlternativeTitle = [blockAlternativeTitleContent];
                 }
-                else{
+                else {
                   blockAlternativeTitle.push(blockAlternativeTitleContent);
                 }
                 userData[blockAlternativeTitleKey] = blockAlternativeTitle;
@@ -579,9 +587,8 @@ export function csvAll(req, res) {
               }
 
 
-
               //Alternative Pro
-              if(blockAlternatives[a].pro) {
+              if (blockAlternatives[a].pro) {
                 let blockAlternativeProKey = 'Block ' + (j + 1) + ' Alternative ' + (a + 1) + ': Pro';
                 let blockAlternativePro = userData[blockAlternativeProKey];
                 let blockAlternativeProContent = replaceNewLines(blockAlternatives[a].pro);
@@ -597,7 +604,7 @@ export function csvAll(req, res) {
               }
 
               //Alternative Contra
-              if(blockAlternatives[a].contra) {
+              if (blockAlternatives[a].contra) {
                 let blockAlternativeContraKey = 'Block ' + (j + 1) + ' Alternative ' + (a + 1) + ': Contra';
                 let blockAlternativeContra = userData[blockAlternativeContraKey];
                 let blockAlternativeContraContent = replaceNewLines(blockAlternatives[a].contra);
@@ -618,10 +625,10 @@ export function csvAll(req, res) {
           let blockCriteriaKey = 'Block ' + (j + 1) + ' Criteria';
           let blockCriteria = userData[blockCriteriaKey];
           let blockCriteriaContent = replaceNewLines(userBlock.blocks[j].criteria);
-          if(!blockCriteria){
+          if (!blockCriteria) {
             blockCriteria = [blockCriteriaContent];
           }
-          else{
+          else {
             blockCriteria.push(blockCriteriaContent);
           }
           userData[blockCriteriaKey] = blockCriteria;
@@ -632,10 +639,10 @@ export function csvAll(req, res) {
           let blockPreconditionsKey = 'Block ' + (j + 1) + ' Preconditions';
           let blockPreconditions = userData[blockPreconditionsKey];
           let blockPreconditionsContent = replaceNewLines(userBlock.blocks[j].preconditions);
-          if(!blockPreconditions){
+          if (!blockPreconditions) {
             blockPreconditions = [blockPreconditionsContent];
           }
-          else{
+          else {
             blockPreconditions.push(blockPreconditionsContent);
           }
           userData[blockPreconditionsKey] = blockPreconditions;
@@ -647,10 +654,10 @@ export function csvAll(req, res) {
             let blockContentKey = 'Block ' + (j + 1) + ' Content';
             let blockContent = userData[blockContentKey];
             let blockContentContent = replaceNewLines(userBlock.blocks[j].content);
-            if(!blockContent){
+            if (!blockContent) {
               blockContent = [blockContentContent];
             }
-            else{
+            else {
               blockContent.push(blockContentContent);
             }
             userData[blockContentKey] = blockContent;
@@ -661,14 +668,17 @@ export function csvAll(req, res) {
         users.push(userData);
       }
 
-    let headerObject = {};
-    for(let r = 0; r < headerRow.length; r++){
-      headerObject[headerRow[r]] = '';
-    }
-    users.unshift(headerObject);
+      let headerObject = {};
+      for (let r = 0; r < headerRow.length; r++) {
+        headerObject[headerRow[r]] = '';
+      }
+      users.unshift(headerObject);
 
       res.csv(users, true);
-    })};
+    }
+  })
+
+}
 
 /**
  * Authentication callback
@@ -677,7 +687,7 @@ export function authCallback(req, res, next) {
   res.redirect('/');
 }
 
-export function getUserPackages(req, res){
+export function getUserPackages(req, res) {
 
   User.findAsync({}, '-salt -password')
     .then(u => {
@@ -687,7 +697,7 @@ export function getUserPackages(req, res){
       let counter = 0;
 
 
-      for(let j = u.length-1; j >= 0; j--){
+      for (let j = u.length - 1; j >= 0; j--) {
 
         let user = u[j].username;
         let userData = {
@@ -698,21 +708,21 @@ export function getUserPackages(req, res){
 
         let userPackageNr = 0;
 
-        let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
+        let rHistory = config.env === 'development' ? './history_database' : '/home/' + user + '/.rstudio/history_database';
 
-        fs.readFile(rHistory, 'utf8', function (err,data) {
+        fs.readFile(rHistory, 'utf8', function (err, data) {
 
-          if(!err) {
+          if (!err) {
             let fileLogs = data.toString().split('\n');
             fileLogs.splice(fileLogs.length - 1, 1); //remove empty last line
             if (fileLogs && fileLogs.length >= 0) {
               for (var i = fileLogs.length - 1; i >= 0; i--) {
                 let match = fileLogs[i].match(new RegExp(/library\((.*?)\)/));
-                if (match !== null && match.length > 1 && !userPackages.includes(''+[match[1]])) {
-                  let column = 'Package '+(++userPackageNr);
+                if (match !== null && match.length > 1 && !userPackages.includes('' + [match[1]])) {
+                  let column = 'Package ' + (++userPackageNr);
                   userData[column] = match[1];
                   headerRow = pushToArrayUnique(headerRow, column);
-                  userPackages.push(''+match[1]);
+                  userPackages.push('' + match[1]);
                 }
               }
             }
@@ -720,9 +730,9 @@ export function getUserPackages(req, res){
           }
 
           counter++;
-          if(counter >= u.length){
+          if (counter >= u.length) {
             let headerObject = {};
-            for(let r = 0; r < headerRow.length; r++){
+            for (let r = 0; r < headerRow.length; r++) {
               headerObject[headerRow[r]] = '';
             }
             users.unshift(headerObject);
@@ -740,24 +750,181 @@ export function getUserPackages(req, res){
 
 }
 
-function getLastLogDate(user, cb){
+/**
+ * Export all Blocks (each on a line) for all useres
+ */
+function csvAllBlocks(res, withContent, blocks) {
+  let users = [];
+  let headerRow = [];
 
-  let rHistory = config.env === 'development' ? './history_database' : '/home/'+user+'/.rstudio/history_database';
+  for (let i = 0; i < blocks.length; i++) {
 
-  fs.readFile(rHistory, 'utf8', function (err,data) {
+    let userBlock = blocks[i];
+
+    headerRow = pushToArrayUnique(headerRow, 'username');
+
+    for (let j = 0; j < userBlock.blocks.length; j++) {
+
+      let userData = {username: userBlock.user};
+
+      //Block Title
+      let blockTitleKey = 'Block Title';
+      let blockTitle = userData[blockTitleKey];
+      let blockTitleContent = replaceNewLines(userBlock.blocks[j].title);
+      if (!blockTitle) {
+        blockTitle = [blockTitleContent];
+      }
+      else {
+        blockTitle.push(blockTitleContent);
+      }
+      userData[blockTitleKey] = blockTitle;
+      headerRow = pushToArrayUnique(headerRow, blockTitleKey);
+
+      //Block Goal
+      let blockGoalKey = 'Block Goal';
+      let blockGoal = userData[blockGoalKey];
+      let blockGoalContent = replaceNewLines(userBlock.blocks[j].goal);
+      if (!blockGoal) {
+        blockGoal = [blockGoalContent];
+      }
+      else {
+        blockGoal.push(blockGoalContent);
+      }
+      userData[blockGoalKey] = blockGoal;
+      headerRow = pushToArrayUnique(headerRow, blockGoalKey);
+      let currentIndex = headerRow.indexOf(blockGoalKey);
+
+
+      //Block Alternatives
+      let blockAlternatives = userBlock.blocks[j].alternatives;
+      if (blockAlternatives && blockAlternatives.length > 0) {
+        for (let a = 0; a < blockAlternatives.length; a++) {
+
+          //Alternative Title
+          if (blockAlternatives[a].title) {
+            let blockAlternativeTitleKey = 'Block Alternative ' + (a + 1) + ': Title';
+            let blockAlternativeTitle = userData[blockAlternativeTitleKey];
+            let blockAlternativeTitleContent = replaceNewLines(blockAlternatives[a].title);
+            if (!blockAlternativeTitle) {
+              blockAlternativeTitle = [blockAlternativeTitleContent];
+            }
+            else {
+              blockAlternativeTitle.push(blockAlternativeTitleContent);
+            }
+            userData[blockAlternativeTitleKey] = blockAlternativeTitle;
+            headerRow = pushToArrayUnique(headerRow, blockAlternativeTitleKey, (++currentIndex));
+          }
+
+
+          //Alternative Pro
+          if (blockAlternatives[a].pro) {
+            let blockAlternativeProKey = 'Block Alternative ' + (a + 1) + ': Pro';
+            let blockAlternativePro = userData[blockAlternativeProKey];
+            let blockAlternativeProContent = replaceNewLines(blockAlternatives[a].pro);
+
+            if (!blockAlternativePro) {
+              blockAlternativePro = [blockAlternativeProContent];
+            }
+            else {
+              blockAlternativePro.push(blockAlternativeProContent);
+            }
+            userData[blockAlternativeProKey] = blockAlternativePro;
+            headerRow = pushToArrayUnique(headerRow, blockAlternativeProKey, (++currentIndex));
+          }
+
+          //Alternative Contra
+          if (blockAlternatives[a].contra) {
+            let blockAlternativeContraKey = 'Block Alternative ' + (a + 1) + ': Contra';
+            let blockAlternativeContra = userData[blockAlternativeContraKey];
+            let blockAlternativeContraContent = replaceNewLines(blockAlternatives[a].contra);
+            if (!blockAlternativeContra) {
+              blockAlternativeContra = [blockAlternativeContraContent];
+            }
+            else {
+              blockAlternativeContra.push(blockAlternativeContraContent);
+            }
+            userData[blockAlternativeContraKey] = blockAlternativeContra;
+            headerRow = pushToArrayUnique(headerRow, blockAlternativeContraKey, (++currentIndex));
+          }
+
+        }
+      }
+
+      //Block Criteria
+      let blockCriteriaKey = 'Block Criteria';
+      let blockCriteria = userData[blockCriteriaKey];
+      let blockCriteriaContent = replaceNewLines(userBlock.blocks[j].criteria);
+      if (!blockCriteria) {
+        blockCriteria = [blockCriteriaContent];
+      }
+      else {
+        blockCriteria.push(blockCriteriaContent);
+      }
+      userData[blockCriteriaKey] = blockCriteria;
+      headerRow = pushToArrayUnique(headerRow, blockCriteriaKey);
+
+
+      //Block Preconditions
+      let blockPreconditionsKey = 'Block Preconditions';
+      let blockPreconditions = userData[blockPreconditionsKey];
+      let blockPreconditionsContent = replaceNewLines(userBlock.blocks[j].preconditions);
+      if (!blockPreconditions) {
+        blockPreconditions = [blockPreconditionsContent];
+      }
+      else {
+        blockPreconditions.push(blockPreconditionsContent);
+      }
+      userData[blockPreconditionsKey] = blockPreconditions;
+      headerRow = pushToArrayUnique(headerRow, blockPreconditionsKey);
+
+
+      if (withContent === 'true') {
+        //Block Content
+        let blockContentKey = 'Block Content';
+        let blockContent = userData[blockContentKey];
+        let blockContentContent = replaceNewLines(userBlock.blocks[j].content);
+        if (!blockContent) {
+          blockContent = [blockContentContent];
+        }
+        else {
+          blockContent.push(blockContentContent);
+        }
+        userData[blockContentKey] = blockContent;
+        headerRow = pushToArrayUnique(headerRow, blockContentKey);
+
+      }
+      users.push(userData);
+    }
+  }
+
+  let headerObject = {};
+  for (let r = 0; r < headerRow.length; r++) {
+    headerObject[headerRow[r]] = '';
+  }
+  users.unshift(headerObject);
+
+  res.csv(users, true);
+}
+
+
+function getLastLogDate(user, cb) {
+
+  let rHistory = config.env === 'development' ? './history_database' : '/home/' + user + '/.rstudio/history_database';
+
+  fs.readFile(rHistory, 'utf8', function (err, data) {
     if (err) {
       return cb('Not logged in to Rstudio yet');
     }
-    else{
+    else {
       let fileLogs = data.toString().split('\n');
-      fileLogs.splice(fileLogs.length-1,1); //remove empty last line
+      fileLogs.splice(fileLogs.length - 1, 1); //remove empty last line
       let lastLogDate = 'N/A';
-      if(fileLogs && fileLogs.length>=0){
-        for(var i = fileLogs.length-1; i >= 0; i--){
+      if (fileLogs && fileLogs.length >= 0) {
+        for (var i = fileLogs.length - 1; i >= 0; i--) {
           let lastLog = fileLogs[i];
-          if(lastLog && lastLog.length > 0){
+          if (lastLog && lastLog.length > 0) {
             let ts = lastLog.substr(0, lastLog.indexOf(':'));
-            if(ts && ts.length > 0){
+            if (ts && ts.length > 0) {
               lastLogDate = new Date(parseInt(ts));
               break;
             }
@@ -774,21 +941,21 @@ function getLastLogDate(user, cb){
 
 //===========HELPER FUNCTIONS===========
 
-function replaceNewLines(text){
-  if(!text){
+function replaceNewLines(text) {
+  if (!text) {
     return text;
   }
-  else{
+  else {
     return text.replace(/[\r\n]/g, "\"\\n\"");
   }
 }
 
-function pushToArrayUnique(arr, key, index){
-  if(arr.indexOf(key) === -1){
-    if(index === undefined || index > arr.length){
+function pushToArrayUnique(arr, key, index) {
+  if (arr.indexOf(key) === -1) {
+    if (index === undefined || index > arr.length) {
       arr.push(key);
     }
-    else{
+    else {
       arr.splice(index, 0, key);
     }
   }
