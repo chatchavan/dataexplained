@@ -8,9 +8,9 @@
       let that = this;
       this.$scope = $scope;
       this.Auth = Auth;
-      this.role = '';
+      this.currentUser = {};
       Auth.getCurrentUser(function(user){
-        that.role = user.role;
+        that.currentUser = user;
       });
       this.User = User;
       this.LogUtil = LogUtil;
@@ -77,11 +77,11 @@
     }
 
     isAdmin(){
-      return this.role === 'admin';
+      return this.currentUser.role === 'admin';
     }
 
     isAdminLight(){
-      return this.role === 'admin-light';
+      return this.currentUser.role === 'admin-light';
     }
 
     initUsersAndBlocks() {
@@ -605,8 +605,43 @@
     }
 
     getCodingProgress(user){
-      console.log(this.blocks);
-      return '34/80';
+      for(let i = 0; i < this.blocks.length; i++){
+        if(this.blocks[i].user === user.username){
+          let counter = 0;
+          let blocks = this.blocks[i].blocks;
+
+          if(!this.blocks[i].plumb){
+            user.progress = 0;
+            return 'No workflow found - user not finished'
+          }
+
+          for(let j = 0; j < blocks.length; j++){
+
+            let block = blocks[j];
+            if(!block.blockCodes){
+              break;
+            }
+            else{
+
+              for(let k=0; k < block.blockCodes.length; k++){
+                let blockCode = block.blockCodes[k];
+                if(blockCode.coder === this.currentUser.username && blockCode.codes.length > 0){
+                  counter++;
+                  break;
+                }
+              }
+
+            }
+
+
+          }
+
+          user.progress = counter/blocks.length;
+          return counter+'/'+blocks.length;
+        }
+      }
+      user.progress = 0;
+      return 'No blocks found';
     }
 
     sortTable(column) {

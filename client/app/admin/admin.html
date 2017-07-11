@@ -63,7 +63,7 @@
       <th ng-if="admin.isAdmin()"  ng-click="admin.sortTable('history')">Last Log entry</th>
       <th ng-if="admin.isAdmin()" ng-click="admin.sortTable('finished')">Finished?</th>
       <th ng-if="admin.isAdmin()" ></th>
-      <th ng-if="!admin.isAdmin()" >Coding progress</th>
+      <th ng-if="!admin.isAdmin()"  ng-click="admin.sortTable('progress')">Coding progress</th>
       <th ng-if="!admin.isAdmin()" >Single-User-Export</th>
     </tr>
     </thead>
@@ -83,8 +83,8 @@
       <td ng-if="admin.isAdmin()"  ><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"
                 ng-click="admin.isAdmin() && admin.toggleFinished(user)">{{user.finished}}</span></td>
 
-      <td ng-if="!admin.isAdmin()">
-        {{admin.getCodingProgress(user.username)}}
+      <td ng-if="!admin.isAdmin()" ng-value="user.progress">
+        {{admin.getCodingProgress(user)}}
       </td>
       <td>
         <i ng-if="admin.isAdmin()" class="fa fa-undo" aria-hidden="true" ng-click="admin.resetUser(user)"></i>
