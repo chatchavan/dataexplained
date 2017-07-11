@@ -44,14 +44,19 @@
 
   <table class="table table-striped table-condensed admin-table" ng-if="admin.displayUsers">
     <col width="2%">
-    <col width="15%">
-    <col width="10%">
-    <col width="5%">
-    <col width="15%">
-    <col width="10%">
-    <col width="15%">
-    <col width="10%">
-    <col width="18%">
+    <col ng-if="admin.isAdmin()" width="15%">
+    <col ng-if="admin.isAdmin()" width="10%">
+    <col ng-if="admin.isAdmin()" width="5%">
+    <col ng-if="admin.isAdmin()" width="15%">
+    <col ng-if="admin.isAdmin()" width="10%">
+    <col ng-if="admin.isAdmin()" width="15%">
+    <col ng-if="admin.isAdmin()" width="10%">
+    <col ng-if="admin.isAdmin()" width="18%">
+
+    <col ng-if="!admin.isAdmin()" width="33%">
+    <col ng-if="!admin.isAdmin()" width="33%">
+    <col ng-if="!admin.isAdmin()" width="33%">
+
     <thead>
     <tr>
       <th></th>
