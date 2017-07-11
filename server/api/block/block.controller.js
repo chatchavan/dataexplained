@@ -144,6 +144,30 @@ export function showAdmin(req, res) {
 
 
 }
+export function showSingleAdmin(req, res) {
+  let user = req.params.user;
+  let blockId = req.params.id;
+
+  Block.findOne({'user': user}).exec(function (err, b) {
+
+    if (err || !b) {
+      return res.status(404).end();
+    }
+    console.log('b', b.blocks.length);
+    for(let i = 0; i < b.blocks.length; i++){
+      console.log('compare', b.blocks[i]._id, blockId, b.blocks[i]._id.toHexString() === blockId);
+      if(b.blocks[i]._id.toHexString() === blockId){
+        return res.status(200).json(b.blocks[i]);
+      }
+    }
+    return res.status(404).end();
+
+
+  });
+
+
+}
+
 
 // Creates a new Block in the DB
 export function create(req, res) {
@@ -303,6 +327,7 @@ export function update(req, res) {
               b.blocks[i].preconditions = block.preconditions;
               b.blocks[i].timestamp = block.timestamp;
               b.blocks[i].content = block.content;
+              b.blocks[i].blockCodes = block.blockCodes;
 
         }
       }

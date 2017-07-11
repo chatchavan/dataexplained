@@ -5,8 +5,13 @@
   class AdminController {
     constructor($scope, Auth, User, LogUtil, Util, BlockUtil, ModalService, $http, $timeout, $state) {
       // Use the User $resource to fetch all users
+      let that = this;
       this.$scope = $scope;
       this.Auth = Auth;
+      this.role = '';
+      Auth.getCurrentUser(function(user){
+        that.role = user.role;
+      });
       this.User = User;
       this.LogUtil = LogUtil;
       this.Util = Util;
@@ -69,6 +74,14 @@
         console.log('error getting configuration: ', err);
       });
 
+    }
+
+    isAdmin(){
+      return this.role === 'admin';
+    }
+
+    isAdminLight(){
+      return this.role === 'admin-light';
     }
 
     initUsersAndBlocks() {
@@ -179,6 +192,7 @@
 
     showWorkflow() {
       if (this.searchUser) {
+        let that = this;
         let itemlistCopy = this.itemlist;
         this.resetView();
         this.$http.get('/api/blocks/admin/' + this.searchUser).then(response => {
@@ -190,6 +204,7 @@
 
             // console.log("Current height: " + style.height, tempJson);
             tempJson.marginTop = style.height;
+            tempJson.user = that.searchUser;
             this.noWorkflow = false;
             this.plumbJson = tempJson;
             this.plumbList = tempJson.nodes;
@@ -225,25 +240,50 @@
 
     createUser() {
       if (this.searchUser) {
-        this.resetView(true);
-        this.Auth.createUserAdmin({
-          username: this.searchUser,
-          password: this.searchUser
-        })
-          .then(() => {
-            // Account created, redirect to home
-            this.textCallback = 'User "' + this.searchUser + '" created.';
-            this.initUsersAndBlocks();
-          })
-          .catch(err => {
-            console.log('err', err);
-            this.textCallback = 'Error creating User "' + this.searchUser + '": ';
 
-            // Update validity of form fields that match the mongoose errors
-            angular.forEach(err.errors, (error, field) => {
-              this.textCallback += error.message + ' ';
-            });
+        let that = this;
+        let actionText1 = 'Normal User';
+        let actionText2 = 'Coder';
+
+        this.ModalService.showModal({
+          templateUrl: "app/custommodal/custommodal.html",
+          controller: "CustomModalController",
+          inputs: {
+            title: "Create User",
+            text: ['What kind of user do you want to create?'],
+            actionText1: actionText1,
+            actionText2: actionText2
+          }
+        }).then(function (modal) {
+          modal.element.modal();
+          modal.close.then(result => {
+            let role = result === actionText2 ? 'admin-light' : 'user';
+
+            that.resetView(true);
+            that.Auth.createUserAdmin({
+              username: that.searchUser,
+              password: that.searchUser,
+              role: role
+            })
+              .then(() => {
+                // Account created, redirect to home
+                that.textCallback = 'User "' + that.searchUser + '" created.';
+                that.initUsersAndBlocks();
+              })
+              .catch(err => {
+                console.log('err', err);
+                that.textCallback = 'Error creating User "' + that.searchUser + '": ';
+
+                // Update validity of form fields that match the mongoose errors
+                angular.forEach(err.errors, (error, field) => {
+                  that.textCallback += error.message + ' ';
+                });
+              });
+
+
           });
+        });
+
       }
     }
 
@@ -378,6 +418,20 @@
         console.log('error exporting user packages');
       });
 
+    }
+
+    exportCodes(){
+      this.$http.get('api/users/admin/codes').then(content => {
+        console.log('content', content);
+        var hiddenElement = document.createElement('a');
+
+        hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = 'codes.csv';
+        hiddenElement.click();
+      }, (err) => {
+        console.log('error exporting codes');
+      });
     }
 
     exportCsv(user) {
@@ -548,6 +602,11 @@
       }
 
       return 'N/A';
+    }
+
+    getCodingProgress(user){
+      console.log(this.blocks);
+      return '34/80';
     }
 
     sortTable(column) {

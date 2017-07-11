@@ -6,10 +6,10 @@ var auth = require('../../auth/auth.service');
 
 var router = express.Router();
 
-router.get('/', auth.hasRole('admin'), controller.index);
+router.get('/', auth.hasRole(['admin', 'admin-light']), controller.index);
 router.get('/:user', auth.isAuthenticated(), controller.show);
 router.get('/file/:user', auth.isAuthenticated(), controller.showFromFile);
-router.get('/history/:user', auth.hasRole('admin'), controller.showHistory);
+router.get('/history/:user', auth.hasRole(['admin', 'admin-light']), controller.showHistory);
 router.get('/user/db', auth.isAuthenticated(), controller.showFromDb);
 router.put('/shift',  auth.isAuthenticated(), controller.shift);
 router.post('/',  auth.isAuthenticated(), controller.create);

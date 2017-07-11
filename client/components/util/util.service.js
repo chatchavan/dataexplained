@@ -28,7 +28,10 @@ function UtilService($window, $sce, $state, ModalService, StorageUtil, $timeout,
       let u = auth.getCurrentUser();
       let user = u.username;
       StorageUtil.saveSStorage('user', user);
-      if (u.finished) {
+      if(u.role === 'admin-light'){
+        $state.go('^.admin');
+      }
+      else if (u.finished) {
         $state.go('^.graph', {'finished': true});
       }
       else if (u.step === 1 && u.step !== step) {

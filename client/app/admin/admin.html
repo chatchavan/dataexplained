@@ -3,10 +3,11 @@
     <div class="navbar-collapse collapse" id="navbar-main">
       <ul class="nav navbar-nav">
         <li>
-          <a ng-click="admin.loadTest = false;">Admin Develop Dashboard</a>
+          <a ng-if="admin.isAdmin()" ng-click="admin.loadTest = false;">Admin Develop Dashboard</a>
+          <a ng-if="!admin.isAdmin()" >Coder Develop Dashboard</a>
         </li>
         <li>
-          <a ng-click="admin.loadTest = true;">Load-Test</a>
+          <a ng-if="admin.isAdmin()" ng-click="admin.loadTest = true;">Load-Test</a>
         </li>
       </ul>
     </div>
@@ -17,11 +18,12 @@
 
   <div class="margin-top-medium top-title">
     <h2>User information</h2>
-    <md-button class="md-raised" ng-click="admin.goAnalysis()">Analysis as Admin</md-button>
+    <md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.goAnalysis()">Analysis as Admin</md-button>
     <md-button class="md-raised" ng-click="admin.exportUsers()">Export all Users</md-button>
-    <md-button class="md-raised" ng-click="admin.exportUserPackages()">Export User Packages</md-button>
-    <label for="survey" class="control-label">Enable survey</label>
-    <input class="" type="checkbox" ng-click="admin.setSurvey()" ng-model="admin.configSurvey" id="survey">
+    <md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.exportUserPackages()">Export User Packages</md-button>
+    <md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.exportCodes()">Export Codes</md-button>
+    <label ng-if="admin.isAdmin()" for="survey" class="control-label">Enable survey</label>
+    <input ng-if="admin.isAdmin()" class="" type="checkbox" ng-click="admin.setSurvey()" ng-model="admin.configSurvey" id="survey">
     <md-button class="mg-raised pull-right" ng-click="admin.logout()">Logout</md-button>
 
     <div class="title-container">
@@ -31,9 +33,9 @@
               required>
       <md-button class="md-raised" ng-click="admin.showHistory()">Show History</md-button>
       <md-button class="md-raised" ng-click="admin.showWorkflow()">Show Workflow</md-button>
-      <md-button class="md-raised" ng-click="admin.showBlocks()">Show Blocks</md-button>
-      <md-button class="md-raised" ng-click="admin.createUser()">Create User</md-button>
-      <md-button ng-if="admin.plumbJson" class="md-raised" ng-click="admin.downloadWorkflow()">Download Workflow</md-button>
+      <md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.showBlocks()">Show Blocks</md-button>
+      <md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.createUser()">Create User</md-button>
+      <md-button ng-if="admin.plumbJson && admin.isAdmin()" class="md-raised" ng-click="admin.downloadWorkflow()">Download Workflow</md-button>
 
 
     </div>
@@ -54,33 +56,39 @@
     <tr>
       <th></th>
       <th ng-click="admin.sortTable('username')">Username</th>
-      <th ng-click="admin.sortTable('surveyDone')">Survey Done?</th>
-      <th ng-click="admin.sortTable('step')">Current Step</th>
-      <th ng-click="admin.sortTable('lastLogin')">Last Login</th>
-      <th ng-click="admin.sortTable('lastBlock')">Blocks since last login</th>
-      <th ng-click="admin.sortTable('history')">Last Log entry</th>
-      <th ng-click="admin.sortTable('finished')">Finished?</th>
-      <th></th>
+      <th ng-if="admin.isAdmin()"  ng-click="admin.sortTable('surveyDone')">Survey Done?</th>
+      <th ng-if="admin.isAdmin()"  ng-click="admin.sortTable('step')">Current Step</th>
+      <th ng-if="admin.isAdmin()"  ng-click="admin.sortTable('lastLogin')">Last Login</th>
+      <th ng-if="admin.isAdmin()"  ng-click="admin.sortTable('lastBlock')">Blocks since last login</th>
+      <th ng-if="admin.isAdmin()"  ng-click="admin.sortTable('history')">Last Log entry</th>
+      <th ng-if="admin.isAdmin()" ng-click="admin.sortTable('finished')">Finished?</th>
+      <th ng-if="admin.isAdmin()" ></th>
+      <th ng-if="!admin.isAdmin()" >Coding progress</th>
+      <th ng-if="!admin.isAdmin()" >Single-User-Export</th>
     </tr>
     </thead>
     <tbody>
     <tr ng-repeat="user in admin.users | orderBy:admin.sort.column:admin.sort.descending | filter : admin.searchUser" ng-if="admin.users && admin.blocks">
       <td>{{$index+1}}</td>
       <td class="cursorpointer" ng-click="admin.searchUser = user.username">{{user.username}}</td>
-      <td><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}"
-                ng-click="admin.toggleSurvey(user)">{{user.surveyDone}}</span></td>
-      <td>
+      <td ng-if="admin.isAdmin()" ><span class="label" ng-class="{'label-success' : user.surveyDone, 'label-danger' : !user.surveyDone}"
+                ng-click="admin.isAdmin() && admin.toggleSurvey(user)">{{user.surveyDone}}</span></td>
+      <td ng-if="admin.isAdmin()" >
         <input id="inputStep_{{user.username}}" type="text" ng-value="user.step" readonly
-               ng-click="admin.toggleStepDisable($event)" ng-blur="admin.toggleStepDisable($event)">
+               ng-click="admin.isAdmin() && admin.toggleStepDisable($event)" ng-blur="admin.toggleStepDisable($event)">
       </td>
-      <td class="text-small">{{user.lastLogin}}</td>
-      <td ng-value="user.lastBlock">{{admin.getLastBlockProgress(user)}}</td>
-      <td class="text-small">{{user.history}}</td>
-      <td><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"
-                ng-click="admin.toggleFinished(user)">{{user.finished}}</span></td>
+      <td ng-if="admin.isAdmin()"  class="text-small">{{user.lastLogin}}</td>
+      <td ng-if="admin.isAdmin()"  ng-value="user.lastBlock">{{admin.getLastBlockProgress(user)}}</td>
+      <td ng-if="admin.isAdmin()"  class="text-small">{{user.history}}</td>
+      <td ng-if="admin.isAdmin()"  ><span class="label" ng-class="{'label-success' : user.finished, 'label-danger' : !user.finished}"
+                ng-click="admin.isAdmin() && admin.toggleFinished(user)">{{user.finished}}</span></td>
+
+      <td ng-if="!admin.isAdmin()">
+        {{admin.getCodingProgress(user.username)}}
+      </td>
       <td>
-        <i class="fa fa-undo" aria-hidden="true" ng-click="admin.resetUser(user)"></i>
-        <i class="fa fa-trash" aria-hidden="true" ng-click="admin.deleteUser(user)"></i>
+        <i ng-if="admin.isAdmin()" class="fa fa-undo" aria-hidden="true" ng-click="admin.resetUser(user)"></i>
+        <i ng-if="admin.isAdmin()" class="fa fa-trash" aria-hidden="true" ng-click="admin.deleteUser(user)"></i>
         <i class="fa fa-download" aria-hidden="true" ng-click="admin.exportCsv(user)"></i>
       </td>
     </tr>

@@ -8,6 +8,6 @@ angular.module('rationalecapApp.admin')
         templateUrl: 'app/admin/admin.html',
         controller: 'AdminController',
         controllerAs: 'admin',
-        authenticate: 'admin'
+        authenticate: ['admin', 'admin-light']
       });
   });
