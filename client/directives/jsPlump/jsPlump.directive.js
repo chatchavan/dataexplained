@@ -369,7 +369,7 @@
               el.style.backgroundColor = 'green';
               el.childNodes[0].nodeValue = blocks[i].title;
               if($scope.updateCoder){
-                $scope.updateCoder({newBlock : newBlock._id});
+                $scope.updateCoder({newBlock : newBlock._id.toString()});
               }
             }
 

@@ -25,7 +25,7 @@ var UserSchema = new Schema({
     type: Number,
     default: 1
   },
-  codes : [{ type: Schema.Types.ObjectId, ref: 'Block' }], //Coders: List of block-ids already coded
+  codes : [String], //Coders: List of block-ids already coded
   lastLogin: Date,
   password: String,
   provider: String,
