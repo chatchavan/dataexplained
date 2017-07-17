@@ -75,8 +75,10 @@ function UtilService($window, $sce, $state, ModalService, StorageUtil, $timeout,
         let modal = document.getElementById(id);
         let modalBack = document.getElementsByClassName('modal-backdrop')[0];
 
-        if(modal && modalBack){
+        if(modal){
           modal.remove();
+        }
+        if(modalBack){
           modalBack.remove();
         }
         $('body').removeClass('modal-open');

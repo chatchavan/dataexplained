@@ -8,9 +8,15 @@
       let that = this;
       this.$scope = $scope;
       this.Auth = Auth;
-      this.currentUser = {};
+      // this.currentUser = {};
       Auth.getCurrentUser(function(user){
-        that.currentUser = user;
+        if(user.role === 'admin' || user.role === 'admin-light'){
+          that.currentUser = user;
+          that.init();
+        }
+        else{
+          $state.go('^.main');
+        }
       });
       this.User = User;
       this.LogUtil = LogUtil;
@@ -35,7 +41,7 @@
       };
 
 
-      this.init();
+
 
     }
 
