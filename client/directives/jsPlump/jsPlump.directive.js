@@ -15,7 +15,7 @@
         user : '<',
         json : '<',
         autosave: '&',
-        updateCoder: '&'
+        updateCoder: '&?'
       },
       controller: ['$scope', 'ModalService', 'Util', 'BlockUtil', '$http', controller],
       controllerAs: 'vm'
@@ -334,17 +334,24 @@
     }
 
     function openBlock(b){
-      ModalService.showModal({
-        templateUrl: "app/blockmodal_coder/blockmodal_coder.html",
-        controller: "BlockModalCoderController",
-        inputs: {
-          title: "Edit block",
-          edit: 'jsplumb',
-          block: b,
-          content: undefined,
-          jsplumb: true,
-        }
-      }).then(function(modal) {
+    let modalObject =
+        {
+          templateUrl: "app/blockmodal2/blockmodal2.html",
+          controller: "BlockModal2Controller",
+          inputs: {
+            title: "Edit block",
+            edit: 'jsplumb',
+            block: b,
+            content: undefined,
+            jsplumb: true,
+          }
+        };
+      if($scope.updateCoder){
+        modalObject.templateUrl = 'app/blockmodal_coder/blockmodal_coder.html';
+        modalObject.controller = 'BlockModalCoderController';
+      }
+      if($scope)
+      ModalService.showModal(modalObject).then(function(modal) {
         modal.element.modal();
         modal.close.then(result => {
           if(result === 'showFilesDiff'){
@@ -369,7 +376,7 @@
               el.style.backgroundColor = 'green';
               el.childNodes[0].nodeValue = blocks[i].title;
               if($scope.updateCoder){
-                $scope.updateCoder({newBlock : newBlock._id});
+                $scope.updateCoder({newBlock : newBlock._id.toString()});
               }
             }
 

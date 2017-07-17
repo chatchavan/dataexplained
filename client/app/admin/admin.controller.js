@@ -8,9 +8,15 @@
       let that = this;
       this.$scope = $scope;
       this.Auth = Auth;
-      this.currentUser = {};
+      // this.currentUser = {};
       Auth.getCurrentUser(function(user){
-        that.currentUser = user;
+        if(user.role === 'admin' || user.role === 'admin-light'){
+          that.currentUser = user;
+          that.init();
+        }
+        else{
+          $state.go('^.main');
+        }
       });
       this.User = User;
       this.LogUtil = LogUtil;
@@ -35,7 +41,7 @@
       };
 
 
-      this.init();
+
 
     }
 
@@ -155,11 +161,14 @@
       if(!this.currentUser.codes){
         this.currentUser.codes = [newBlockId];
       }
-      else{
+      else if(this.currentUser.codes.indexOf(newBlockId) < 0){
         this.currentUser.codes.push(newBlockId);
       }
       this.$http.put('/api/users/', this.currentUser).then(response => {
         console.log('response', response);
+        if(response && response.data){
+          this.currentUser = response.data;
+        }
       }, (err) => {
         console.log('error updating user: ', err);
       });
@@ -223,6 +232,7 @@
             tempJson.marginTop = style.height;
             tempJson.user = that.searchUser;
             if(that.isAdminLight()){
+              console.log('cu', that.currentUser);
               tempJson.codeList = that.currentUser.codes;
             }
             this.noWorkflow = false;

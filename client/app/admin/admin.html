@@ -1,4 +1,4 @@
-<div class="navbar navbar-default navbar-static-top">
+<div class="navbar navbar-default navbar-static-top" ng-if="admin.currentUser">
   <div class="admin-navbar">
     <div class="navbar-collapse collapse" id="navbar-main">
       <ul class="nav navbar-nav">
@@ -14,7 +14,7 @@
   </div>
 </div>
 
-<div class="admin" id="admin-container" ng-if="!admin.loadTest">
+<div class="admin" id="admin-container" ng-if="!admin.loadTest && admin.currentUser">
 
   <div class="margin-top-medium top-title">
     <h2>User information</h2>
