@@ -231,6 +231,18 @@ function AuthService($location, $http, $cookies, $q, appConfig, Util, User, Stor
     },
 
     /**
+     * Check if a user is an admin-light (coder)
+     *   (synchronous|asynchronous)
+     *
+     * @param  {Function|*} callback - optional, function(is)
+     * @return {Bool|Promise}
+     */
+    // isAdminLight() {
+    //     return Auth.hasRole
+    //       .apply(Auth, [].concat.apply(['asfasdf'], arguments));
+    // },
+
+    /**
      * Get auth token
      *
      * @return {String} - a token string used for authenticating

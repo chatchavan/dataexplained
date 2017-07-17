@@ -72,7 +72,12 @@ export function index(req, res) {
 }
 
 export function indexAdmin(req, res) {
-  User.find({}, '-salt -password')
+  let role = req.user.role;
+  let query = {};
+  if(role === 'admin-light'){
+    query = {role : 'user'};
+  }
+  User.find(query, '-salt -password')
     .then(users => {
       let users2 = [];
 
@@ -134,15 +139,17 @@ export function create(req, res, next) {
 
 export function createAdmin(req, res) {
   let username = req.body.username;
-  console.log('creating user : ' + username);
+  console.log('creating user : ' + username+' (role:'+req.body.role+' )');
 
-  shell.exec('sudo userdel ' + username + ' --force --remove');
-  shell.exec('sudo useradd -p $(openssl passwd -1 ' + username + ') ' + username + ' -m');
-  shell.exec('sudo usermod -aG sudo ' + username);
-  shell.exec('sudo mkdir /home/' + username + '/rstudio-workspace');
-  shell.exec('sudo chmod -R 777 /home/' + username + '/rstudio-workspace/');
-  shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/' + username + '/rstudio-workspace/');
-  shell.exec('sudo chown ' + username + ' /home/' + username + '/rstudio-workspace');
+  if(req.body.role === 'user'){
+    shell.exec('sudo userdel ' + username + ' --force --remove');
+    shell.exec('sudo useradd -p $(openssl passwd -1 ' + username + ') ' + username + ' -m');
+    shell.exec('sudo usermod -aG sudo ' + username);
+    shell.exec('sudo mkdir /home/' + username + '/rstudio-workspace');
+    shell.exec('sudo chmod -R 777 /home/' + username + '/rstudio-workspace/');
+    shell.exec('sudo cp -a /home/ubuntu/dataset/. /home/' + username + '/rstudio-workspace/');
+    shell.exec('sudo chown ' + username + ' /home/' + username + '/rstudio-workspace');
+  }
 
   var newUser = new User(req.body);
   newUser.saveAsync()
@@ -750,13 +757,48 @@ export function getUserPackages(req, res) {
 
 }
 
+export function getCodes(req, res){
+  let withContent = req.params.content;
+
+  Block.find({}).exec(function (err, blocks) {
+    if (err || !blocks) {
+      return res.status(404).end();
+    }
+
+    let users = [];
+    let headerRow = getBlocksCsv(blocks, [], withContent, true, users);
+
+    let headerObject = {};
+    for (let r = 0; r < headerRow.length; r++) {
+      headerObject[headerRow[r]] = '';
+    }
+    users.unshift(headerObject);
+
+    res.csv(users, true);
+
+
+
+  });
+
+}
+
 /**
  * Export all Blocks (each on a line) for all useres
  */
 function csvAllBlocks(res, withContent, blocks) {
   let users = [];
-  let headerRow = [];
+  let headerRow = getBlocksCsv(blocks, [], withContent, false, users);
 
+  let headerObject = {};
+  for (let r = 0; r < headerRow.length; r++) {
+    headerObject[headerRow[r]] = '';
+  }
+  users.unshift(headerObject);
+
+  res.csv(users, true);
+}
+
+function getBlocksCsv(blocks, headerRow, withContent, withCodes, users) {
   for (let i = 0; i < blocks.length; i++) {
 
     let userBlock = blocks[i];
@@ -893,17 +935,63 @@ function csvAllBlocks(res, withContent, blocks) {
         headerRow = pushToArrayUnique(headerRow, blockContentKey);
 
       }
+
+      if(withCodes){
+        //Block Codes
+        let blockCodes = userBlock.blocks[j].blockCodes;
+        if (blockCodes && blockCodes.length > 0) {
+          let codenr = 1;
+
+          for (let a = 0; a < blockCodes.length; a++) {
+
+            let code = blockCodes[a];
+
+            if(code && code.codes){
+              //Coder username
+              let coder = code.coder;
+
+              for(let c = 0; c < code.codes.length; c++){
+
+                //Code Text
+                let codeTextKey = 'Code ' + codenr + ': Text';
+                let codeText = userData[codeTextKey];
+                let codeTextContent = replaceNewLines(code.codes[c].codeText);
+                if (!codeText) {
+                  codeText = [codeTextContent];
+                }
+                else {
+                  codeText.push(codeTextContent);
+                }
+                userData[codeTextKey] = codeText;
+                headerRow = pushToArrayUnique(headerRow, codeTextKey);
+
+                //Code
+                let codeKey = 'Code ' + codenr+ ': Code';
+                let codes = userData[codeKey];
+                let codeContent = replaceNewLines(code.codes[c].code);
+                if (!codes) {
+                  codes = [codeContent];
+                }
+                else {
+                  codes.push(codeContent);
+                }
+                userData[codeKey] = codes;
+                headerRow = pushToArrayUnique(headerRow, codeKey);
+                codenr++;
+              }
+
+
+            }
+
+
+          }
+        }
+      }
+
       users.push(userData);
     }
   }
-
-  let headerObject = {};
-  for (let r = 0; r < headerRow.length; r++) {
-    headerObject[headerRow[r]] = '';
-  }
-  users.unshift(headerObject);
-
-  res.csv(users, true);
+  return headerRow;
 }
 
 

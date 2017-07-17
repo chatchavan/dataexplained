@@ -6,10 +6,11 @@ var auth = require('../../auth/auth.service');
 
 var router = express.Router();
 
-router.get('/', auth.hasRole('admin'), controller.index);
+router.get('/', auth.hasRole(['admin', 'admin-light']), controller.index);
 router.get('/user', auth.isAuthenticated(), controller.show);
 router.get('/user/db', auth.isAuthenticated(), controller.showFromDb);
-router.get('/admin/:user', auth.hasRole('admin'), controller.showAdmin);
+router.get('/admin/:user',  auth.hasRole(['admin', 'admin-light']), controller.showAdmin);
+router.get('/admin/:user/:id',  auth.hasRole(['admin', 'admin-light']), controller.showSingleAdmin);
 router.post('/plumb', auth.isAuthenticated(), controller.createPlumb);
 router.post('/plumb/delete', auth.isAuthenticated(), controller.deletePlumb);
 router.post('/', auth.isAuthenticated(),  controller.create);

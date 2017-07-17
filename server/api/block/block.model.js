@@ -2,6 +2,16 @@
 
 var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
+var CodesSchema = new mongoose.Schema({
+  codeText: String,
+  code: String
+});
+
+var BlockCodeSchema = new mongoose.Schema({
+  coder: String,
+  codes: [CodesSchema]
+});
+
 var AlternativesSchema = new mongoose.Schema({
   title: String,
   pro: String,
@@ -15,7 +25,8 @@ var BlockContentSchema = new mongoose.Schema({
   criteria: String,
   preconditions: String,
   timestamp: Date,
-  content: String
+  content: String,
+  blockCodes: [BlockCodeSchema]
 });
 
 var BlockSchema = new mongoose.Schema({

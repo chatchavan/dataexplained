@@ -16,14 +16,14 @@
         json : '<',
         autosave: '&'
       },
-      controller: ['$scope', 'ModalService', 'Util', 'BlockUtil', controller],
+      controller: ['$scope', 'ModalService', 'Util', 'BlockUtil', '$http', controller],
       controllerAs: 'vm'
     };
 
     return directive;
   }
 
-  function controller($scope, ModalService, Util, BlockUtil) {
+  function controller($scope, ModalService, Util, BlockUtil, $http) {
 
 
     $scope.leftMargin = 60; //in px
@@ -304,6 +304,7 @@
     function editBlock (block){
 
       let b = undefined;
+      console.log('edit block', block);
 
       for (let i = 0; i < $scope.plumbList.length; i++){
         if($scope.plumbList[i].id === block.id || $scope.plumbList[i].blockId === block.id){
@@ -311,31 +312,43 @@
           break;
         }
       }
-      if(b){
-        // let select = this.selection;
-        ModalService.showModal({
-          templateUrl: "app/blockmodal2/blockmodal2.html",
-          controller: "BlockModal2Controller",
-          inputs: {
-            title: "Edit block",
-            edit: 'jsplumb',
-            block: b,
-            content: undefined,
-            jsplumb: true,
+      if(!b){
+        $http.get('/api/blocks/admin/' + $scope.json.user+'/'+block.id).then(response => {
+          if (response && response.data) {
+            openBlock(response.data);
           }
-        }).then(function(modal) {
-          modal.element.modal();
-          modal.close.then(result => {
-            if(result === 'showFilesDiff'){
-              Util.showFilesDiff(b, $scope.user);
-            }
-            else if(result && result.title){
-              updateBlock(result);
-            }
-          });
+        }, (err) => {
+          console.log('error single block', err);
         });
       }
+      else{
+        openBlock(b);
+      }
 
+    }
+
+    function openBlock(b){
+      ModalService.showModal({
+        templateUrl: "app/blockmodal_coder/blockmodal_coder.html",
+        controller: "BlockModalCoderController",
+        inputs: {
+          title: "Edit block",
+          edit: 'jsplumb',
+          block: b,
+          content: undefined,
+          jsplumb: true,
+        }
+      }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          if(result === 'showFilesDiff'){
+            Util.showFilesDiff(b, $scope.user);
+          }
+          else if(result && result.title){
+            updateBlock(result);
+          }
+        });
+      });
     }
 
     function updateBlock (newBlock) {

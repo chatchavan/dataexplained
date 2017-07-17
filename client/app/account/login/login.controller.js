@@ -40,7 +40,7 @@ class LoginController {
       .then((u) => {
         // Logged in, redirect to home
         this.StorageUtil.saveSStorage('user',this.user.username);
-        if(this.Auth.isAdmin()){
+        if(this.Auth.isAdmin() || u.role === 'admin-light'){
           this.$state.go('admin');
         }
         else if(u.finished){
