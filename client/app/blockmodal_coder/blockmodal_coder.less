@@ -1,7 +1,18 @@
 .blockmodalCoder{
 
+
+  /* Important part */
   .modal-dialog{
-    width: 90%;
+    overflow-y: initial !important
+  }
+  .modal-content{
+    //height: 250px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .modal-dialog{
+    width: 99%;
   }
   textarea{
     resize: none;
@@ -12,8 +23,19 @@
     padding-bottom: 20px;
   }
 
-  .alternative-not-first{
+  .alternative{
     padding-top: 10px;
+  }
+
+  .alternative-first{
+    //border-top: 1px solid #ccc;
+  }
+
+  .alternative-icons{
+    font-size: 20px;
+    .fa{
+      margin-right: 10px;
+    }
   }
 
   .center {
@@ -83,6 +105,7 @@
 
   .content-line{
     margin: 0;
+    padding-left: 0px;
     word-wrap: break-word;
   }
 

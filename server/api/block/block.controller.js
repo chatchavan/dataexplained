@@ -153,9 +153,7 @@ export function showSingleAdmin(req, res) {
     if (err || !b) {
       return res.status(404).end();
     }
-    console.log('b', b.blocks.length);
     for(let i = 0; i < b.blocks.length; i++){
-      console.log('compare', b.blocks[i]._id, blockId, b.blocks[i]._id.toHexString() === blockId);
       if(b.blocks[i]._id.toHexString() === blockId){
         return res.status(200).json(b.blocks[i]);
       }

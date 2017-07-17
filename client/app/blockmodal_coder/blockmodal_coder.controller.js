@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModalCoderController', function($scope, $element, title, close, block, content, edit, Auth) {
+  .controller('BlockModalCoderController', function($scope, $element, title, close, block, content, edit, Auth, ModalService) {
 
     $scope.title = title;
     $scope.edit = edit;
@@ -72,12 +72,37 @@ angular.module('rationalecapApp')
       $scope.coderCodes.push({});
     };
 
-    $scope.spliceCode = function(){
-      if($scope.coderCodes.length > 0){
-        $scope.coderCodes.splice($scope.coderCodes.length-1, 1);
+    $scope.deleteCode = function(index){
+      if(index >= 0 && $scope.coderCodes.length > index){
+        $scope.coderCodes.splice(index, 1);
       }
 
     };
+    $scope.addExplanation = function(index){
+      if(index >= 0 && $scope.coderCodes.length > index){
+
+
+        let explanation = $scope.coderCodes[index].explanation;
+
+        ModalService.showModal({
+          templateUrl: "app/explanationmodal/explanationmodal.html",
+          controller: "ExplanationModalController",
+          inputs: {
+            explanation: explanation
+          }
+        }).then(function(modal) {
+          modal.element.modal();
+          modal.close.then(result => {
+            if(result){
+              $scope.coderCodes[index].explanation = result;
+            }
+          });
+        });
+
+      }
+
+    };
+
 
     $scope.increaseStep = function(form){
       if(form.$valid){

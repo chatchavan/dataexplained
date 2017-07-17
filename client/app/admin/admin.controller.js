@@ -151,6 +151,23 @@
     }
 
 
+    updateCoder(newBlockId) {
+      if(!this.currentUser.codes){
+        this.currentUser.codes = [newBlockId];
+      }
+      else{
+        this.currentUser.codes.push(newBlockId);
+      }
+      this.$http.put('/api/users/', this.currentUser).then(response => {
+        console.log('response', response);
+      }, (err) => {
+        console.log('error updating user: ', err);
+      });
+    }
+
+
+
+
     deleteUser(user) {
       if (user.username) {
         this.resetView(true);
@@ -205,6 +222,9 @@
             // console.log("Current height: " + style.height, tempJson);
             tempJson.marginTop = style.height;
             tempJson.user = that.searchUser;
+            if(that.isAdminLight()){
+              tempJson.codeList = that.currentUser.codes;
+            }
             this.noWorkflow = false;
             this.plumbJson = tempJson;
             this.plumbList = tempJson.nodes;

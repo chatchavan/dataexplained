@@ -68,7 +68,7 @@
       <th ng-if="admin.isAdmin()"  ng-click="admin.sortTable('history')">Last Log entry</th>
       <th ng-if="admin.isAdmin()" ng-click="admin.sortTable('finished')">Finished?</th>
       <th ng-if="admin.isAdmin()" ></th>
-      <th ng-if="!admin.isAdmin()"  ng-click="admin.sortTable('progress')">Coding progress</th>
+      <th ng-if="!admin.isAdmin()"  ng-click="admin.sortTable('progress')">Annotated blocks / Total Blocks</th>
       <th ng-if="!admin.isAdmin()" >Single-User-Export</th>
     </tr>
     </thead>
@@ -139,7 +139,7 @@
 </div>
 
 <div class="jsplumb-container" id="plumb-container">
-  <js-plump class="jsplumb" ng-if="admin.plumbJson && !admin.loadTest" plumb-list="admin.plumbList" json="admin.plumbJson" instance="admin.plumbInstance" user="admin.searchUser"></js-plump>
+  <js-plump class="jsplumb" ng-if="admin.plumbJson && !admin.loadTest" plumb-list="admin.plumbList" json="admin.plumbJson" instance="admin.plumbInstance" user="admin.searchUser" update-coder="admin.updateCoder(newBlock)"></js-plump>
 </div>
 
 <loadtest ng-if="admin.loadTest"></loadtest>

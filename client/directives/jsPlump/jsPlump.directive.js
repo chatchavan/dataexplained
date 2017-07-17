@@ -14,7 +14,8 @@
         instance : '=',
         user : '<',
         json : '<',
-        autosave: '&'
+        autosave: '&',
+        updateCoder: '&'
       },
       controller: ['$scope', 'ModalService', 'Util', 'BlockUtil', '$http', controller],
       controllerAs: 'vm'
@@ -28,6 +29,7 @@
 
     $scope.leftMargin = 60; //in px
     $scope.hoverPaintStyle = {stroke: "#009900", strokeWidth: 2 };
+    $scope.codedBlockStyle = { fill:"#009900", outlineStroke:"black", outlineWidth:1 };
     $scope.defaultPaintStyle = {stroke: "rgb(92, 150, 188)", strokeWidth: 2};
 
 
@@ -92,7 +94,7 @@
           }
           else {
             document.getElementById("canvas").appendChild(createPlump(p.name, p.blockId, p.blockId+'action'));
-            repositionElement($scope.marginTop, p.blockId, p.positionX, p.positionY);
+            repositionElement($scope.marginTop, $scope.json.codeList, p.blockId, p.positionX, p.positionY);
           }
 
         }
@@ -220,10 +222,14 @@
 
     // --- CONTROLLER ---
 
-    function repositionElement(marginTop, id, posX, posY){
+    function repositionElement(marginTop, codeList, id, posX, posY){
       let el = $('#'+id);
       el.css('left', posX);
       el.css('top', posY+marginTop);
+      console.log('coder', codeList, id);
+      if(codeList && codeList.indexOf(id) >= 0){
+        el.css('background-color', "green");
+      }
       jsPlumb.revalidate(id);
     }
 
@@ -360,7 +366,11 @@
             $scope.plumbList.push({name: blocks[i].title, id: blocks[i]._id, block: blocks[i]});
             if(blocks[i]._id === newBlock._id){
               let el = document.getElementById(newBlock._id);
+              el.style.backgroundColor = 'green';
               el.childNodes[0].nodeValue = blocks[i].title;
+              if($scope.updateCoder){
+                $scope.updateCoder({newBlock : newBlock._id});
+              }
             }
 
           }
