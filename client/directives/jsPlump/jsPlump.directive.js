@@ -226,7 +226,6 @@
       let el = $('#'+id);
       el.css('left', posX);
       el.css('top', posY+marginTop);
-      console.log('coder', codeList, id);
       if(codeList && codeList.indexOf(id) >= 0){
         el.css('background-color', "green");
       }
@@ -365,6 +364,8 @@
     }
 
     function updateBlock (newBlock) {
+      let noCodes = newBlock.noCodes;
+      delete newBlock.noCodes;
       BlockUtil.updateBlock(newBlock, $scope.user, undefined, undefined).then(function(success){
         let blocks = success.blockList;
         if(blocks){
@@ -373,11 +374,19 @@
             $scope.plumbList.push({name: blocks[i].title, id: blocks[i]._id, block: blocks[i]});
             if(blocks[i]._id === newBlock._id){
               let el = document.getElementById(newBlock._id);
-              el.style.backgroundColor = 'green';
               el.childNodes[0].nodeValue = blocks[i].title;
+
               if($scope.updateCoder){
-                $scope.updateCoder({newBlock : newBlock._id.toString()});
+                if(!noCodes){
+                  el.style.backgroundColor = 'green';
+                }
+                else{
+                  console.log('white');
+                  el.style.backgroundColor = 'white';
+                }
+                $scope.updateCoder({newBlock : newBlock._id.toString(), noCodes : noCodes});
               }
+
             }
 
           }

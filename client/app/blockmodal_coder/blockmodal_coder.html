@@ -32,17 +32,17 @@
               <span>Please describe each alternative and explain its advantages and disadvantages</span>
               <div ng-repeat="alternative in block.alternatives" ng-class="{'alternative-not-last' : !$last, 'alternative-not-first' : $last}">
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="">Alternative [alternative]</div>
+                  <div class="sublabel" class="">Alternative [alt{{$index+1}}]</div>
                   <span class="sublabel-input form-control">{{block.alternatives[$index].title}}</span>
 
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="">Advantages of this alternative [adv]</div>
+                  <div class="sublabel" class="">Advantages of this alternative [adv{{$index+1}}]</div>
                   <span class="sublabel-input form-control">{{block.alternatives[$index].pro}}</span>
 
                 </div>
                 <div class="multilabel-container padding-top-medium">
-                  <div class="sublabel" class="">Disadvantages of this alternative [dis]</div>
+                  <div class="sublabel" class="">Disadvantages of this alternative [dis{{$index+1}}]</div>
                   <span class="sublabel-input form-control">{{block.alternatives[$index].contra}}</span>
                 </div>
               </div>
@@ -55,7 +55,7 @@
             </div>
 
             <div ng-if="step==5 || edit" class="form-group question-group">
-              <label for="preconditions" class="">What preconditions should be fulfilled to successfully execute this block? [preconditions]</label>
+              <label for="preconditions" class="">What preconditions should be fulfilled to successfully execute this block? [prec]</label>
               <span class="form-control" id="preconditions">{{block.preconditions}}</span>
             </div>
 

@@ -157,12 +157,16 @@
     }
 
 
-    updateCoder(newBlockId) {
-      if(!this.currentUser.codes){
+    updateCoder(newBlockId, noCodes) {
+      console.log('noCodes', noCodes);
+      if(!this.currentUser.codes && !noCodes){
         this.currentUser.codes = [newBlockId];
       }
-      else if(this.currentUser.codes.indexOf(newBlockId) < 0){
+      else if(this.currentUser.codes.indexOf(newBlockId) < 0 && !noCodes){
         this.currentUser.codes.push(newBlockId);
+      }
+      else if(this.currentUser.codes.indexOf(newBlockId) > 0 && noCodes){
+        this.currentUser.codes.splice(this.currentUser.codes.indexOf(newBlockId), 1);
       }
       this.$http.put('/api/users/', this.currentUser).then(response => {
         console.log('response', response);
