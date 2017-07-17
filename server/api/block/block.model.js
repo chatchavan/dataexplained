@@ -4,7 +4,8 @@ var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 
 var CodesSchema = new mongoose.Schema({
   codeText: String,
-  code: String
+  code: String,
+  explanation: String
 });
 
 var BlockCodeSchema = new mongoose.Schema({

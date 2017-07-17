@@ -66,6 +66,7 @@
 
       if(vm.blocks.plumb && tempJson.nodes.length > 0){
         tempJson.marginTop = '0px';
+        tempJson.coder = false;
         vm.plumbJson = tempJson;
         vm.plumbList = [];
         let blockContents = vm.blocks.blocks;

@@ -75,7 +75,7 @@ export function indexAdmin(req, res) {
   let role = req.user.role;
   let query = {};
   if(role === 'admin-light'){
-    query = {role : 'user'};
+    query = {role : 'user', finished : true};
   }
   User.find(query, '-salt -password')
     .then(users => {
