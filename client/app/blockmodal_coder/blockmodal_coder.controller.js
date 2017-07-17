@@ -36,14 +36,19 @@ angular.module('rationalecapApp')
       if(form){
         form.$setSubmitted();
         if(form.$valid){
+          $scope.block.noCodes = $scope.coderCodes.length <= 0;
+          if($scope.coderCodes.length > 0){
+            if(!$scope.block.blockCodes || $scope.block.blockCodes.length <= 0){
+              $scope.block.blockCodes = [{'coder' : $scope.user, 'codes' : $scope.coderCodes}];
+            }
+            else{
+              $scope.block.blockCodes[$scope.blockCodesIndex].codes = $scope.coderCodes;
+            }
+          }
+          else if($scope.block.blockCodes && $scope.block.blockCodes[$scope.blockCodesIndex]){
+            $scope.block.blockCodes.splice($scope.blockCodesIndex, 1);
+          }
 
-          console.log('block.blockcodes', $scope.block.blockCodes);
-          if(!$scope.block.blockCodes || $scope.block.blockCodes.length <= 0){
-            $scope.block.blockCodes = [{'coder' : $scope.user, 'codes' : $scope.coderCodes}];
-          }
-          else{
-            $scope.block.blockCodes[$scope.blockCodesIndex].codes = $scope.coderCodes;
-          }
           $element.modal('hide');
           close($scope.block, 500); // close, but give 500ms for bootstrap to animate
         }
