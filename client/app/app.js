@@ -26,7 +26,9 @@ angular.module('rationalecapApp', [
   'ui.sortable',
   'dndLists',
   'angularModalService',
-  'validation.match'
+  'validation.match',
+  'bootstrap-tagsinput',
+  'ngTagsInput'
 ])
   .config(function($urlRouterProvider, $locationProvider) {
     $urlRouterProvider

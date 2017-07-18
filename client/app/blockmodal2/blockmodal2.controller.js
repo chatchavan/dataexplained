@@ -6,7 +6,6 @@ angular.module('rationalecapApp')
     $scope.title = title;
     $scope.edit = edit;
     $scope.block = block;
-    $scope.list = ["one", "two", "thre", "four", "five", "six"];
 
     if(!$scope.block){
       $scope.block = {};

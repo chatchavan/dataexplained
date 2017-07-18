@@ -299,11 +299,13 @@
     }
 
     function deleteConnection(connection){
-      jsPlumb.detach(connection, {
-        fireEvent: false, //fire a connection detached event?
-        forceDetach: false //override any beforeDetach listeners
-      });
-      save();
+      if(connection){
+        jsPlumb.detach(connection, {
+          fireEvent: false, //fire a connection detached event?
+          forceDetach: false //override any beforeDetach listeners
+        });
+        save();
+      }
     }
 
     function editBlock (block){
@@ -320,19 +322,31 @@
       if(!b){
         $http.get('/api/blocks/admin/' + $scope.json.user+'/'+block.id).then(response => {
           if (response && response.data) {
-            openBlock(response.data);
+            prepareBlock(response.data);
           }
         }, (err) => {
           console.log('error single block', err);
         });
       }
       else{
-        openBlock(b);
+        prepareBlock(b);
       }
 
     }
 
-    function openBlock(b){
+    function prepareBlock(b){
+      $http.get('/api/configurations/codes').then(response => {
+        if (response && response.data) {
+          openBlock(b, response.data);
+        }
+      }, (err) => {
+        console.log('error getting conf codes', err);
+        openBlock(b, []);
+
+      });
+    }
+
+    function openBlock(b, allCodes){
     let modalObject =
         {
           templateUrl: "app/blockmodal2/blockmodal2.html",
@@ -348,6 +362,7 @@
       if($scope.updateCoder){
         modalObject.templateUrl = 'app/blockmodal_coder/blockmodal_coder.html';
         modalObject.controller = 'BlockModalCoderController';
+        modalObject.inputs.allCodes = allCodes;
       }
       if($scope)
       ModalService.showModal(modalObject).then(function(modal) {
@@ -365,7 +380,9 @@
 
     function updateBlock (newBlock) {
       let noCodes = newBlock.noCodes;
+      let allCodes = newBlock.allCodes;
       delete newBlock.noCodes;
+      delete newBlock.allCodes;
       BlockUtil.updateBlock(newBlock, $scope.user, undefined, undefined).then(function(success){
         let blocks = success.blockList;
         if(blocks){
@@ -381,10 +398,9 @@
                   el.style.backgroundColor = 'green';
                 }
                 else{
-                  console.log('white');
                   el.style.backgroundColor = 'white';
                 }
-                $scope.updateCoder({newBlock : newBlock._id.toString(), noCodes : noCodes});
+                $scope.updateCoder({newBlock : newBlock._id.toString(), noCodes : noCodes, allCodes : allCodes});
               }
 
             }
