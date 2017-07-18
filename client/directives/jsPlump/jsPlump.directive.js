@@ -363,6 +363,7 @@
         modalObject.templateUrl = 'app/blockmodal_coder/blockmodal_coder.html';
         modalObject.controller = 'BlockModalCoderController';
         modalObject.inputs.allCodes = allCodes;
+        modalObject.inputs.title = 'Code block';
       }
       if($scope)
       ModalService.showModal(modalObject).then(function(modal) {
