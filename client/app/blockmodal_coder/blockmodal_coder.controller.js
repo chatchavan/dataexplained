@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModalCoderController', function($scope, $element, title, close, block, content, edit, Auth, ModalService) {
+  .controller('BlockModalCoderController', function($scope, $element, title, close, block, content, edit, allCodes, Auth, ModalService) {
 
     $scope.title = title;
     $scope.edit = edit;
     $scope.block = block;
-    $scope.list = ["one", "two", "thre", "four", "five", "six"];
+    $scope.allCodes = allCodes;
+    console.log('allllllCodes', $scope.allCodes);
 
     if(!$scope.block){
       $scope.block = {};
@@ -26,9 +27,43 @@ angular.module('rationalecapApp')
     }
 
     $scope.blockCodesIndex = 0;
+    $scope.codes = [];
     loadCoderCodes();
 
     $scope.step = 1;
+
+
+    $scope.loadTags = function(query) {
+      return $scope.allCodes.filter(function (el) {
+        return el.includes(query);
+      });
+
+    };
+
+    $scope.onTagAdded = function(tag, index){
+      if($scope.codes.length === index){
+        $scope.codes.push([tag])
+      }
+      $scope.coderCodes[index].code = $scope.codes[index][0].text;
+      for(let i = 1; i < $scope.codes[index].length; i++){
+        $scope.coderCodes[index].code += ';'+$scope.codes[index][i].text;
+      }
+
+
+    };
+
+    $scope.onTagRemoved = function(tag, index){
+      if($scope.codes[index].length <= 0){
+        $scope.coderCodes[index].code = undefined;
+      }
+      else{
+        $scope.onTagAdded(tag, index);
+      }
+
+    };
+
+
+
 
     //  This close function doesn't need to use jQuery or bootstrap, because
     //  the button has the 'data-dismiss' attribute.
@@ -37,6 +72,15 @@ angular.module('rationalecapApp')
         form.$setSubmitted();
         if(form.$valid){
           $scope.block.noCodes = $scope.coderCodes.length <= 0;
+          //join all blockCodes
+          let allCodes = [];
+          for(let i = 0; i < $scope.codes.length; i++){
+            let cs = $scope.codes[i];
+            for(let j = 0; j < cs.length; j++){
+              allCodes.push(cs[j].text);
+            }
+          }
+          $scope.block.allCodes = allCodes;
           if($scope.coderCodes.length > 0){
             if(!$scope.block.blockCodes || $scope.block.blockCodes.length <= 0){
               $scope.block.blockCodes = [{'coder' : $scope.user, 'codes' : $scope.coderCodes}];
@@ -140,12 +184,22 @@ angular.module('rationalecapApp')
 
           return;
         }
-        console.log('blockCodes', blockCodes);
 
         for(let i = 0; i < blockCodes.length; i++){
           if(blockCodes[i].coder === user.username){
             $scope.blockCodesIndex = i;
             $scope.coderCodes = blockCodes[i].codes;
+            for(let j = 0; j < $scope.coderCodes.length; j++){
+              let codesArray = [];
+              if($scope.coderCodes[j].code){
+                codesArray = $scope.coderCodes[j].code.split(';');
+              }
+              let codeSet = [];
+              for(let k = 0; k < codesArray.length; k++){
+                codeSet.push({'text' : codesArray[k]});
+              }
+              $scope.codes.push(codeSet);
+            }
             return;
           }
         }

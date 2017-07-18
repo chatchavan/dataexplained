@@ -82,7 +82,9 @@
 
               </div>
               <div class="multilabel-container padding-top-medium">
-                <textarea placeholder="Code" type="text" class="sublabel-input form-control" name="code{{$index}}" placeholder="" ng-model="code.code"></textarea>
+                <tags-input on-tag-removed="onTagRemoved($tag, $index)" on-tag-added="onTagAdded($tag, $index)" add-on-enter="true" add-on-space="true" add-on-comma="true" placeholder="Add code" ng-model="codes[$index]">
+                  <auto-complete source="loadTags($query)"></auto-complete>
+                </tags-input>
               </div>
               <div class="multilabel-container padding-top-medium">
                 <textarea placeholder="Code-Text" type="text" class="sublabel-input form-control" name="codeText{{$index}}" placeholder="" ng-model="code.codeText"></textarea>

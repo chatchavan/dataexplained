@@ -80,6 +80,19 @@ export function showEnv(req, res) {
   return res.status(200).json(config.env);
 }
 
+export function showCodes(req, res) {
+  Configuration.find({}, function(err, conf){
+
+    if(err || conf.length <=0){
+      return res.status(404).end();
+    }
+    else{
+      return res.status(200).json(conf[0].codes);
+    }
+
+  });
+}
+
 // Creates a new Configuration in the DB
 export function create(req, res) {
   let survey = req.body.survey;
@@ -102,6 +115,40 @@ export function create(req, res) {
       });
     }
   });
+}
+
+export function updateCodes(req, res){
+  let allCodes = req.body.allCodes;
+
+  Configuration.find({}, function(err, conf){
+
+    if(err || conf.length <=0){
+      return res.status(404).end();
+    }
+    else{
+
+      let codes = conf[0].codes;
+      for(let i = 0; i < allCodes.length; i++){
+        if (codes.indexOf(allCodes[i]) === -1) {
+          codes.push(allCodes[i]);
+        }
+      }
+
+      delete conf[0]._id;
+      conf[0].codes = codes;
+
+      conf[0].save(function (err) {
+        if (err) {
+          console.log('could update configuration codes', err);
+          // return res.status(200).json(blockCopy);
+        }
+        return res.status(200).json(codes);
+
+      });
+    }
+
+  });
+
 }
 
 // Updates an existing Configuration in the DB

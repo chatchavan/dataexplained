@@ -157,8 +157,7 @@
     }
 
 
-    updateCoder(newBlockId, noCodes) {
-      console.log('noCodes', noCodes);
+    updateCoder(newBlockId, noCodes, allCodes) {
       if(!this.currentUser.codes && !noCodes){
         this.currentUser.codes = [newBlockId];
       }
@@ -169,13 +168,23 @@
         this.currentUser.codes.splice(this.currentUser.codes.indexOf(newBlockId), 1);
       }
       this.$http.put('/api/users/', this.currentUser).then(response => {
-        console.log('response', response);
         if(response && response.data){
           this.currentUser = response.data;
         }
       }, (err) => {
         console.log('error updating user: ', err);
       });
+
+      if(!noCodes && allCodes.length > 0){
+        this.$http.put('/api/configurations/codes', {'allCodes' : allCodes}).then(response => {
+          if(response && response.data){
+          }
+        }, (err) => {
+          console.log('error updating configuration codes: ', err);
+        });
+      }
+
+
     }
 
 
@@ -236,7 +245,6 @@
             tempJson.marginTop = style.height;
             tempJson.user = that.searchUser;
             if(that.isAdminLight()){
-              console.log('cu', that.currentUser);
               tempJson.codeList = that.currentUser.codes;
             }
             this.noWorkflow = false;
@@ -363,7 +371,7 @@
       node.style.width = left > 0 ? (left + 300) + 'px' : node.style.width;
       node.style.height = '300vh';
 
-      console.log(node.style.height, node.style.width);
+      // console.log(node.style.height, node.style.width);
 
       let that = this;
       domtoimage.toPng(node)
