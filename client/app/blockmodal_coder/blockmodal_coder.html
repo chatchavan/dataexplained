@@ -82,7 +82,7 @@
 
               </div>
               <div class="multilabel-container padding-top-medium">
-                <tags-input on-tag-removed="onTagRemoved($tag, $index)" on-tag-added="onTagAdded($tag, $index)" add-on-enter="true" add-on-space="true" add-on-comma="true" replaceSpacesWithDashes="false" placeholder="Add code" ng-model="codes[$index]">
+                <tags-input on-tag-removed="onTagRemoved($tag, $index)" on-tag-added="onTagAdded($tag, $index)" add-on-enter="true" add-on-space="false" add-on-comma="false" replace-spaces-with-dashes="false" placeholder="Add code" ng-model="codes[$index]">
                   <auto-complete source="loadTags($query)"></auto-complete>
                 </tags-input>
               </div>
