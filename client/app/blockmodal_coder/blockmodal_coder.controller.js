@@ -7,7 +7,6 @@ angular.module('rationalecapApp')
     $scope.edit = edit;
     $scope.block = block;
     $scope.allCodes = allCodes;
-    console.log('allllllCodes', $scope.allCodes);
 
     if(!$scope.block){
       $scope.block = {};
