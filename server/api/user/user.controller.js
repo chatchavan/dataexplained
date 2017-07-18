@@ -760,21 +760,33 @@ export function getUserPackages(req, res) {
 export function getCodes(req, res){
   let withContent = req.params.content;
 
-  Block.find({}).exec(function (err, blocks) {
-    if (err || !blocks) {
-      return res.status(404).end();
+  User.find({role : 'user', finished: true}).exec(function(e, users){
+    let usernames = [];
+    if(users.length <=0){
+      return res.status(200).end();
+    }
+    for(let i = 0; i < users.length; i++){
+      usernames.push(users[i].username);
     }
 
-    let users = [];
-    let headerRow = getBlocksCsv(blocks, [], withContent, true, users);
+    Block.find({user : { $in : usernames } }).exec(function (err, blocks) {
+      if (err || !blocks) {
+        return res.status(404).end();
+      }
 
-    let headerObject = {};
-    for (let r = 0; r < headerRow.length; r++) {
-      headerObject[headerRow[r]] = '';
-    }
-    users.unshift(headerObject);
+      let users = [];
+      let headerRow = getBlocksCsv(blocks, [], withContent, true, users);
 
-    res.csv(users, true);
+      let headerObject = {};
+      for (let r = 0; r < headerRow.length; r++) {
+        headerObject[headerRow[r]] = '';
+      }
+      users.unshift(headerObject);
+
+      res.csv(users, true);
+
+
+    });
 
 
 
@@ -942,20 +954,20 @@ function getBlocksCsv(blocks, headerRow, withContent, withCodes, users) {
         if (blockCodes && blockCodes.length > 0) {
           let codenr = 1;
 
-          for (let a = 0; a < blockCodes.length; a++) {
+          for (let a = 0; a < blockCodes.length; a++) { //iterate of codes of each user
 
-            let code = blockCodes[a];
+            let userCode = blockCodes[a];
 
-            if(code && code.codes){
+            if(userCode && userCode.codes){
               //Coder username
-              let coder = code.coder;
+              let coder = userCode.coder;
 
-              for(let c = 0; c < code.codes.length; c++){
+              for(let c = 0; c < userCode.codes.length; c++){
 
                 //Code Text
                 let codeTextKey = 'Code ' + codenr + ': Text';
                 let codeText = userData[codeTextKey];
-                let codeTextContent = replaceNewLines(code.codes[c].codeText);
+                let codeTextContent = replaceNewLines(userCode.codes[c].codeText);
                 if (!codeText) {
                   codeText = [codeTextContent];
                 }
@@ -968,7 +980,7 @@ function getBlocksCsv(blocks, headerRow, withContent, withCodes, users) {
                 //Code
                 let codeKey = 'Code ' + codenr+ ': Code';
                 let codes = userData[codeKey];
-                let codeContent = replaceNewLines(code.codes[c].code);
+                let codeContent = replaceNewLines(userCode.codes[c].code);
                 if (!codes) {
                   codes = [codeContent];
                 }
@@ -977,6 +989,19 @@ function getBlocksCsv(blocks, headerRow, withContent, withCodes, users) {
                 }
                 userData[codeKey] = codes;
                 headerRow = pushToArrayUnique(headerRow, codeKey);
+
+                //Explanation
+                let codeExplanationKey = 'Code ' + codenr+ ': Explanation';
+                let codeExplanation = userData[codeExplanationKey];
+                let codeExplanationContent = replaceNewLines(userCode.codes[c].explanation);
+                if (!codeExplanation) {
+                  codeExplanation = [codeExplanationContent];
+                }
+                else {
+                  codeExplanation.push(codeExplanationContent);
+                }
+                userData[codeExplanationKey] = codeExplanation;
+                headerRow = pushToArrayUnique(headerRow, codeExplanationKey);
                 codenr++;
               }
 
