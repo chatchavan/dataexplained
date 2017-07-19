@@ -808,7 +808,7 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
 
     for (let j = 0; j < userBlock.blocks.length; j++) {
 
-
+      let blockId = userBlock.blocks[j]._id.toString();
 
       //Block Codes
       let blockCodes = userBlock.blocks[j].blockCodes;
@@ -835,11 +835,13 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
 
                 let codeKey = singleCodes[s];
                 let codeData = {
+                  blockId : blockId,
                   codename : codeKey,
                   appearance: codeText,
                   explanation: codeExplanation,
                   coder: coder
                 };
+                headerRow = pushToArrayUnique(headerRow, 'blockId');
                 headerRow = pushToArrayUnique(headerRow, 'codename');
                 headerRow = pushToArrayUnique(headerRow, 'appearance');
                 headerRow = pushToArrayUnique(headerRow, 'explanation');
