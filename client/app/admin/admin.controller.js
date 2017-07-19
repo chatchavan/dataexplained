@@ -463,17 +463,44 @@
     }
 
     exportCodes(){
-      this.$http.get('api/users/admin/codes').then(content => {
-        console.log('content', content);
-        var hiddenElement = document.createElement('a');
 
-        hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
-        hiddenElement.target = '_blank';
-        hiddenElement.download = 'codes.csv';
-        hiddenElement.click();
-      }, (err) => {
-        console.log('error exporting codes');
+      let actionText1 = 'Code-wise';
+      let actionText2 = 'Block-wise';
+      let that = this;
+
+      this.ModalService.showModal({
+        templateUrl: "app/custommodal/custommodal.html",
+        controller: "CustomModalController",
+        inputs: {
+          title: "Export Codes",
+          text: ['What format do you want to export the codes?'],
+          actionText1: actionText1,
+          actionText2: actionText2
+        }
+      }).then(function (modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          let blockWise = result === actionText2;
+
+          that.$http.get('api/users/admin/codes/'+blockWise).then(content => {
+            console.log('content', content);
+            var hiddenElement = document.createElement('a');
+
+            hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = blockWise ? 'codes_blockWise.csv' : 'codes.csv';
+            hiddenElement.click();
+          }, (err) => {
+            console.log('error exporting codes');
+          });
+
+
+        });
       });
+
+
+
+
     }
 
     exportCsv(user) {
@@ -481,8 +508,8 @@
 
         let that = this;
 
-        let actionText11 = 'Block-wise';
-        let actionText12 = 'User-wise';
+        let actionText11 = 'User-wise';
+        let actionText12 = 'Block-wise';
         let actionText21 = 'Yes';
         let actionText22 = 'No';
 
@@ -511,7 +538,7 @@
             }).then(function (modal) {
               modal.element.modal();
               modal.close.then(result2 => {
-                let blockWise = result1 === actionText11;
+                let blockWise = result1 === actionText12;
                 let blockContent = result2 === actionText21;
                 that.$http.post('api/users/csv/' + blockWise + '/' + blockContent, user).then(content => {
                   console.log('content', content);
