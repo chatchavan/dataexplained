@@ -141,7 +141,7 @@ angular.module('rationalecapApp')
         }).then(function(modal) {
           modal.element.modal();
           modal.close.then(result => {
-            if(result){
+            if(result && result.length > 0){
               $scope.coderCodes[index].explanation = result;
             }
           });

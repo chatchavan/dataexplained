@@ -758,7 +758,7 @@ export function getUserPackages(req, res) {
 }
 
 export function getCodes(req, res){
-  let withContent = req.params.content;
+  let blockWise = req.params.blockWise;
 
   User.find({role : 'user', finished: true}).exec(function(e, users){
     let usernames = [];
@@ -774,16 +774,22 @@ export function getCodes(req, res){
         return res.status(404).end();
       }
 
-      let users = [];
-      let headerRow = getBlocksCsv(blocks, [], withContent, true, users);
+      let codes = [];
+      let headerRow;
+      if(blockWise === 'true'){
+        headerRow = getBlocksCsv(blocks, [], false, true, codes);
+      }
+      else{
+        headerRow = getCodeMetricsCsv(blocks, [], codes);
+      }
 
       let headerObject = {};
       for (let r = 0; r < headerRow.length; r++) {
         headerObject[headerRow[r]] = '';
       }
-      users.unshift(headerObject);
+      codes.unshift(headerObject);
 
-      res.csv(users, true);
+      res.csv(codes, true);
 
 
     });
@@ -793,6 +799,70 @@ export function getCodes(req, res){
   });
 
 }
+
+function getCodeMetricsCsv(blocks, headerRow, allCodes) {
+
+  for (let i = 0; i < blocks.length; i++) {
+
+    let userBlock = blocks[i];
+
+    for (let j = 0; j < userBlock.blocks.length; j++) {
+
+
+
+      //Block Codes
+      let blockCodes = userBlock.blocks[j].blockCodes;
+      if (blockCodes && blockCodes.length > 0) {
+
+        for (let a = 0; a < blockCodes.length; a++) { //iterate of codes of each user
+
+          let userCode = blockCodes[a];
+
+          if(userCode && userCode.codes){
+
+            let coder = userCode.coder;
+
+
+            for(let c = 0; c < userCode.codes.length; c++) {
+
+              let codeString = userCode.codes[c].code; //separated with ';'
+              let codeText = replaceNewLines(userCode.codes[c].codeText);
+              let codeExplanation = replaceNewLines(userCode.codes[c].explanation);
+
+              let singleCodes = codeString.split(';');
+
+              for (let s = 0; s < singleCodes.length; s++) {
+
+                let codeKey = singleCodes[s];
+                let codeData = {
+                  codename : codeKey,
+                  appearance: codeText,
+                  explanation: codeExplanation,
+                  coder: coder
+                };
+                headerRow = pushToArrayUnique(headerRow, 'codename');
+                headerRow = pushToArrayUnique(headerRow, 'appearance');
+                headerRow = pushToArrayUnique(headerRow, 'explanation');
+                headerRow = pushToArrayUnique(headerRow, 'coder');
+
+                allCodes.push(codeData);
+
+              }
+            }
+
+
+          }
+
+
+        }
+      }
+
+    }
+  }
+  return headerRow;
+}
+
+
 
 /**
  * Export all Blocks (each on a line) for all useres
@@ -964,19 +1034,6 @@ function getBlocksCsv(blocks, headerRow, withContent, withCodes, users) {
 
               for(let c = 0; c < userCode.codes.length; c++){
 
-                //Code Text
-                let codeTextKey = 'Code ' + codenr + ': Text';
-                let codeText = userData[codeTextKey];
-                let codeTextContent = replaceNewLines(userCode.codes[c].codeText);
-                if (!codeText) {
-                  codeText = [codeTextContent];
-                }
-                else {
-                  codeText.push(codeTextContent);
-                }
-                userData[codeTextKey] = codeText;
-                headerRow = pushToArrayUnique(headerRow, codeTextKey);
-
                 //Code
                 let codeKey = 'Code ' + codenr+ ': Code';
                 let codes = userData[codeKey];
@@ -989,6 +1046,19 @@ function getBlocksCsv(blocks, headerRow, withContent, withCodes, users) {
                 }
                 userData[codeKey] = codes;
                 headerRow = pushToArrayUnique(headerRow, codeKey);
+
+                //Code Text
+                let codeTextKey = 'Code ' + codenr + ': Text';
+                let codeText = userData[codeTextKey];
+                let codeTextContent = replaceNewLines(userCode.codes[c].codeText);
+                if (!codeText) {
+                  codeText = [codeTextContent];
+                }
+                else {
+                  codeText.push(codeTextContent);
+                }
+                userData[codeTextKey] = codeText;
+                headerRow = pushToArrayUnique(headerRow, codeTextKey);
 
                 //Explanation
                 let codeExplanationKey = 'Code ' + codenr+ ': Explanation';
