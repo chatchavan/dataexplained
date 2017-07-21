@@ -839,7 +839,7 @@ export function getCodes(req, res){
         headerRow = getCodeMetricsCsvDetail(blocks, [], codes);
       }
       else{
-        headerRow = getCodeMetricsCsv(blocks, [], codes); //TODO
+        headerRow = getCodeMetricsCsv(blocks, [], codes);
       }
 
       let headerObject = {};
@@ -938,7 +938,7 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
       let blockId = userBlock.blocks[j]._id.toString();
       let blockTitle = userBlock.blocks[j].title;
 
-      let codeData = {
+      let blockData = {
         username : user,
         blockId : blockId,
         blockTitle: blockTitle
@@ -963,34 +963,63 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
 
               let codeString = userCode.codes[c].code; //separated with ';'
               let codeText = userCode.codes[c].codeText;
-              console.log('codeText', codeText);
 
               //TITLE
               let titleCodeTexts = getValueByTag(codeText, 'title');
               if(titleCodeTexts){
-                codeData['Codes for Title'] = codeString;
-                headerRow = pushToArrayUnique(headerRow, 'Codes for Title');
+                let titleCodesKey = 'Codes for Title';
+
+                if(!blockData[titleCodesKey]){
+                  blockData[titleCodesKey] = codeString;
+                }
+                else{
+                  blockData[titleCodesKey]+= (';'+codeString);
+                }
+
+                headerRow = pushToArrayUnique(headerRow, titleCodesKey);
               }
 
               //GOAL
               let goalCodeTexts = getValueByTag(codeText, 'goal');
               if(goalCodeTexts){
-                codeData['Codes for Goal'] = codeString;
-                headerRow = pushToArrayUnique(headerRow, 'Codes for Goal');
+                let goalCodesKey = 'Codes for Goal';
+                if(!blockData[goalCodesKey]){
+                  blockData[goalCodesKey] = codeString;
+                }
+                else{
+                  blockData[goalCodesKey] += (';'+codeString);
+                }
+                // codeData['Codes for Goal'] = codeString;
+                headerRow = pushToArrayUnique(headerRow, goalCodesKey);
               }
 
               //REASON
               let reasonCodeTexts = getValueByTag(codeText, 'reason');
               if(reasonCodeTexts){
-                codeData['Codes for Reason'] = codeString;
-                headerRow = pushToArrayUnique(headerRow, 'Codes for Reason');
+                let reasonCodeKey = 'Codes for Reason';
+                if(!blockData[reasonCodeKey]){
+                  blockData[reasonCodeKey] = codeString;
+                }
+                else{
+                  blockData[reasonCodeKey] += (';'+codeString);
+                }
+                // codeData['Codes for Reason'] = codeString;
+                headerRow = pushToArrayUnique(headerRow, reasonCodeKey);
               }
 
               //PRECONDITION
               let precCodeTexts = getValueByTag(codeText, 'prec');
               if(precCodeTexts){
-                codeData['Codes for Precondition'] = codeString;
-                headerRow = pushToArrayUnique(headerRow, 'Codes for Precondition');
+                let precCodeKey = 'Codes for Precondition';
+
+                if(!blockData[precCodeKey]){
+                  blockData[precCodeKey] = codeString;
+                }
+                else{
+                  blockData[precCodeKey] += (';'+codeString);
+                }
+                // codeData['Codes for Precondition'] = codeString;
+                headerRow = pushToArrayUnique(headerRow, precCodeKey);
               }
 
               //ALTERNATIVES
@@ -999,26 +1028,46 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
                 //ALT
                 let altCodeTexts = getValueByTag(codeText, 'alt'+(o+1));
                 if(altCodeTexts){
-                  codeData['Codes for Alternative '+(o+1)] = codeString;
-                  headerRow = pushToArrayUnique(headerRow, 'Codes for Alternative '+(o+1));
+                  let altCodeKey = 'Codes for Alternative '+(o+1);
+                  if(!blockData[altCodeKey]){
+                    blockData[altCodeKey] = codeString;
+                  }
+                  else{
+                    blockData[altCodeKey] += (';'+codeString);
+                  }
+                  // codeData['Codes for Alternative '+(o+1)] = codeString;
+                  headerRow = pushToArrayUnique(headerRow, altCodeKey);
                 }
 
                 //ALT-ADV
                 let altAdvCodeTexts = getValueByTag(codeText, 'adv'+(o+1));
                 if(altAdvCodeTexts){
-                  codeData['Codes for Alternative '+(o+1)+' Adv.'] = codeString;
-                  headerRow = pushToArrayUnique(headerRow, 'Codes for Alternative '+(o+1)+' Adv.');
+                  let altAdvCodeKey = 'Codes for Alternative '+(o+1)+' Adv.';
+                  if(!blockData[altAdvCodeKey]){
+                    blockData[altAdvCodeKey] = codeString;
+                  }
+                  else{
+                    blockData[altAdvCodeKey] += (';'+codeString);
+                  }
+                  // codeData['Codes for Alternative '+(o+1)+' Adv.'] = codeString;
+                  headerRow = pushToArrayUnique(headerRow, altAdvCodeKey);
                 }
 
                 //ALT-DIS
                 let altDisCodeTexts = getValueByTag(codeText, 'dis'+(o+1));
                 if(altDisCodeTexts){
-                  codeData['Codes for Alternative '+(o+1)+' Dis.'] = codeString;
-                  headerRow = pushToArrayUnique(headerRow, 'Codes for Alternative '+(o+1)+' Dis.');
+                  let altDisCodeKey = 'Codes for Alternative '+(o+1)+' Dis.';
+                  if(!blockData[altDisCodeKey]){
+                    blockData[altDisCodeKey] = codeString;
+                  }
+                  else{
+                    blockData[altDisCodeKey] += (';'+codeString);
+                  }
+                  // codeData['Codes for Alternative '+(o+1)+' Dis.'] = codeString;
+                  headerRow = pushToArrayUnique(headerRow, altDisCodeKey);
                 }
 
               }
-
 
 
 
@@ -1031,7 +1080,7 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
         }
       }
 
-      allCodes.push(codeData);
+      allCodes.push(blockData);
 
     }
   }
@@ -1323,51 +1372,26 @@ function pushToArrayUnique(arr, key, index) {
 
 function getValueByTag(string, tag){
 
-  let now = false;
-  if(string === '[title]: title text'){
-    console.log('TITLE TEXT');
-    now = true;
-  }
-
   let value = undefined;
   if(string){
     string += '[';
 
     let tagIndex = string.indexOf('['+tag+']:');
-    if(now){
-      console.log('tagIndex', tagIndex);
-    }
     if(tagIndex < 0){
       return value;
     }
-    // else{
-    //   string = string.substr(tagIndex, string.length-1);
-    // }
-
-    if(now){
-      console.log('string before regex', string);
-    }
 
     let expression = '[\\['+tag+'\\]\\:]((.|\\n)*?)[\\[]';
-    if(now){
-      console.log('expression', expression);
-    }
     var rx = new RegExp(expression, 'm');
     let match = string.match(rx);
-    if(now){
-      console.log('match', match);
-    }
+
     // match = string2.match(/[\[title\]\:]((.|\n)*?)[\[]/m);
     if(match && match[0].endsWith('[')){
       match[0] = match[0].substr(0, match[0].length-2);
-      console.log('match for '+ tag+':');
-      console.log('==========');
-      console.log(match[0]);
       value = match[0];
     }
 
   }
-  now = false;
 
   return value;
 
