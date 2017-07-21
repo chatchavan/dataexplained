@@ -133,7 +133,8 @@ class MainController {
               title: 'More than '+(this.logThreshold + this.logThresholdExtra)+' logs are not assigned to a block.',
               text: text,
               actionText1: actionText1,
-              actionText2: undefined
+              actionText2: undefined,
+              actionText3: undefined
             }
           }).then(function(modal) {
             modal.element.modal();
@@ -170,7 +171,8 @@ class MainController {
         title: 'More than '+this.logThreshold +' logs are not assigned to a block.',
         text: text,
         actionText1: actionText1,
-        actionText2: actionText2
+        actionText2: actionText2,
+        actionText3: undefined
       }
     }).then(function(modal) {
       modal.element.modal();
@@ -312,7 +314,8 @@ class MainController {
         title: "Finish Analysis",
         text: ['Please confirm that you have finished your analysis.'],
         actionText1: actionText1,
-        actionText2: actionText2
+        actionText2: actionText2,
+        actionText3: undefined
       }
     }).then(function(modal) {
       modal.element.modal();

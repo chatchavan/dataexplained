@@ -294,7 +294,8 @@
             title: "Create User",
             text: ['What kind of user do you want to create?'],
             actionText1: actionText1,
-            actionText2: actionText2
+            actionText2: actionText2,
+            actionText3: undefined
           }
         }).then(function (modal) {
           modal.element.modal();
@@ -406,7 +407,8 @@
           title: "Export all users",
           text: ['Which format do you want to export the users?'],
           actionText1: actionText11,
-          actionText2: actionText12
+          actionText2: actionText12,
+          actionText3: undefined
         }
       }).then(function (modal) {
         modal.element.modal();
@@ -419,7 +421,8 @@
               title: "Export all users",
               text: ['Do you want to include the content (code) of the blocks?'],
               actionText1: actionText21,
-              actionText2: actionText22
+              actionText2: actionText22,
+              actionText3: undefined
             }
           }).then(function (modal) {
             modal.element.modal();
@@ -465,7 +468,8 @@
     exportCodes(){
 
       let actionText1 = 'Code-wise';
-      let actionText2 = 'Block-wise';
+      let actionText2 = 'Code-wise Detail';
+      let actionText3 = 'Block-wise';
       let that = this;
 
       this.ModalService.showModal({
@@ -475,20 +479,27 @@
           title: "Export Codes",
           text: ['What format do you want to export the codes?'],
           actionText1: actionText1,
-          actionText2: actionText2
+          actionText2: actionText2,
+          actionText3: actionText3
         }
       }).then(function (modal) {
         modal.element.modal();
         modal.close.then(result => {
-          let blockWise = result === actionText2;
+          let method = 'codeWise';
+          if(result === actionText2){
+            method = 'codeWise-Detail';
+          }
+          else if(result === actionText3){
+            method = 'blockWise';
+          }
 
-          that.$http.get('api/users/admin/codes/'+blockWise).then(content => {
+          that.$http.get('api/users/admin/codes/'+method).then(content => {
             console.log('content', content);
             var hiddenElement = document.createElement('a');
 
             hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
             hiddenElement.target = '_blank';
-            hiddenElement.download = blockWise ? 'codes_blockWise.csv' : 'codes.csv';
+            hiddenElement.download = 'codes_'+method+'.csv';
             hiddenElement.click();
           }, (err) => {
             console.log('error exporting codes');
@@ -520,7 +531,8 @@
             title: "Export User " + user.username,
             text: ['Which format do you want to export the user?'],
             actionText1: actionText11,
-            actionText2: actionText12
+            actionText2: actionText12,
+            actionText3: undefined
           }
         }).then(function (modal) {
           modal.element.modal();
@@ -533,7 +545,8 @@
                 title: "Export User " + user.username,
                 text: ['Do you want to include the content (code) of the blocks?'],
                 actionText1: actionText21,
-                actionText2: actionText22
+                actionText2: actionText22,
+                actionText3: undefined
               }
             }).then(function (modal) {
               modal.element.modal();

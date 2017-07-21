@@ -758,7 +758,7 @@ export function getUserPackages(req, res) {
 }
 
 export function getCodes(req, res){
-  let blockWise = req.params.blockWise;
+  let method = req.params.method;
 
   User.find({role : 'user', finished: true}).exec(function(e, users){
     let usernames = [];
@@ -776,11 +776,14 @@ export function getCodes(req, res){
 
       let codes = [];
       let headerRow;
-      if(blockWise === 'true'){
+      if(method === 'blockWise'){
         headerRow = getBlocksCsv(blocks, [], false, true, codes);
       }
+      else if (method === 'codeWise-Detail'){
+        headerRow = getCodeMetricsCsvDetail(blocks, [], codes);
+      }
       else{
-        headerRow = getCodeMetricsCsv(blocks, [], codes);
+        headerRow = getCodeMetricsCsv(blocks, [], codes); //TODO
       }
 
       let headerObject = {};
@@ -800,10 +803,11 @@ export function getCodes(req, res){
 
 }
 
-function getCodeMetricsCsv(blocks, headerRow, allCodes) {
+function getCodeMetricsCsvDetail(blocks, headerRow, allCodes) {
 
   for (let i = 0; i < blocks.length; i++) {
 
+    let user = blocks[i].user;
     let userBlock = blocks[i];
 
     for (let j = 0; j < userBlock.blocks.length; j++) {
@@ -835,12 +839,14 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
 
                 let codeKey = singleCodes[s];
                 let codeData = {
+                  user : user,
                   blockId : blockId,
                   codename : codeKey,
                   appearance: codeText,
                   explanation: codeExplanation,
                   coder: coder
                 };
+                headerRow = pushToArrayUnique(headerRow, 'user');
                 headerRow = pushToArrayUnique(headerRow, 'blockId');
                 headerRow = pushToArrayUnique(headerRow, 'codename');
                 headerRow = pushToArrayUnique(headerRow, 'appearance');
@@ -864,6 +870,117 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
   return headerRow;
 }
 
+function getCodeMetricsCsv(blocks, headerRow, allCodes) {
+
+  for (let i = 0; i < blocks.length; i++) {
+
+    let userBlock = blocks[i];
+    let user = blocks[i].user;
+
+    for (let j = 0; j < userBlock.blocks.length; j++) {
+
+      let blockId = userBlock.blocks[j]._id.toString();
+      let blockTitle = userBlock.blocks[j].title;
+
+      let codeData = {
+        username : user,
+        blockId : blockId,
+        blockTitle: blockTitle
+      };
+      headerRow = pushToArrayUnique(headerRow, 'username');
+      headerRow = pushToArrayUnique(headerRow, 'blockId');
+      headerRow = pushToArrayUnique(headerRow, 'blockTitle');
+
+
+      //Block Codes
+      let blockCodes = userBlock.blocks[j].blockCodes;
+      let nrAlternatives = userBlock.blocks[j].alternatives ? userBlock.blocks[j].alternatives.length : 0;
+      if (blockCodes && blockCodes.length > 0) {
+
+        for (let a = 0; a < blockCodes.length; a++) { //iterate of codes of each user
+
+          let userCode = blockCodes[a];
+
+          if(userCode && userCode.codes){
+
+            for(let c = 0; c < userCode.codes.length; c++) {
+
+              let codeString = userCode.codes[c].code; //separated with ';'
+              let codeText = userCode.codes[c].codeText;
+              console.log('codeText', codeText);
+
+              //TITLE
+              let titleCodeTexts = getValueByTag(codeText, 'title');
+              if(titleCodeTexts){
+                codeData['Codes for Title'] = codeString;
+                headerRow = pushToArrayUnique(headerRow, 'Codes for Title');
+              }
+
+              //GOAL
+              let goalCodeTexts = getValueByTag(codeText, 'goal');
+              if(goalCodeTexts){
+                codeData['Codes for Goal'] = codeString;
+                headerRow = pushToArrayUnique(headerRow, 'Codes for Goal');
+              }
+
+              //REASON
+              let reasonCodeTexts = getValueByTag(codeText, 'reason');
+              if(reasonCodeTexts){
+                codeData['Codes for Reason'] = codeString;
+                headerRow = pushToArrayUnique(headerRow, 'Codes for Reason');
+              }
+
+              //PRECONDITION
+              let precCodeTexts = getValueByTag(codeText, 'prec');
+              if(precCodeTexts){
+                codeData['Codes for Precondition'] = codeString;
+                headerRow = pushToArrayUnique(headerRow, 'Codes for Precondition');
+              }
+
+              //ALTERNATIVES
+              for(let o = 0; o < nrAlternatives; o++){
+
+                //ALT
+                let altCodeTexts = getValueByTag(codeText, 'alt'+(o+1));
+                if(altCodeTexts){
+                  codeData['Codes for Alternative '+(o+1)] = codeString;
+                  headerRow = pushToArrayUnique(headerRow, 'Codes for Alternative '+(o+1));
+                }
+
+                //ALT-ADV
+                let altAdvCodeTexts = getValueByTag(codeText, 'adv'+(o+1));
+                if(altAdvCodeTexts){
+                  codeData['Codes for Alternative '+(o+1)+' Adv.'] = codeString;
+                  headerRow = pushToArrayUnique(headerRow, 'Codes for Alternative '+(o+1)+' Adv.');
+                }
+
+                //ALT-DIS
+                let altDisCodeTexts = getValueByTag(codeText, 'dis'+(o+1));
+                if(altDisCodeTexts){
+                  codeData['Codes for Alternative '+(o+1)+' Dis.'] = codeString;
+                  headerRow = pushToArrayUnique(headerRow, 'Codes for Alternative '+(o+1)+' Dis.');
+                }
+
+              }
+
+
+
+
+            }
+
+
+          }
+
+
+        }
+      }
+
+      allCodes.push(codeData);
+
+    }
+  }
+  return headerRow;
+}
 
 
 /**
@@ -1147,3 +1264,55 @@ function pushToArrayUnique(arr, key, index) {
   return arr;
 }
 
+
+function getValueByTag(string, tag){
+
+  let now = false;
+  if(string === '[title]: title text'){
+    console.log('TITLE TEXT');
+    now = true;
+  }
+
+  let value = undefined;
+  if(string){
+    string += '[';
+
+    let tagIndex = string.indexOf('['+tag+']:');
+    if(now){
+      console.log('tagIndex', tagIndex);
+    }
+    if(tagIndex < 0){
+      return value;
+    }
+    // else{
+    //   string = string.substr(tagIndex, string.length-1);
+    // }
+
+    if(now){
+      console.log('string before regex', string);
+    }
+
+    let expression = '[\\['+tag+'\\]\\:]((.|\\n)*?)[\\[]';
+    if(now){
+      console.log('expression', expression);
+    }
+    var rx = new RegExp(expression, 'm');
+    let match = string.match(rx);
+    if(now){
+      console.log('match', match);
+    }
+    // match = string2.match(/[\[title\]\:]((.|\n)*?)[\[]/m);
+    if(match && match[0].endsWith('[')){
+      match[0] = match[0].substr(0, match[0].length-2);
+      console.log('match for '+ tag+':');
+      console.log('==========');
+      console.log(match[0]);
+      value = match[0];
+    }
+
+  }
+  now = false;
+
+  return value;
+
+}

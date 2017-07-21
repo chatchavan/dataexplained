@@ -127,7 +127,8 @@
           title: 'Reconstruct Workflow',
           text: text,
           actionText1: 'Ok',
-          actionText2: undefined
+          actionText2: undefined,
+          actionText3: undefined
         }
       }).then(function(modal) {
         modal.element.modal();
@@ -156,7 +157,8 @@
           title: "Edit Blocks",
           text: ['Please be aware that the graphical arrangement of your blocks will be lost when going back to the previous step.'],
           actionText1: actionText1,
-          actionText2: actionText2
+          actionText2: actionText2,
+          actionText3: undefined
         }
       }).then(function(modal) {
         modal.element.modal();

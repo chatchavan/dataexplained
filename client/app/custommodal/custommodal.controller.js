@@ -1,12 +1,15 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('CustomModalController', function($scope, $element, $sce, title, close, text, actionText1, actionText2) {
+  .controller('CustomModalController', function($scope, $element, $sce, title, close, text, actionText1, actionText2, actionText3) {
 
     $scope.title = title;
     $scope.text = text;
     $scope.actionText1 = actionText1;
     $scope.actionText2 = actionText2;
+    if(actionText3){
+      $scope.actionText3 = actionText3;
+    }
 
     $scope.trustAsHtml = function(string) {
       return $sce.trustAsHtml(string);
@@ -15,6 +18,11 @@ angular.module('rationalecapApp')
     $scope.close = function(form) {
         $element.modal('hide');
         close($scope.actionText1, 500); // close, but give 500ms for bootstrap to animate
+    };
+
+    $scope.action3 = function(form) {
+      $element.modal('hide');
+      close($scope.actionText3, 500); // close, but give 500ms for bootstrap to animate
     };
 
     $scope.cancel = function(form) {
