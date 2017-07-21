@@ -34,7 +34,7 @@ angular.module('rationalecapApp')
 
     $scope.loadTags = function(query) {
       return $scope.allCodes.filter(function (el) {
-        return el.includes(query);
+        return el.includes(query.toLowerCase());
       });
 
     };

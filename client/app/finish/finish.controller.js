@@ -112,7 +112,8 @@
           title: 'Rearrange Log-statements',
           text: text,
           actionText1: 'Ok',
-          actionText2: undefined
+          actionText2: undefined,
+          actionText3: undefined
         }
       }).then(function (modal) {
         modal.element.modal();
