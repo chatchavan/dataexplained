@@ -23,7 +23,7 @@
     <md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.exportUserDetail()">Export User Details</md-button>
     <!--<md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.exportUserDetail('Packages')">Export User Packages</md-button>-->
     <!--<md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.exportUserDetail('Activity')">Export User Activity</md-button>-->
-    <md-button ng-if="admin.isAdmin()" class="md-raised" ng-click="admin.exportCodes()">Export Codes</md-button>
+    <md-button  class="md-raised" ng-click="admin.exportCodes()">Export Codes</md-button>
     <label ng-if="admin.isAdmin()" for="survey" class="control-label">Enable survey</label>
     <input ng-if="admin.isAdmin()" class="" type="checkbox" ng-click="admin.setSurvey()" ng-model="admin.configSurvey" id="survey">
     <md-button class="mg-raised pull-right" ng-click="admin.logout()">Logout</md-button>
