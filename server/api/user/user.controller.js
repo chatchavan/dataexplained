@@ -757,6 +757,62 @@ export function getUserPackages(req, res) {
 
 }
 
+export function getUserActivity(req, res) {
+
+  User.findAsync({}, '-salt -password')
+    .then(u => {
+
+      let userActivities = [];
+      let headerRow = [];
+      let counter = 0;
+
+      for (let j = u.length - 1; j >= 0; j--) {
+
+        let user = u[j].username;
+        let userData = {
+          username: user,
+        };
+        headerRow = pushToArrayUnique(headerRow, 'username');
+
+        let rHistory = config.env === 'development' ? './history_database' : '/home/' + user + '/.rstudio/history_database';
+
+        fs.readFile(rHistory, 'utf8', function (err, data) {
+
+          if (!err) {
+            let fileLogs = data.toString().split('\n');
+            fileLogs.splice(fileLogs.length - 1, 1); //remove empty last line
+            if (fileLogs && fileLogs.length >= 0) {
+              for (var i = fileLogs.length - 1; i >= 0; i--) {
+                if(fileLogs[i].length > 0){
+                  userData.timestamp = fileLogs[i].substr(0, fileLogs[i].indexOf(':'));
+                  headerRow = pushToArrayUnique(headerRow, 'timestamp');
+                  userActivities.push(userData);
+                }
+              }
+            }
+
+          }
+
+          counter++;
+          if (counter >= u.length) {
+            let headerObject = {};
+            for (let r = 0; r < headerRow.length; r++) {
+              headerObject[headerRow[r]] = '';
+            }
+            userActivities.unshift(headerObject);
+
+            res.csv(userActivities, true);
+            return;
+          }
+        });
+
+      }
+
+    })
+    .catch(handleError(res));
+
+}
+
 export function getCodes(req, res){
   let method = req.params.method;
 

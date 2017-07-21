@@ -10,6 +10,7 @@ router.get('/', auth.hasRole(['admin', 'admin-light']), controller.index);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.get('/admin/all', auth.hasRole(['admin', 'admin-light']), controller.indexAdmin);
 router.get('/admin/userPackages', auth.hasRole(['admin', 'admin-light']), controller.getUserPackages);
+router.get('/admin/userActivity', auth.hasRole(['admin']), controller.getUserActivity);
 router.get('/admin/codes/:method', auth.hasRole(['admin', 'admin-light']), controller.getCodes);
 router.get('/:id', auth.isAuthenticated(), controller.show);
 router.get('/csvAll/:blockWise/:content', auth.hasRole(['admin', 'admin-light']), controller.csvAll);

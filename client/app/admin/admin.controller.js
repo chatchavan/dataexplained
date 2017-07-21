@@ -450,19 +450,39 @@
 
     }
 
-    exportUserPackages() {
-      this.$http.get('api/users/admin/userPackages').then(content => {
-        console.log('content', content);
-        var hiddenElement = document.createElement('a');
+    exportUserDetail(){
+      let that = this;
+      let actionText1 = 'Packages';
+      let actionText2 = 'Activity';
 
-        hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
-        hiddenElement.target = '_blank';
-        hiddenElement.download = 'allUsers_packages.csv';
-        hiddenElement.click();
-      }, (err) => {
-        console.log('error exporting user packages');
+      this.ModalService.showModal({
+        templateUrl: "app/custommodal/custommodal.html",
+        controller: "CustomModalController",
+        inputs: {
+          title: "Export User Detail",
+          text: ['What kind of user details do you want to export?'],
+          actionText1: actionText1,
+          actionText2: actionText2,
+          actionText3: undefined
+        }
+      }).then(function (modal) {
+        modal.element.modal();
+        modal.close.then(result => {
+          that.$http.get('api/users/admin/user'+result).then(content => {
+            console.log('content', content);
+            var hiddenElement = document.createElement('a');
+
+            hiddenElement.href = 'data:attachment/csv,' + encodeURI(content.data);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = 'allUsers_'+result+'.csv';
+            hiddenElement.click();
+          }, (err) => {
+            console.log('error exporting user '+result);
+          });
+
+
+        });
       });
-
     }
 
     exportCodes(){
