@@ -121,8 +121,9 @@ angular.module('rationalecapApp')
     };
 
     $scope.deleteCode = function(index){
-      if(index >= 0 && $scope.coderCodes.length > index){
+      if(index >= 0 && $scope.coderCodes.length > index && $scope.codes.length > index){
         $scope.coderCodes.splice(index, 1);
+        $scope.codes.splice(index, 1);
       }
 
     };
