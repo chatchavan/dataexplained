@@ -25,7 +25,8 @@ var UserSchema = new Schema({
     type: Number,
     default: 1
   },
-  codes : [String], //Coders: List of block-ids already coded
+  codes : [String], //Coders: All codes user has applied so far
+  codedBlocks: [String], //Coders: List of block-ids already coded
   lastLogin: Date,
   password: String,
   provider: String,

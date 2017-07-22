@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 var Configuration = require('./configuration.model');
+var User = require('./../user/user.model');
 var config = require('../../config/environment');
 
 function handleError(res, statusCode) {
@@ -80,7 +81,21 @@ export function showEnv(req, res) {
   return res.status(200).json(config.env);
 }
 
+//Shows all codes this user has used so far
 export function showCodes(req, res) {
+  let coderId = req.user._id;
+  User.findOne({'_id': coderId}).exec(function (errFind, user) {
+    if (!user || errFind) {
+      return res.status(404).end();
+    }
+    else{
+      return res.status(200).json(user.codes);
+    }
+  });
+}
+
+//Shows all codes from all users (global)
+export function showAllCodes(req, res){
   Configuration.find({}, function(err, conf){
 
     if(err || conf.length <=0){
@@ -118,14 +133,13 @@ export function create(req, res) {
 }
 
 export function updateCodes(req, res){
-  let allCodes = req.body.allCodes;
+  let allCodes = req.body.allCodes; //all Codes from updated Block
+  let coderId =   req.user._id;
 
+  //Update all codes (global)
   Configuration.find({}, function(err, conf){
 
-    if(err || conf.length <=0){
-      return res.status(404).end();
-    }
-    else{
+    if(!err && conf.length > 0){
 
       let codes = conf[0].codes;
       for(let i = 0; i < allCodes.length; i++){
@@ -138,6 +152,34 @@ export function updateCodes(req, res){
       conf[0].codes = codes;
 
       conf[0].save(function (err) {
+        if (err) {
+          console.log('could update configuration codes', err);
+          // return res.status(200).json(blockCopy);
+        }
+
+      });
+    }
+
+  });
+
+  //Update codes from users
+  User.findOne({'_id': coderId}).exec(function (errFind, user) {
+    if (!user || errFind) {
+      return res.status(404).end();
+    }
+    else{
+
+      let codes = user.codes;
+      for(let i = 0; i < allCodes.length; i++){
+        if (codes.indexOf(allCodes[i]) === -1) {
+          codes.push(allCodes[i]);
+        }
+      }
+
+      delete user._id;
+      user.codes = codes;
+
+      user.save(function (err) {
         if (err) {
           console.log('could update configuration codes', err);
           // return res.status(200).json(blockCopy);
