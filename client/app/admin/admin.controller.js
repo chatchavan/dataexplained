@@ -158,14 +158,14 @@
 
 
     updateCoder(newBlockId, noCodes, allCodes) {
-      if(!this.currentUser.codes && !noCodes){
-        this.currentUser.codes = [newBlockId];
+      if(!this.currentUser.codedBlocks && !noCodes){
+        this.currentUser.codedBlocks = [newBlockId];
       }
-      else if(this.currentUser.codes.indexOf(newBlockId) < 0 && !noCodes){
-        this.currentUser.codes.push(newBlockId);
+      else if(this.currentUser.codedBlocks.indexOf(newBlockId) < 0 && !noCodes){
+        this.currentUser.codedBlocks.push(newBlockId);
       }
-      else if(this.currentUser.codes.indexOf(newBlockId) > 0 && noCodes){
-        this.currentUser.codes.splice(this.currentUser.codes.indexOf(newBlockId), 1);
+      else if(this.currentUser.codedBlocks.indexOf(newBlockId) > 0 && noCodes){
+        this.currentUser.codedBlocks.splice(this.currentUser.codedBlocks.indexOf(newBlockId), 1);
       }
       this.$http.put('/api/users/', this.currentUser).then(response => {
         if(response && response.data){
@@ -245,7 +245,7 @@
             tempJson.marginTop = style.height;
             tempJson.user = that.searchUser;
             if(that.isAdminLight()){
-              tempJson.codeList = that.currentUser.codes;
+              tempJson.codeList = that.currentUser.codedBlocks;
             }
             this.noWorkflow = false;
             this.plumbJson = tempJson;
