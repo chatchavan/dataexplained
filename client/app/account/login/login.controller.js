@@ -18,7 +18,7 @@ class LoginController {
 
   checkSession(){
    let user = this.StorageUtil.retrieveSStorage('user');
-   if(user){
+   if(user && user !== 'undefined'){
      this.doLogin(user, user);
    }
 
@@ -39,7 +39,7 @@ class LoginController {
     })
       .then((u) => {
         // Logged in, redirect to home
-        this.StorageUtil.saveSStorage('user',this.user.username);
+        this.StorageUtil.saveSStorage('user', u.username);
         if(this.Auth.isAdmin() || u.role === 'admin-light'){
           this.$state.go('admin');
         }
@@ -71,6 +71,7 @@ class LoginController {
         }
       })
       .catch(err => {
+        console.log('user not logged in', err);
         this.errors.other = err.message;
       });
   }
