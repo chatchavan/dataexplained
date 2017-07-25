@@ -8,7 +8,7 @@ var router = express.Router();
 
 router.get('/', auth.hasRole(['admin', 'admin-light']), controller.index);
 router.get('/user', auth.isAuthenticated(), controller.show);
-router.get('/user/db', auth.isAuthenticated(), controller.showFromDb);
+router.get('/codeReferences/:code', auth.isAuthenticated(), controller.getCodeReferences);
 router.get('/admin/:user',  auth.hasRole(['admin', 'admin-light']), controller.showAdmin);
 router.get('/admin/:user/:id',  auth.hasRole(['admin', 'admin-light']), controller.showSingleAdmin);
 router.post('/plumb', auth.isAuthenticated(), controller.createPlumb);

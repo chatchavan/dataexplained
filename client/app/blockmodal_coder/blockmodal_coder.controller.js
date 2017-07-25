@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModalCoderController', function($scope, $element, title, close, block, content, edit, allCodes, Auth, ModalService) {
+  .controller('BlockModalCoderController', function($scope, $element, $http, title, close, block, content, edit, allCodes, Auth, ModalService) {
 
     $scope.title = title;
     $scope.edit = edit;
@@ -60,6 +60,44 @@ angular.module('rationalecapApp')
       }
 
     };
+
+    $scope.onTagClicked = function(tag){
+      console.log('tag', tag.text);
+      $http.get('/api/blocks/codeReferences/' + tag.text ).then(response => {
+        let codeTexts = ['Code has not been applied at another place yet.'];
+
+        if (response.data && response.data.length > 0) {
+          codeTexts = [];
+          for(let i = 0; i < response.data.length; i++){
+            codeTexts.push(response.data[i]);
+            if(i < response.data.length-1){
+              codeTexts.push('<hr>');
+            }
+          }
+        }
+
+        ModalService.showModal({
+          templateUrl: "app/custommodal/custommodal.html",
+          controller: "CustomModalController",
+          inputs: {
+            title: "Code Texts",
+            text: codeTexts,
+            actionText1: 'Ok',
+            actionText2: undefined,
+            actionText3: undefined
+          }
+        }).then(function (modal) {
+          modal.element.modal();
+          modal.close.then(result => {
+          });
+        });
+
+      }, (err) => {
+        console.log('error getting code texts', err);
+      });
+
+    };
+
 
 
 

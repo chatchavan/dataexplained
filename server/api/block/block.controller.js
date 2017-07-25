@@ -11,6 +11,7 @@
 
 import _ from 'lodash';
 var Block = require('./block.model');
+var User = require('./../user/user.model');
 var UserCtrl = require('./../user/user.controller');
 var LogCtrl = require('./../log/log.controller');
 var auth = require('../../auth/auth.service');
@@ -127,6 +128,73 @@ export function showFromDb(req, res) {
   });
 
 
+}
+
+
+export function getCodeReferences(req, res) {
+  let code = req.params.code;
+  console.log('get Code Texts for code', code);
+
+  User.find({role : 'user', finished : true}, '-salt -password')
+    .then(users => {
+      let codeTexts = [];
+
+      var onComplete = function () {
+        return res.status(200).json(codeTexts);
+      };
+
+      var tasksToGo = users.length;
+      users.forEach(function (i) {
+        let userObject = i.toObject();
+
+
+        Block.findOne({'user': userObject.username}).exec(function (err, userBlocks) {
+
+          if (!err && userBlocks) {
+            for(let i = 0; i < userBlocks.blocks.length; i++){
+              let userBlockCodes = userBlocks.blocks[i].blockCodes;
+
+              if(userBlockCodes){
+                for(let j = 0; j < userBlockCodes.length; j++){
+
+                  let userCodes = userBlockCodes[j].codes;
+                  let coder = userBlockCodes[j].coder;
+
+                  if(coder === req.user.username && userCodes){
+
+                    let match = userCodes.filter(function(item){
+                      return item.code.indexOf(code) >= 0;
+                    });
+                    if(match && match.length > 0){
+                      for(let m = 0; m < match.length; m++){
+                        let text = 'User : '+userObject.username+'<br>Block Nr: '+(i+1)+'<br>Block Title: '+userBlocks.blocks[i].title+
+                          '<br>Coded Text:<br>'+match[m].codeText;
+                        codeTexts.push(text);
+                      }
+                    }
+                  }
+
+                }
+              }
+
+
+
+            }
+
+          }
+
+          if (--tasksToGo === 0) {
+            // No tasks left, good to go
+            onComplete();
+          }
+
+        });
+
+
+
+      });
+
+    })
 }
 
 export function showAdmin(req, res) {
