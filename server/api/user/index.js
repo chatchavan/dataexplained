@@ -23,6 +23,7 @@ router.post('/',  auth.isAuthenticated(), controller.create);
 router.post('/createAdmin', auth.hasRole(['admin']), controller.createAdmin);
 router.post('/resetAdmin', auth.hasRole(['admin']), controller.resetAdmin);
 router.post('/deleteAdmin', auth.hasRole(['admin']), controller.deleteAdmin);
+router.post('/migrateCodeLabels', auth.hasRole(['admin']), controller.migrateCodeLabels);
 router.delete('/:id', auth.hasRole(['admin']), controller.destroy);
 
 
