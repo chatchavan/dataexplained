@@ -7,29 +7,12 @@ angular.module('rationalecapApp')
     $scope.edit = edit;
     $scope.block = block;
     $scope.allCodes = allCodes;
-
-    if(!$scope.block){
-      $scope.block = {};
-      $scope.block.alternatives = [{}];
-    }
-    $scope.renderedContent_temp = [];
-    if($scope.block.content){
-      $scope.renderedContent_temp = $scope.block.content.split('\\n');
-    }
-    else if(content){
-      $scope.renderedContent_temp = content.content.split('\\n');
-    }
-
-    $scope.renderedContent = [];
-    for(var i = 0; i < $scope.renderedContent_temp.length; i++){
-      $scope.renderedContent.push({id: i, content: $scope.renderedContent_temp[i]});
-    }
-
+    $scope.labels = ['title', 'goal'];
     $scope.blockCodesIndex = 0;
     $scope.codes = [];
-    loadCoderCodes();
-
     $scope.step = 1;
+
+    init();
 
 
     $scope.loadTags = function(query) {
@@ -47,7 +30,6 @@ angular.module('rationalecapApp')
       for(let i = 1; i < $scope.codes[index].length; i++){
         $scope.coderCodes[index].code += ';'+$scope.codes[index][i].text;
       }
-
 
     };
 
@@ -99,7 +81,14 @@ angular.module('rationalecapApp')
     };
 
 
-
+    $scope.getLabel = function(code){
+      if(code && code.codeLabel){
+        return code.codeLabel;
+      }
+      else{
+        return 'Label...';
+      }
+    };
 
 
     //  This close function doesn't need to use jQuery or bootstrap, because
@@ -210,6 +199,38 @@ angular.module('rationalecapApp')
 
 
     //========HELPER FUNCTION
+
+    function init(){
+      if(!$scope.block){
+        $scope.block = {};
+        $scope.block.alternatives = [{}];
+      }
+
+      for(let i = 0; i < $scope.block.alternatives.length; i++){
+        $scope.labels.push('alt'+(i+1));
+        $scope.labels.push('adv'+(i+1));
+        $scope.labels.push('dis'+(i+1));
+      }
+      $scope.labels.push('reason');
+      $scope.labels.push('prec');
+
+      $scope.renderedContent_temp = [];
+      if($scope.block.content){
+        $scope.renderedContent_temp = $scope.block.content.split('\\n');
+      }
+      else if(content){
+        $scope.renderedContent_temp = content.content.split('\\n');
+      }
+
+      $scope.renderedContent = [];
+      for(var i = 0; i < $scope.renderedContent_temp.length; i++){
+        $scope.renderedContent.push({id: i, content: $scope.renderedContent_temp[i]});
+      }
+
+      loadCoderCodes();
+    }
+
+
     function loadCoderCodes(){
       let blockCodes = $scope.block.blockCodes;
 

@@ -163,12 +163,18 @@ export function getCodeReferences(req, res) {
                   if(coder === req.user.username && userCodes){
 
                     let match = userCodes.filter(function(item){
-                      return item.code.indexOf(code) >= 0;
+                      if(item.code && item.code.length > 0){
+                        return item.code.indexOf(code) >= 0;
+                      }
+                        return false;
                     });
                     if(match && match.length > 0){
                       for(let m = 0; m < match.length; m++){
                         let text = 'User : '+userObject.username+'<br>Block Nr: '+(i+1)+'<br>Block Title: '+userBlocks.blocks[i].title+
                           '<br>Coded Text:<br>'+match[m].codeText;
+                        if(match[m].explanation){
+                          text += '<br>Note:<br>'+ match[m].explanation;
+                        }
                         codeTexts.push(text);
                       }
                     }

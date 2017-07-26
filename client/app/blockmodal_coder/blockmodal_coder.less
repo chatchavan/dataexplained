@@ -1,5 +1,7 @@
 .blockmodalCoder{
 
+  @code-area-min-height: 80px;
+
 
   /* Important part */
   .modal-dialog{
@@ -61,6 +63,14 @@
     padding: 0;
   }
 
+  .btn-group{
+    width: 100%;
+
+    button{
+      width: 100%;
+    }
+  }
+
   .modal-footer .btn-group button {
     height:40px;
     border-top-left-radius : 0;
@@ -75,7 +85,7 @@
 
   .code-area{
     textarea{
-      min-height: 80px;
+      min-height: @code-area-min-height;
     }
   }
 
@@ -116,9 +126,14 @@
 
   .multilabel-container{
     display: flex;
-    justify-content: center;
+    //justify-content: center;
     tags-input{
-      width: 80%;
+      width: 100%;
+      .tags{
+        border-radius: 3px;
+        border: 1px solid #ccc;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      }
     }
   }
   .sublabel{
@@ -130,7 +145,7 @@
   }
 
   .sublabel-input{
-    width: 80%;
+    width: 100%;
   }
 
   .required{
@@ -139,6 +154,57 @@
 
   .inline-error{
     margin-left: 15%;
+  }
+
+  .dropdown-menu{
+
+    min-width: 5px;
+    width: 100%;
+
+    li{
+      margin-left: 5px;
+      max-width: 60px;
+      min-width: 60px;
+      //display: inline-block;
+      //color: black;
+      text-align: center;
+    }
+
+    .open > .dropdown-menu {
+      display: block;
+      cursor: pointer;
+      width: 100%;
+    }
+  }
+
+  .dropdown-toggle{
+    //margin-top: @code-area-min-height/2;
+  }
+
+  .coding-column{
+    table{
+      width: 100%;
+      border-collapse: collapse;
+
+      .padding-bottom{
+        padding-bottom: 20px;
+      }
+      .right-td{
+        padding-left: 10px;
+      }
+    }
+    .first-column{
+      width: 1%;
+    }
+
+    .code-text-container{
+      margin-top: 20px;
+
+      td{
+        min-width: 80px;
+      }
+    }
+
   }
 }
 

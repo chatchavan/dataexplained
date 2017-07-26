@@ -5,6 +5,7 @@ var mongoose = require('bluebird').promisifyAll(require('mongoose'));
 var CodesSchema = new mongoose.Schema({
   codeText: String,
   code: String,
+  codeLabel: String,
   explanation: String
 });
 
