@@ -79,16 +79,44 @@
               <div class="text-right alternative-icons">
                 <i class="fa fa-lightbulb-o" aria-hidden="true" ng-click="addExplanation($index)"></i>
                 <i class="fa fa-trash" aria-hidden="true" ng-click="deleteCode($index)"></i>
+              </div>
 
-              </div>
-              <div class="multilabel-container padding-top-medium">
-                <tags-input on-tag-removed="onTagRemoved($tag, $index)" on-tag-added="onTagAdded($tag, $index)" on-tag-clicked="onTagClicked($tag)" add-on-enter="true" add-on-space="false" add-on-comma="false" replace-spaces-with-dashes="false" placeholder="Add code" ng-model="codes[$index]">
-                  <auto-complete source="loadTags($query)"></auto-complete>
-                </tags-input>
-              </div>
-              <div class="multilabel-container padding-top-medium">
-                <textarea placeholder="Code-Text" type="text" class="sublabel-input form-control" name="codeText{{$index}}" placeholder="" ng-model="code.codeText"></textarea>
-              </div>
+                <div class="coding-column">
+
+                  <table>
+                    <tbody>
+                    <tr>
+                      <td class="first-column"></td>
+                      <td class="right-td padding-bottom">
+                        <div class="multilabel-container padding-top-medium">
+                          <tags-input on-tag-removed="onTagRemoved($tag, $index)" on-tag-added="onTagAdded($tag, $index)" on-tag-clicked="onTagClicked($tag)" add-on-enter="true" add-on-space="false" add-on-comma="false" replace-spaces-with-dashes="false" placeholder="Add code" ng-model="codes[$index]">
+                            <auto-complete source="loadTags($query)"></auto-complete>
+                          </tags-input>
+                        </div>
+                      </td>
+
+                    </tr>
+
+                    <tr class="code-text-container">
+                      <td>
+                        <div class="btn-group show-on-hover">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span data-bind="bs-drp-sel-label" ng-bind="getLabel(code)"></span>
+                            <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" role="menu">
+                            <li class="" ng-repeat="label in labels" ng-click="code.codeLabel = label">{{label}}</li>
+                          </ul>
+                        </div>
+                      </td>
+                      <td class="right-td">
+                        <textarea placeholder="Code-Text" type="text" class="sublabel-input form-control" name="codeText{{$index}}" placeholder="" ng-model="code.codeText"></textarea>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                </div>
 
             </div>
             <div class="">

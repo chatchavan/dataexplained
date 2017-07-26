@@ -963,10 +963,11 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
 
               let codeString = userCode.codes[c].code; //separated with ';'
               let codeText = userCode.codes[c].codeText;
+              let codeLabel = userCode.codes[c].codeLabel;
 
               //TITLE
-              let titleCodeTexts = getValueByTag(codeText, 'title');
-              if(titleCodeTexts){
+              // let titleCodeTexts = getValueByTag(codeText, 'title');
+              if(codeLabel && codeLabel === 'title'){
                 let titleCodesKey = 'Codes for Title';
 
                 if(!blockData[titleCodesKey]){
@@ -980,8 +981,8 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
               }
 
               //GOAL
-              let goalCodeTexts = getValueByTag(codeText, 'goal');
-              if(goalCodeTexts){
+              // let goalCodeTexts = getValueByTag(codeText, 'goal');
+              if(codeLabel && codeLabel === 'goal'){
                 let goalCodesKey = 'Codes for Goal';
                 if(!blockData[goalCodesKey]){
                   blockData[goalCodesKey] = codeString;
@@ -994,8 +995,8 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
               }
 
               //REASON
-              let reasonCodeTexts = getValueByTag(codeText, 'reason');
-              if(reasonCodeTexts){
+              // let reasonCodeTexts = getValueByTag(codeText, 'reason');
+              if(codeLabel && codeLabel === 'reason'){
                 let reasonCodeKey = 'Codes for Reason';
                 if(!blockData[reasonCodeKey]){
                   blockData[reasonCodeKey] = codeString;
@@ -1008,8 +1009,8 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
               }
 
               //PRECONDITION
-              let precCodeTexts = getValueByTag(codeText, 'prec');
-              if(precCodeTexts){
+              // let precCodeTexts = getValueByTag(codeText, 'prec');
+              if(codeLabel && codeLabel === 'prec'){
                 let precCodeKey = 'Codes for Precondition';
 
                 if(!blockData[precCodeKey]){
@@ -1026,8 +1027,8 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
               for(let o = 0; o < nrAlternatives; o++){
 
                 //ALT
-                let altCodeTexts = getValueByTag(codeText, 'alt'+(o+1));
-                if(altCodeTexts){
+                // let altCodeTexts = getValueByTag(codeText, 'alt'+(o+1));
+                if(codeLabel && codeLabel === 'alt'+(o+1)){
                   let altCodeKey = 'Codes for Alternative '+(o+1);
                   if(!blockData[altCodeKey]){
                     blockData[altCodeKey] = codeString;
@@ -1040,8 +1041,8 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
                 }
 
                 //ALT-ADV
-                let altAdvCodeTexts = getValueByTag(codeText, 'adv'+(o+1));
-                if(altAdvCodeTexts){
+                // let altAdvCodeTexts = getValueByTag(codeText, 'adv'+(o+1));
+                if(codeLabel && codeLabel === 'adv'+(o+1)){
                   let altAdvCodeKey = 'Codes for Alternative '+(o+1)+' Adv.';
                   if(!blockData[altAdvCodeKey]){
                     blockData[altAdvCodeKey] = codeString;
@@ -1054,8 +1055,8 @@ function getCodeMetricsCsv(blocks, headerRow, allCodes) {
                 }
 
                 //ALT-DIS
-                let altDisCodeTexts = getValueByTag(codeText, 'dis'+(o+1));
-                if(altDisCodeTexts){
+                // let altDisCodeTexts = getValueByTag(codeText, 'dis'+(o+1));
+                if(codeLabel && codeLabel === 'dis'+(o+1)){
                   let altDisCodeKey = 'Codes for Alternative '+(o+1)+' Dis.';
                   if(!blockData[altDisCodeKey]){
                     blockData[altDisCodeKey] = codeString;
