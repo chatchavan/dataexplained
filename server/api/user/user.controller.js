@@ -769,14 +769,12 @@ export function getUserActivity(req, res) {
       for (let j = u.length - 1; j >= 0; j--) {
 
         let user = u[j].username;
-        let userData = {
-          username: user,
-        };
         headerRow = pushToArrayUnique(headerRow, 'username');
 
         let rHistory = config.env === 'development' ? './history_database' : '/home/' + user + '/.rstudio/history_database';
 
         fs.readFile(rHistory, 'utf8', function (err, data) {
+          let timestamps = [];
 
           if (!err) {
             let fileLogs = data.toString().split('\n');
@@ -784,13 +782,18 @@ export function getUserActivity(req, res) {
             if (fileLogs && fileLogs.length >= 0) {
               for (var i = fileLogs.length - 1; i >= 0; i--) {
                 if(fileLogs[i].length > 0){
-                  userData.timestamp = fileLogs[i].substr(0, fileLogs[i].indexOf(':'));
+                  let ts = fileLogs[i].substr(0, fileLogs[i].indexOf(':'));
                   headerRow = pushToArrayUnique(headerRow, 'timestamp');
-                  userActivities.push(userData);
+                  timestamps.push(ts);
                 }
               }
             }
 
+          }
+
+          //reverse timestamps
+          for(let t = timestamps.length-1; t >= 0; t--){
+            userActivities.push({username : user, timestamp : timestamps[t]});
           }
 
           counter++;
