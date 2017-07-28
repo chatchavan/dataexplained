@@ -413,7 +413,6 @@ export function update(req, res) {
 
         }
         else {
-          console.log('block updated');
           // LogCtrl.createOrUpdateLogs(user, blockId, selection, function(logSuccess){
           //   return res.status(200).json(block);
           // });
@@ -658,7 +657,6 @@ export function stripLogFromBlockContent(user, blockId, logIndex, logEntry, late
 
         }
         else {
-          console.log('block updated');
           return cb(b.blocks);
 
         }

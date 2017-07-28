@@ -134,7 +134,7 @@ export function create(req, res) {
 
 export function updateCodes(req, res){
   let allCodes = req.body.allCodes; //all Codes from updated Block
-  let coderId =   req.user._id;
+  let coder = req.body.coder;
 
   //Update all codes (global)
   Configuration.find({}, function(err, conf){
@@ -153,8 +153,7 @@ export function updateCodes(req, res){
 
       conf[0].save(function (err) {
         if (err) {
-          console.log('could update configuration codes', err);
-          // return res.status(200).json(blockCopy);
+          console.log('could not update configuration codes', err);
         }
 
       });
@@ -163,33 +162,27 @@ export function updateCodes(req, res){
   });
 
   //Update codes from users
-  User.findOne({'_id': coderId}).exec(function (errFind, user) {
-    if (!user || errFind) {
-      return res.status(404).end();
+  let codes = coder.codes;
+  for(let i = 0; i < allCodes.length; i++){
+    if (codes.indexOf(allCodes[i]) === -1) {
+      codes.push(allCodes[i]);
     }
-    else{
-
-      let codes = user.codes;
-      for(let i = 0; i < allCodes.length; i++){
-        if (codes.indexOf(allCodes[i]) === -1) {
-          codes.push(allCodes[i]);
-        }
+  }
+  coder.codes = codes;
+  User.findByIdAsync(coder._id)
+    .then(user => {
+      if (!user) {
+        console.log('could not update user with codes');
+        return res.status(200).json(coder);
       }
-
-      delete user._id;
-      user.codes = codes;
-
-      user.save(function (err) {
-        if (err) {
-          console.log('could update configuration codes', err);
-          // return res.status(200).json(blockCopy);
-        }
-        return res.status(200).json(codes);
-
-      });
-    }
-
-  });
+      delete coder._id;
+      let updated = _.extend(user, coder);
+      return updated.saveAsync()
+        .spread(updated => {
+          return res.status(200).json(updated);
+        });
+    })
+    .catch(err => next(err));
 
 }
 
