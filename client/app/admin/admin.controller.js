@@ -167,17 +167,11 @@
       else if(this.currentUser.codedBlocks.indexOf(newBlockId) > 0 && noCodes){
         this.currentUser.codedBlocks.splice(this.currentUser.codedBlocks.indexOf(newBlockId), 1);
       }
-      this.$http.put('/api/users/', this.currentUser).then(response => {
-        if(response && response.data){
-          this.currentUser = response.data;
-        }
-      }, (err) => {
-        console.log('error updating user: ', err);
-      });
 
       if(!noCodes && allCodes.length > 0){
-        this.$http.put('/api/configurations/codes', {'allCodes' : allCodes}).then(response => {
+        this.$http.put('/api/configurations/codes', {'allCodes' : allCodes, 'coder' : this.currentUser}).then(response => {
           if(response && response.data){
+            this.currentUser = response.data;
           }
         }, (err) => {
           console.log('error updating configuration codes: ', err);
