@@ -1,10 +1,17 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('LabelModalController', function($scope, $element, close, label, edit) {
+  .controller('LabelModalController', function($scope, $element, Auth, close, label, edit) {
 
     $scope.label = label ? label : '';
     $scope.edit = edit;
+    $scope.isCoder = false;
+
+    Auth.getCurrentUser(function(user){
+      if(user.role === 'admin-light'){
+        $scope.isCoder = true;
+      }
+    });
 
     $scope.close = function(form) {
       $element.modal('hide');
