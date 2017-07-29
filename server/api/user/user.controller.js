@@ -892,29 +892,32 @@ function getCodeMetricsCsvDetail(blocks, headerRow, allCodes) {
               let codeText = replaceNewLines(userCode.codes[c].codeText);
               let codeExplanation = replaceNewLines(userCode.codes[c].explanation);
 
-              let singleCodes = codeString.split(';');
+              if(codeString && codeString.length > 0){
+                let singleCodes = codeString.split(';');
 
-              for (let s = 0; s < singleCodes.length; s++) {
+                for (let s = 0; s < singleCodes.length; s++) {
 
-                let codeKey = singleCodes[s];
-                let codeData = {
-                  user : user,
-                  blockId : blockId,
-                  codename : codeKey,
-                  appearance: codeText,
-                  explanation: codeExplanation,
-                  coder: coder
-                };
-                headerRow = pushToArrayUnique(headerRow, 'user');
-                headerRow = pushToArrayUnique(headerRow, 'blockId');
-                headerRow = pushToArrayUnique(headerRow, 'codename');
-                headerRow = pushToArrayUnique(headerRow, 'appearance');
-                headerRow = pushToArrayUnique(headerRow, 'explanation');
-                headerRow = pushToArrayUnique(headerRow, 'coder');
+                  let codeKey = singleCodes[s];
+                  let codeData = {
+                    user : user,
+                    blockId : blockId,
+                    codename : codeKey,
+                    appearance: codeText,
+                    explanation: codeExplanation,
+                    coder: coder
+                  };
+                  headerRow = pushToArrayUnique(headerRow, 'user');
+                  headerRow = pushToArrayUnique(headerRow, 'blockId');
+                  headerRow = pushToArrayUnique(headerRow, 'codename');
+                  headerRow = pushToArrayUnique(headerRow, 'appearance');
+                  headerRow = pushToArrayUnique(headerRow, 'explanation');
+                  headerRow = pushToArrayUnique(headerRow, 'coder');
 
-                allCodes.push(codeData);
+                  allCodes.push(codeData);
 
+                }
               }
+
             }
 
 
