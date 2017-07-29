@@ -353,7 +353,7 @@ function getFile(file){
 function pushFiles(message, files, user, timestamp, res) {
   m_newCommit = {};
   m_filesToCommit = [];
-  let diffUrl = 'https://github.com/nicost71/'+blockRepo+'/commit/';
+  let diffUrl = 'https://github.com/'+config.github.user+'/'+blockRepo+'/commit/';
   return fetchHead()
     // .then(() => deleteFilesSilent(user, files))
     .then(() => getCurrentTreeSHA())
