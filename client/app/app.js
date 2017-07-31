@@ -34,8 +34,8 @@ angular.module('rationalecapApp', [
     $urlRouterProvider
       .otherwise(function ($injector, $location) {
 
-        if ($location.url() === '/readme') {
-          window.open('https://s3-eu-west-1.amazonaws.com/dataexplained/README.rtf', '_self');
+        if ($location.url() === '/dataset') {
+          window.open('https://s3-eu-west-1.amazonaws.com/dataexplained/Dataset.zip', '_self');
         }
         else {
           return '/';
