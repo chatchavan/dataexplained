@@ -312,7 +312,7 @@ class MainController {
       controller: "CustomModalController",
       inputs: {
         title: "Finish Analysis",
-        text: ['Please confirm that you have finished your analysis.'],
+        text: ['Please confirm that you have finished your analysis.', 'Make sure that all your logs are assigned to a block.'],
         actionText1: actionText1,
         actionText2: actionText2,
         actionText3: undefined

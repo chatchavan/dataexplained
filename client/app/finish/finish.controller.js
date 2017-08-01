@@ -82,7 +82,7 @@
       vm.loglist = vm.loglist ? vm.loglist : [];
 
       for (let i = 0; i < vm.loglist.length; i++) {
-        if (!vm.loglist[i].used && vm.loglist[i].length > 0) {
+        if (vm.loglist[i] && !vm.loglist[i].user && !vm.loglist[i].used) {
           vm.itemlist.push(vm.loglist[i]);
           vm.itemlist[vm.itemlist.length - 1].title = vm.loglist[i].log;
           vm.itemlist[vm.itemlist.length - 1].timestamp = new Date(Number(vm.loglist[i].timestamp));
