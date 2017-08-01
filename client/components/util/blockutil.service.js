@@ -190,7 +190,8 @@
             text: ['Do you really want to delete this block?'],
             actionText1: actionText1,
             actionText2: actionText2,
-            actionText3: undefined
+            actionText3: undefined,
+            actionText4: undefined
           }
         }).then(function(modal) {
           modal.element.modal();

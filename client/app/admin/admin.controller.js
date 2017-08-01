@@ -289,7 +289,8 @@
             text: ['What kind of user do you want to create?'],
             actionText1: actionText1,
             actionText2: actionText2,
-            actionText3: undefined
+            actionText3: undefined,
+            actionText4: undefined
           }
         }).then(function (modal) {
           modal.element.modal();
@@ -402,7 +403,8 @@
           text: ['Which format do you want to export the users?'],
           actionText1: actionText11,
           actionText2: actionText12,
-          actionText3: undefined
+          actionText3: undefined,
+          actionText4: undefined
         }
       }).then(function (modal) {
         modal.element.modal();
@@ -416,7 +418,8 @@
               text: ['Do you want to include the content (code) of the blocks?'],
               actionText1: actionText21,
               actionText2: actionText22,
-              actionText3: undefined
+              actionText3: undefined,
+              actionText4: undefined
             }
           }).then(function (modal) {
             modal.element.modal();
@@ -457,7 +460,8 @@
           text: ['What kind of user details do you want to export?'],
           actionText1: actionText1,
           actionText2: actionText2,
-          actionText3: undefined
+          actionText3: undefined,
+          actionText4: undefined
         }
       }).then(function (modal) {
         modal.element.modal();
@@ -484,6 +488,7 @@
       let actionText1 = 'Code-wise';
       let actionText2 = 'Code-wise Detail';
       let actionText3 = 'Block-wise';
+      let actionText4 = 'Code Matrix';
       let that = this;
 
       this.ModalService.showModal({
@@ -494,7 +499,8 @@
           text: ['What format do you want to export the codes?'],
           actionText1: actionText1,
           actionText2: actionText2,
-          actionText3: actionText3
+          actionText3: actionText3,
+          actionText4: actionText4
         }
       }).then(function (modal) {
         modal.element.modal();
@@ -505,6 +511,9 @@
           }
           else if(result === actionText3){
             method = 'blockWise';
+          }
+          else if(result === actionText4){
+            method = 'matrix';
           }
 
           that.$http.get('api/users/admin/codes/'+method).then(content => {
@@ -546,7 +555,8 @@
             text: ['Which format do you want to export the user?'],
             actionText1: actionText11,
             actionText2: actionText12,
-            actionText3: undefined
+            actionText3: undefined,
+            actionText4: undefined
           }
         }).then(function (modal) {
           modal.element.modal();
@@ -560,7 +570,8 @@
                 text: ['Do you want to include the content (code) of the blocks?'],
                 actionText1: actionText21,
                 actionText2: actionText22,
-                actionText3: undefined
+                actionText3: undefined,
+                actionText4: undefined
               }
             }).then(function (modal) {
               modal.element.modal();

@@ -362,6 +362,7 @@ export function createOrUpdateLogs(user, blockId, selection, cb) {
 
     for(let i = 0; i < selection.length; i++){
       selection[i].block = blockId;
+      selection[i].used = true;
     }
 
     Log.findOne({'user': user}).exec(function (err, logs) {
