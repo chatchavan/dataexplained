@@ -841,6 +841,9 @@ export function getCodes(req, res){
       else if (method === 'codeWise-Detail'){
         headerRow = getCodeMetricsCsvDetail(blocks, [], codes);
       }
+      else if (method === 'matrix'){
+        headerRow = getCodeMatrix(blocks, [], codes);
+      }
       else{
         headerRow = getCodeMetricsCsv(blocks, [], codes);
       }
@@ -929,6 +932,121 @@ function getCodeMetricsCsvDetail(blocks, headerRow, allCodes) {
 
     }
   }
+  return headerRow;
+}
+
+function getCodeMatrix(blocks, headerRow, allCodes) {
+
+  let codeMatrix = [];
+
+   //=====Collect each applied code for every coder=====
+  //===================================================
+  for (let i = 0; i < blocks.length; i++) {
+
+    let userBlock = blocks[i];
+
+    for (let j = 0; j < userBlock.blocks.length; j++) {
+
+      let blockId = userBlock.blocks[j]._id.toString();
+      let blockTitle = userBlock.blocks[j].title;
+      codeMatrix[blockId] = {blockTitle : blockTitle};
+
+
+      //Block Codes
+      let blockCodes = userBlock.blocks[j].blockCodes;
+      if (blockCodes && blockCodes.length > 0) {
+
+        for (let a = 0; a < blockCodes.length; a++) { //iterate of codes of each user
+
+          let userCode = blockCodes[a];
+
+          if(userCode && userCode.codes){
+
+            let coder = userCode.coder;
+
+
+            for(let c = 0; c < userCode.codes.length; c++) {
+
+              let codeString = userCode.codes[c].code; //separated with ';'
+
+              if(codeString && codeString.length > 0){
+                let singleCodes = codeString.split(';');
+
+                for (let s = 0; s < singleCodes.length; s++) {
+
+                  let codeKey = singleCodes[s];
+                  let blockMatrixCode = codeMatrix[blockId][codeKey];
+                  if(!blockMatrixCode){
+                    blockMatrixCode = [coder];
+                  }
+                  else{
+                    blockMatrixCode.push(coder);
+                  }
+                  codeMatrix[blockId][codeKey] = blockMatrixCode;
+
+                }
+              }
+
+            }
+
+
+          }
+
+
+        }
+      }
+
+    }
+  }
+
+  //=====Aggregate codes =====
+  //==========================
+  headerRow = pushToArrayUnique(headerRow, 'blockId');
+  headerRow = pushToArrayUnique(headerRow, 'blockTitle');
+  headerRow = pushToArrayUnique(headerRow, 'code');
+
+  Object.keys(codeMatrix).forEach(function(blockId,index) {
+
+    let blockEntry = codeMatrix[blockId];
+    let blockTitle = blockEntry['blockTitle'];
+
+    Object.keys(blockEntry).forEach(function (key, innerIndex){
+      let codeEntry = {};
+
+      codeEntry['blockId'] = blockId;
+      if(key !== 'blockTitle'){
+        //codes
+        let code = key;
+        codeEntry['blockTitle'] = blockTitle;
+        codeEntry['code'] = code;
+        let coders = blockEntry[code];
+        for(let c = 0; c < coders.length; c++){
+          codeEntry[coders[c]] = 1;
+          headerRow = pushToArrayUnique(headerRow, coders[c]);
+        }
+        allCodes.push(codeEntry);
+      }
+
+
+    });
+
+
+  });
+
+
+  //=====Fill missing codes for coder with 0=====
+  //=============================================
+  for(let a = 0; a < allCodes.length; a++){
+    let row = allCodes[a];
+    for(let h = 0; h < headerRow.length; h++){
+      if(headerRow[h] !== 'blockId' && headerRow[h] !== 'blockTitle' && headerRow[h] !== 'code' && !row.hasOwnProperty(headerRow[h])){
+        row[headerRow[h]] = 0;
+      }
+    }
+    allCodes[a] = row;
+  }
+
+
   return headerRow;
 }
 

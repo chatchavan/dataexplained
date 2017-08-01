@@ -66,7 +66,8 @@ angular.module('rationalecapApp')
             text: codeTexts,
             actionText1: 'Ok',
             actionText2: undefined,
-            actionText3: undefined
+            actionText3: undefined,
+            actionText4: undefined
           }
         }).then(function (modal) {
           modal.element.modal();

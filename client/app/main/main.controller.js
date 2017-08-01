@@ -134,7 +134,8 @@ class MainController {
               text: text,
               actionText1: actionText1,
               actionText2: undefined,
-              actionText3: undefined
+              actionText3: undefined,
+              actionText4: undefined
             }
           }).then(function(modal) {
             modal.element.modal();
@@ -172,7 +173,8 @@ class MainController {
         text: text,
         actionText1: actionText1,
         actionText2: actionText2,
-        actionText3: undefined
+        actionText3: undefined,
+        actionText4: undefined
       }
     }).then(function(modal) {
       modal.element.modal();
@@ -315,7 +317,8 @@ class MainController {
         text: ['Please confirm that you have finished your analysis.', 'Make sure that all your logs are assigned to a block.'],
         actionText1: actionText1,
         actionText2: actionText2,
-        actionText3: undefined
+        actionText3: undefined,
+        actionText4: undefined
       }
     }).then(function(modal) {
       modal.element.modal();

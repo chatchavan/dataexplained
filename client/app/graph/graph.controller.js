@@ -128,7 +128,8 @@
           text: text,
           actionText1: 'Ok',
           actionText2: undefined,
-          actionText3: undefined
+          actionText3: undefined,
+          actionText4: undefined
         }
       }).then(function(modal) {
         modal.element.modal();
@@ -158,7 +159,8 @@
           text: ['Please be aware that the graphical arrangement of your blocks will be lost when going back to the previous step.'],
           actionText1: actionText1,
           actionText2: actionText2,
-          actionText3: undefined
+          actionText3: undefined,
+          actionText4: undefined
         }
       }).then(function(modal) {
         modal.element.modal();
