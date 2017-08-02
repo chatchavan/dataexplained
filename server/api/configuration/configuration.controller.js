@@ -169,6 +169,9 @@ export function updateCodes(req, res){
     }
   }
   coder.codes = codes;
+  if(!coder._id){
+    return res.status(400).end();
+  }
   User.findByIdAsync(coder._id)
     .then(user => {
       if (!user) {
@@ -182,7 +185,7 @@ export function updateCodes(req, res){
           return res.status(200).json(updated);
         });
     })
-    .catch(err => next(err));
+    .catch(err => res.status(500).send(err));
 
 }
 
