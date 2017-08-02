@@ -943,13 +943,14 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
   //===================================================
   for (let i = 0; i < blocks.length; i++) {
 
+    let user = blocks[i].user;
     let userBlock = blocks[i];
 
     for (let j = 0; j < userBlock.blocks.length; j++) {
 
       let blockId = userBlock.blocks[j]._id.toString();
       let blockTitle = userBlock.blocks[j].title;
-      codeMatrix[blockId] = {blockTitle : blockTitle};
+      codeMatrix[blockId] = {user : user};
 
 
       //Block Codes
@@ -968,6 +969,8 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
             for(let c = 0; c < userCode.codes.length; c++) {
 
               let codeString = userCode.codes[c].code; //separated with ';'
+              let codeText = replaceNewLines(userCode.codes[c].codeText);
+              codeMatrix[blockId]['codeText'] = codeText;
 
               if(codeString && codeString.length > 0){
                 let singleCodes = codeString.split(';');
@@ -1001,23 +1004,24 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
 
   //=====Aggregate codes =====
   //==========================
+  headerRow = pushToArrayUnique(headerRow, 'user');
   headerRow = pushToArrayUnique(headerRow, 'blockId');
-  headerRow = pushToArrayUnique(headerRow, 'blockTitle');
+  headerRow = pushToArrayUnique(headerRow, 'codeText');
   headerRow = pushToArrayUnique(headerRow, 'code');
 
   Object.keys(codeMatrix).forEach(function(blockId,index) {
 
     let blockEntry = codeMatrix[blockId];
-    let blockTitle = blockEntry['blockTitle'];
+    let codeText = blockEntry['codeText'];
 
     Object.keys(blockEntry).forEach(function (key, innerIndex){
       let codeEntry = {};
 
       codeEntry['blockId'] = blockId;
-      if(key !== 'blockTitle'){
+      if(key !== 'codeText'){
         //codes
         let code = key;
-        codeEntry['blockTitle'] = blockTitle;
+        codeEntry['codeText'] = codeText;
         codeEntry['code'] = code;
         let coders = blockEntry[code];
         for(let c = 0; c < coders.length; c++){
@@ -1039,7 +1043,7 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
   for(let a = 0; a < allCodes.length; a++){
     let row = allCodes[a];
     for(let h = 0; h < headerRow.length; h++){
-      if(headerRow[h] !== 'blockId' && headerRow[h] !== 'blockTitle' && headerRow[h] !== 'code' && !row.hasOwnProperty(headerRow[h])){
+      if(headerRow[h] !== 'blockId' && headerRow[h] !== 'codeText' && headerRow[h] !== 'code' && !row.hasOwnProperty(headerRow[h])){
         row[headerRow[h]] = 0;
       }
     }
