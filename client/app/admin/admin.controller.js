@@ -169,9 +169,10 @@
       }
 
       if(!noCodes && allCodes.length > 0){
+        let that = this;
         this.$http.put('/api/configurations/codes', {'allCodes' : allCodes, 'coder' : this.currentUser}).then(response => {
           if(response && response.data){
-            this.currentUser = response.data;
+            that.currentUser = response.data;
           }
         }, (err) => {
           console.log('error updating configuration codes: ', err);
