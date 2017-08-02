@@ -105,7 +105,7 @@
                             <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu" role="menu">
-                            <li class="" ng-repeat="label in labels" ng-click="code.codeLabel = label">{{label}}</li>
+                            <li class="" ng-repeat="label in labels track by $index" ng-click="code.codeLabel = label">{{label}}</li>
                           </ul>
                         </div>
                       </td>
