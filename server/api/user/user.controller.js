@@ -950,7 +950,7 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
 
       let blockId = userBlock.blocks[j]._id.toString();
       let blockTitle = userBlock.blocks[j].title;
-      codeMatrix[blockId] = {user : user};
+      codeMatrix[blockId] = {user : user, blockTitle: blockTitle};
 
 
       //Block Codes
@@ -969,8 +969,6 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
             for(let c = 0; c < userCode.codes.length; c++) {
 
               let codeString = userCode.codes[c].code; //separated with ';'
-              let codeText = replaceNewLines(userCode.codes[c].codeText);
-              codeMatrix[blockId]['codeText'] = codeText;
 
               if(codeString && codeString.length > 0){
                 let singleCodes = codeString.split(';');
@@ -1006,23 +1004,23 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
   //==========================
   headerRow = pushToArrayUnique(headerRow, 'user');
   headerRow = pushToArrayUnique(headerRow, 'blockId');
-  headerRow = pushToArrayUnique(headerRow, 'codeText');
+  headerRow = pushToArrayUnique(headerRow, 'blockTitle');
   headerRow = pushToArrayUnique(headerRow, 'code');
 
   Object.keys(codeMatrix).forEach(function(blockId,index) {
 
     let blockEntry = codeMatrix[blockId];
-    let codeText = blockEntry['codeText'];
+    let blockTitle = blockEntry['blockTitle'];
 
     Object.keys(blockEntry).forEach(function (key, innerIndex){
       let codeEntry = {};
 
       codeEntry['blockId'] = blockId;
       codeEntry['user'] = blockEntry['user'];
-      if(key !== 'codeText' && key !== 'user'){
+      if(key !== 'blockTitle' && key !== 'user'){
         //codes
         let code = key;
-        codeEntry['codeText'] = codeText;
+        codeEntry['blockTitle'] = blockTitle;
         codeEntry['code'] = code;
         let coders = blockEntry[code];
         for(let c = 0; c < coders.length; c++){
@@ -1044,7 +1042,7 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
   for(let a = 0; a < allCodes.length; a++){
     let row = allCodes[a];
     for(let h = 0; h < headerRow.length; h++){
-      if(headerRow[h] !== 'blockId' && headerRow[h] !== 'codeText' && headerRow[h] !== 'code' && !row.hasOwnProperty(headerRow[h])){
+      if(headerRow[h] !== 'user' && headerRow[h] !== 'blockId' && headerRow[h] !== 'blockTitle' && headerRow[h] !== 'code' && !row.hasOwnProperty(headerRow[h])){
         row[headerRow[h]] = 0;
       }
     }
