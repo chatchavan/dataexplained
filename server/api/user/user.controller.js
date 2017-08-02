@@ -1018,7 +1018,8 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
       let codeEntry = {};
 
       codeEntry['blockId'] = blockId;
-      if(key !== 'codeText'){
+      codeEntry['user'] = blockEntry['user'];
+      if(key !== 'codeText' && key !== 'user'){
         //codes
         let code = key;
         codeEntry['codeText'] = codeText;
