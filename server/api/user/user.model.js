@@ -76,24 +76,24 @@ UserSchema
   }, 'Password cannot be blank');
 
 // Validate email is not taken
-UserSchema
-  .path('username')
-  .validate(function(value, respond) {
-    var self = this;
-    return this.constructor.findOneAsync({ username: value })
-      .then(function(user) {
-        if (user) {
-          if (self.id === user.id) {
-            return respond(true);
-          }
-          return respond(false);
-        }
-        return respond(true);
-      })
-      .catch(function(err) {
-        throw err;
-      });
-  }, 'The specified username is already in use.');
+// UserSchema
+//   .path('username')
+//   .validate(function(value, respond) {
+//     var self = this;
+//     return this.constructor.findOneAsync({ username: value })
+//       .then(function(user) {
+//         if (user) {
+//           if (self.id === user.id) {
+//             return respond(true);
+//           }
+//           return respond(false);
+//         }
+//         return respond(true);
+//       })
+//       .catch(function(err) {
+//         throw err;
+//       });
+//   }, 'The specified username is already in use.');
 
 var validatePresenceOf = function(value) {
   return value && value.length;
