@@ -215,6 +215,7 @@ angular.module('rationalecapApp')
       $scope.labels.push('reason');
       $scope.labels.push('prec');
       $scope.labels.push('code');
+      $scope.labels.push('block');
 
       $scope.renderedContent_temp = [];
       if($scope.block.content){
