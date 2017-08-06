@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('rationalecapApp')
-  .controller('BlockModalCoderController', function($scope, $element, $http, title, close, block, content, edit, allCodes, Auth, ModalService) {
+  .controller('BlockModalCoderController', function($scope, $element, $http, $timeout, title, close, block, content, edit, allCodes, Auth, ModalService) {
 
     $scope.title = title;
     $scope.edit = edit;
@@ -11,6 +11,7 @@ angular.module('rationalecapApp')
     $scope.blockCodesIndex = 0;
     $scope.codes = [];
     $scope.step = 1;
+    $scope.errorFields = [];
 
     init();
 
@@ -120,8 +121,10 @@ angular.module('rationalecapApp')
             $scope.block.blockCodes.splice($scope.blockCodesIndex, 1);
           }
 
-          $element.modal('hide');
-          close($scope.block, 500); // close, but give 500ms for bootstrap to animate
+          if($scope.checkFields()){
+            $element.modal('hide');
+            close($scope.block, 500); // close, but give 500ms for bootstrap to animate
+          }
         }
       }
     };
@@ -136,6 +139,36 @@ angular.module('rationalecapApp')
       close(undefined, 500); // close, but give 500ms for bootstrap to animate
     };
 
+    $scope.checkFields = function(){
+
+      $scope.errorFields = [];
+      let errors = [];
+
+      if(!$scope.block.blockCodes){
+        return true;
+      }
+
+      let codes = $scope.block.blockCodes[$scope.blockCodesIndex].codes;
+      // console.log('codes', codes);
+      for(let i = 0; i < codes.length; i++){
+        if(!codes[i].code){
+          $scope.errorFields.push('- Code(s) for entry '+(i+1));
+        }
+        if(!codes[i].codeLabel){
+          $scope.errorFields.push('- Label for entry '+(i+1));
+        }
+        if(!codes[i].codeText){
+          $scope.errorFields.push('- Code-Text for entry '+(i+1));
+        }
+      }
+
+      // $timeout(function(){
+      //   $scope.errorFields = errors;
+      // });
+      // console.log('errors', $scope.errorFields);
+
+      return $scope.errorFields.length <= 0;
+    };
 
 
     $scope.showDiff = function(){
@@ -149,7 +182,7 @@ angular.module('rationalecapApp')
     };
 
     $scope.deleteCode = function(index){
-      if(index >= 0 && $scope.coderCodes.length > index && $scope.codes.length > index){
+      if(index >= 0 && $scope.coderCodes.length > index){
         $scope.coderCodes.splice(index, 1);
         $scope.codes.splice(index, 1);
       }
@@ -196,6 +229,32 @@ angular.module('rationalecapApp')
       let element = document.getElementById(id);
       element.style.height = (element.scrollHeight > element.clientHeight) ? (element.scrollHeight)+"px" : "60px";
 
+    };
+
+    $scope.setLabel = function(code, label){
+      code.codeLabel = label;
+      if(label === 'title'){
+        code.codeText = $scope.block.title;
+      }
+      else if(label === 'goal'){
+        code.codeText = $scope.block.goal;
+      }
+      else if(label === 'reason'){
+        code.codeText = $scope.block.criteria;
+      }
+      else if(label === 'prec'){
+        code.codeText = $scope.block.preconditions;
+      }
+      else if(label.startsWith('alt')){
+        code.codeText = $scope.block.alternatives[Number(label.substr(3, label.length))-1].title;
+      }
+      else if(label.startsWith('adv')){
+        code.codeText = $scope.block.alternatives[Number(label.substr(3, label.length))-1].pro;
+
+      }
+      else if(label.startsWith('dis')){
+        code.codeText = $scope.block.alternatives[Number(label.substr(3, label.length))-1].contra;
+      }
     };
 
 

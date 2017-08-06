@@ -105,7 +105,7 @@
                             <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu" role="menu">
-                            <li class="" ng-repeat="label in labels track by $index" ng-click="code.codeLabel = label">{{label}}</li>
+                            <li class="" ng-repeat="label in labels track by $index" ng-click="setLabel(code, label)">{{label}}</li>
                           </ul>
                         </div>
                       </td>
@@ -131,6 +131,12 @@
             <md-button ng-if="edit" type="button" ng-click="showDiff()" class="md-raised">Show Diff</md-button>
             <md-button type="button" ng-click="cancel()" class="md-raised">Cancel</md-button>
           </div>
+          <div class="errorFields">
+            <span ng-if="errorFields.length > 0">The following fields are missing:<br>
+              <span ng-repeat="error in errorFields track by $index">{{error}}<br></span>
+            </span>
+          </div>
+
 
         </div>
 
