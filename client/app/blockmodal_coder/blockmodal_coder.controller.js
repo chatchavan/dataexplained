@@ -144,8 +144,8 @@ angular.module('rationalecapApp')
       $scope.errorFields = [];
       let errors = [];
 
-      if(!$scope.block.blockCodes){
-        return true;
+      if(!$scope.block.blockCodes || !$scope.block.blockCodes[$scope.blockCodesIndex]){
+          return true;
       }
 
       let codes = $scope.block.blockCodes[$scope.blockCodesIndex].codes;
@@ -325,7 +325,7 @@ angular.module('rationalecapApp')
           }
         }
         // $scope.coderCodes = [{'codeText' : '', 'code' : ''}];
-        $scope.blockCodesIndex = $scope.block.blockCodes.push({coder: $scope.user, codes:[]});
+        $scope.block.blockCodes.push({coder: $scope.user, codes:[]});
         $scope.blockCodesIndex = $scope.block.blockCodes.length-1;
         $scope.coderCodes = [];
       });
