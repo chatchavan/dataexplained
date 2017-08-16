@@ -972,12 +972,12 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
             for(let c = 0; c < userCode.codes.length; c++) {
 
               let codeString = userCode.codes[c].code; //separated with ';'
-              let codeLabel = userCode.codes[c].code;
+              let codeLabel = userCode.codes[c].codeLabel;
 
-              let isNotAlternativeCode = true;
-              isNotAlternativeCode = (codeLabel !== 'title' && codeLabel !== 'goal' && codeLabel !== 'reason' && codeLabel !== 'prec' && codeLabel !== 'code' && codeLabel !== 'block');
+              let isAlternativeCode = false;
+              isAlternativeCode = (codeLabel !== 'title' && codeLabel !== 'goal' && codeLabel !== 'reason' && codeLabel !== 'prec' && codeLabel !== 'code' && codeLabel !== 'block');
 
-              if(codeString && codeString.length > 0 && !isNotAlternativeCode){
+              if(codeString && codeString.length > 0 && !isAlternativeCode){
                 let singleCodes = codeString.split(';');
 
                 for (let s = 0; s < singleCodes.length; s++) {
