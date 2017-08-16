@@ -892,6 +892,7 @@ function getCodeMetricsCsvDetail(blocks, headerRow, allCodes) {
             for(let c = 0; c < userCode.codes.length; c++) {
 
               let codeString = userCode.codes[c].code; //separated with ';'
+              let codeLabel = userCode.codes[c].codeLabel;
               let codeText = replaceNewLines(userCode.codes[c].codeText);
               let codeExplanation = replaceNewLines(userCode.codes[c].explanation);
 
@@ -905,6 +906,7 @@ function getCodeMetricsCsvDetail(blocks, headerRow, allCodes) {
                     user : user,
                     blockId : blockId,
                     codename : codeKey,
+                    codelabel : codeLabel,
                     appearance: codeText,
                     explanation: codeExplanation,
                     coder: coder
@@ -912,6 +914,7 @@ function getCodeMetricsCsvDetail(blocks, headerRow, allCodes) {
                   headerRow = pushToArrayUnique(headerRow, 'user');
                   headerRow = pushToArrayUnique(headerRow, 'blockId');
                   headerRow = pushToArrayUnique(headerRow, 'codename');
+                  headerRow = pushToArrayUnique(headerRow, 'codelabel');
                   headerRow = pushToArrayUnique(headerRow, 'appearance');
                   headerRow = pushToArrayUnique(headerRow, 'explanation');
                   headerRow = pushToArrayUnique(headerRow, 'coder');
@@ -969,12 +972,8 @@ function getCodeMatrix(blocks, headerRow, allCodes) {
             for(let c = 0; c < userCode.codes.length; c++) {
 
               let codeString = userCode.codes[c].code; //separated with ';'
-              let codeLabel = userCode.codes[c].code;
 
-              let isNotAlternativeCode = true;
-              isNotAlternativeCode = (codeLabel !== 'title' && codeLabel !== 'goal' && codeLabel !== 'reason' && codeLabel !== 'prec' && codeLabel !== 'code' && codeLabel !== 'block');
-
-              if(codeString && codeString.length > 0 && !isNotAlternativeCode){
+              if(codeString && codeString.length > 0){
                 let singleCodes = codeString.split(';');
 
                 for (let s = 0; s < singleCodes.length; s++) {
