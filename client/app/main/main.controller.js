@@ -314,7 +314,7 @@ class MainController {
       controller: "CustomModalController",
       inputs: {
         title: "Finish Analysis",
-        text: ['Please confirm that you have finished your analysis.', 'Make sure that all your logs are assigned to a block.'],
+        text: ['Please make sure that you have calculated all the required measures for reporting your analysis.', 'A full version of the results survey (in a google doc) can be found <a href="https://docs.google.com/document/d/12aRqdsC7nkLFD2SR_ew0SgV0DE_j001X2POe0gh4rXE/edit?usp=sharing" target="_blank">here</a>.', 'Also make sure that all your logs are assigned to a block.','Please confirm that you have finished your analysis.', ],
         actionText1: actionText1,
         actionText2: actionText2,
         actionText3: undefined,
