@@ -1,4 +1,4 @@
-# rationalecap
+# DataExplained
 
 ## Getting Started
 
